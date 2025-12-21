@@ -1,0 +1,16 @@
+server:
+  port: 5125
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27123/andy-springboot3-template-local
+    redis:
+      database: 0
+      host: localhost
+      port: 6125
+      password: aredissecret
+      timeout: 10000
+  cache:
+    type: redis
+  kafka:
+    bootstrap-servers: localhost:9125
