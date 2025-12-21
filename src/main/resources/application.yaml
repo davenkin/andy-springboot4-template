@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    accept-count: 100
+    max-swallow-size: 50
+    max-keep-alive-requests: 200
+    threads:
+      max: 500
+
+spring:
+  application:
+    name: andy-springboot4-template
+  profiles:
+    active: local # use "local" profile by default for local run
+
+mongock:
+  enabled: true
+  migration-scan-package: com.company.andy.common.migration
+  transactional: true
+  lock-repository-name: mongock-lock
+  migration-repository-name: mongock-migration
+
+springdoc:
+  default-produces-media-type: application/json

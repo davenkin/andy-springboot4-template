@@ -1,0 +1,16 @@
+de.flapdoodle.mongodb.embedded.version: 7.0.12 # Enable flapdoodle Embedded MongoDB by specifying a version
+
+mongock:
+  enabled: false # Disable Mongock
+
+spring:
+  autoconfigure:
+    exclude:
+      # Comment out the below line if you want to disable embedded MongoDB and use a real MongoDB server
+      # - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration # Disable Kafka
+  data:
+    redis:
+      port: 6124 # embedded Redis, can be accessed via 127.0.0.1:6124
+  mongodb:
+    uri: mongodb://localhost:27125/andy-springboot4-template-local

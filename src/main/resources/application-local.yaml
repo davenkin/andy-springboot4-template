@@ -2,8 +2,6 @@ server:
   port: 5125
 spring:
   data:
-    mongodb:
-      uri: mongodb://localhost:27123/andy-springboot3-template-local
     redis:
       database: 0
       host: localhost
@@ -14,3 +12,5 @@ spring:
     type: redis
   kafka:
     bootstrap-servers: localhost:9125
+  mongodb:
+    uri: mongodb://localhost:27125/andy-springboot4-template-local

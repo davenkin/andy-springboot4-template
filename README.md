@@ -27,10 +27,10 @@ This is a sample Spring Boot project for building Microservices with the followi
 ## Tech stack
 
 - Java 17
-- Spring Boot 3.5.3
-- Spring Data Mongodb 4.5.1
-- Spring Data Redis 3.5.0
-- Spring Kafka 3.3.7
+- Spring Boot 4.0.1
+- Spring Data Mongodb
+- Spring Data Redis
+- Spring Kafka
 
 ## How to run locally
 
