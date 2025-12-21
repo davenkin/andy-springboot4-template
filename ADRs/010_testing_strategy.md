@@ -80,7 +80,7 @@ assist you testing.
   configuration:
     - Kafka is disabled because it's asynchronous and hard to manage when it comes to testing
     - Embedded Redis server is used: `com.github.codemonstur:embedded-redis`
-    - Embedded MongoDB server is used: ``de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x``
+    - Embedded MongoDB server is used: `de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`
     - All external HTTP services should be mocked
     - Job schedulers are disabled
 

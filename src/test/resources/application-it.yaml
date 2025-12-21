@@ -8,9 +8,9 @@ spring:
     exclude:
       # Comment out the below line if you want to disable embedded MongoDB and use a real MongoDB server
       # - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
-      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration # Disable Kafka
+      - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
   data:
     redis:
-      port: 6124 # embedded Redis, can be accessed via 127.0.0.1:6124
+      port: 6126 # embedded Redis, can be accessed via 127.0.0.1:6126
   mongodb:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
