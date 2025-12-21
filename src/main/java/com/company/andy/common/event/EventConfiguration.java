@@ -55,7 +55,7 @@ public class EventConfiguration {
 
     @Bean
     public DefaultKafkaProducerFactoryCustomizer defaultKafkaProducerFactoryCustomizer(JsonMapper objectMapper) {
-        return producerFactory -> producerFactory.setValueSerializer(new JacksonJsonSerializer(objectMapper));
+        return producerFactory -> producerFactory.setValueSerializer(new JacksonJsonSerializer<>(objectMapper));
     }
 
     @Bean
@@ -65,7 +65,7 @@ public class EventConfiguration {
             valueDeserializer.addTrustedPackages("*");
 
             //we must wrap the JsonDeserializer into an ErrorHandlingDeserializer, otherwise deserialization error will result in endless message retry
-            consumerFactory.setValueDeserializer(new ErrorHandlingDeserializer(valueDeserializer));
+            consumerFactory.setValueDeserializer(new ErrorHandlingDeserializer<>(valueDeserializer));
         };
     }
 
