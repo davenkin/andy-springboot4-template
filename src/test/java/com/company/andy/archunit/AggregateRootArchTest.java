@@ -10,7 +10,7 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.archunit.util.ArchUnitUtils.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-@AnalyzeClasses(packages = "com.company.andy.business", importOptions = DoNotIncludeTests.class)
+@AnalyzeClasses(packages = "com.company.andy.feature", importOptions = DoNotIncludeTests.class)
 class AggregateRootArchTest {
 
     @ArchTest
@@ -18,7 +18,7 @@ class AggregateRootArchTest {
             .that()
             .areAssignableTo(AggregateRoot.class)
             .should()
-            .resideInAnyPackage("com.company.andy.business..domain")
+            .resideInAnyPackage("com.company.andy.feature..domain")
             .because("Aggregate root should located directly under domain package.");
 
     @ArchTest

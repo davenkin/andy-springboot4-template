@@ -27,7 +27,7 @@ class EquipmentCreatedEventHandlerIntegrationTest extends IntegrationTest {
     private EquipmentRepository equipmentRepository;
 
     @Test
-    void should_evict_org_equipment_summaries_cache() {
+    void should_evict_org_equipment_summaries_cache() throws InterruptedException {
         Operator operator = RandomTestUtils.randomUserOperator();
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(RandomTestUtils.randomEquipmentName());
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -41,6 +41,7 @@ class EquipmentCreatedEventHandlerIntegrationTest extends IntegrationTest {
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         equipmentCreatedEventHandler.handle(equipmentCreatedEvent);
+        Thread.sleep(100);//wait for cache to evict
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
     }
 }

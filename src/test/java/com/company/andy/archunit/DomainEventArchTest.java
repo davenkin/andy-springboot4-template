@@ -11,7 +11,7 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.archunit.util.ArchUnitUtils.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-@AnalyzeClasses(packages = "com.company.andy.business", importOptions = DoNotIncludeTests.class)
+@AnalyzeClasses(packages = "com.company.andy.feature", importOptions = DoNotIncludeTests.class)
 class DomainEventArchTest {
 
     @ArchTest
@@ -19,7 +19,7 @@ class DomainEventArchTest {
             .that()
             .areAssignableTo(DomainEvent.class)
             .should()
-            .resideInAnyPackage("com.company.andy.business..domain.event..")
+            .resideInAnyPackage("com.company.andy.feature..domain.event..")
             .because("Domain events are domain models and should have a specific package under domain.event package.");
 
     @ArchTest
@@ -51,7 +51,7 @@ class DomainEventArchTest {
             .that()
             .areAssignableTo(AbstractEventHandler.class)
             .should()
-            .resideInAnyPackage("com.company.andy.business..eventhandler..")
+            .resideInAnyPackage("com.company.andy.feature..eventhandler..")
             .because("We should gather event handlers together under eventhandler package.");
 
     @ArchTest
