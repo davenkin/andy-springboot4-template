@@ -8,9 +8,7 @@ spring:
       port: 6125
       password: aredissecret
       timeout: 10000
-  cache:
-    type: redis
-  kafka:
-    bootstrap-servers: localhost:9125
   mongodb:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
+  kafka:
+    bootstrap-servers: localhost:9125

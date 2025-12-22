@@ -13,6 +13,8 @@ spring:
     name: andy-springboot4-template
   profiles:
     active: local # use "local" profile by default for local run
+  cache:
+    type: redis
 
 mongock:
   enabled: true

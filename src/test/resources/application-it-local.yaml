@@ -1,0 +1,18 @@
+mongock:
+  enabled: false # Disable Mongock
+
+spring:
+  autoconfigure:
+    exclude:
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable embedded MongoDB as real one will be used
+      - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6125
+      password: aredissecret
+      timeout: 10000
+  mongodb:
+    uri: mongodb://localhost:27125/andy-springboot4-template-local
+

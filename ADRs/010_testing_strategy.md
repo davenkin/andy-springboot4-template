@@ -4,7 +4,7 @@
 
 Backend developers usually write both unit tests and integration tests. According
 to [Testing Pyramid](https://martinfowler.com/bliki/TestPyramid.html), unit tests
-constitute the base of the pyramid, while integration tests are at a level higher. The goal is to have a large number of
+constitute the base of the pyramid while integration tests are at a level higher. The goal is to have a large number of
 unit tests and a smaller number of integration tests. But in our case, we find that unit tests can be too fragile and
 require frequent updates when the code changes, and it gives us less confidence than integration tests, more detail can
 be found [here](https://web.dev/articles/ta-strategies).
@@ -44,45 +44,62 @@ No need to write tests for:
 - All integration tests should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java):
 
 ```java
+
 @Slf4j
-@ActiveProfiles(IT_PROFILE)
+@ActiveProfiles("it")
+//@ActiveProfiles("it-local")
+@Execution(SAME_THREAD)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
-    private static RedisServer redisServer;
+  private static RedisServer redisServer;
 }
 ```
 
-The `IntegrationTest` is annotated with `@SpringBootTest`, instructing the test to load the whole Spring application
-context, hence creating an integration test environment. Docker is not used for integration tests, instead embedded MongoDB and Redis are used.
+The `IntegrationTest` is annotated with `@SpringBootTest`, meaning the tests will load the whole Spring application
+context which uses a real servlet server.
 
-It's also annotated with `@ActiveProfiles(IT_PROFILE)` which
-uses [application-it.yaml](../src/test/resources/application-it.yaml) for Spring configuration.
-
-- When write your own integration test class, you only need to extend `IntegrationTest`:
+When write your own integration test classes, you only need to extend `IntegrationTest`:
 
 ```java
 class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
-    @Autowired
-    private EquipmentCommandService equipmentCommandService;
+  @Autowired
+  private EquipmentCommandService equipmentCommandService;
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+  @Autowired
+  private EquipmentRepository equipmentRepository;
 
-    @Test
-    void should_create_equipment() {}
+  @Test
+  void should_create_equipment() {}
 }
 ```
 
-You can use `@Autowire` to get an instance of the bean that should be tested, or whatever beans that you require to
+You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
 assist you testing.
 
-- We want developers to run the tests without any local setup, hence for integration tests we have the following
-  configuration:
-    - Kafka is disabled because it's asynchronous and hard to manage when it comes to testing
-    - Embedded Redis server is used: `com.github.codemonstur:embedded-redis`
-    - Embedded MongoDB server is used: `de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`
-    - All external HTTP services should be mocked
+There are two profiles for integration test: [application-it.yaml](../src/test/resources/application-it.yaml)
+and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can choose to enable one
+of them, but not both.
+
+The main difference between `application-it.yaml` and `application-it-local.yaml` is that the former uses embedded MongoDB and Redis while
+the latter uses real ones from your local machine.
+
+- `application-it.yaml`: This is the default profile and should be enabled for Jenkins CI. This profile enables developers to run
+  integration tests without setting up any middlewares locally like MongoDB, Redis or Kafka. You can just pull the code and run the tests.
+  It has the following configurations:
+    - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
+    - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
+    - Mongock disabled
+    - Kafka disabled for both sending and consuming events
     - Job schedulers are disabled
+- `application-it-local.yaml`: This is only for your local testing and should not be enabled for Jenkins CI, it has the following
+  configurations:
+    - Use your local MongoDB serve
+    - Use your local Redis server
+    - Mongock disabled (same as `application-it.yaml`)
+    - Kafka disabled for both sending and consuming events (same as `application-it.yaml`)
+    - Job schedulers are disabled (same as `application-it.yaml`)
+
+For both profiles:
 
 - As Kafka is disabled, you will need to call EventHandlers' `handle()` methods explicitly to ensure the processing of
   events.
@@ -91,25 +108,33 @@ assist you testing.
   verify the existence of domain events:
 
 ```java
-    @Test
-    void should_create_equipment() {
-        Operator operator = randomUserOperator();
 
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+@Test
+void should_create_equipment() {
+  Operator operator = randomUserOperator();
 
-        Equipment equipment = equipmentRepository.byId(equipmentId);
-        assertEquals(createEquipmentCommand.name(), equipment.getName());
-        assertEquals(operator.getOrgId(), equipment.getOrgId());
+  CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+  String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
 
-        // Verify the existence of Domain Events in database
-        EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
-    }
+  Equipment equipment = equipmentRepository.byId(equipmentId);
+  assertEquals(createEquipmentCommand.name(), equipment.getName());
+  assertEquals(operator.getOrgId(), equipment.getOrgId());
+
+  // Verify the existence of Domain Events in database
+  EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
+  assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
+}
 ```
 
-- In order to [enhance testing performance](https://www.baeldung.com/spring-tests), please use as less mocks as possible
-  in integration tests
+- In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing context repeatedly,
+  please use as less mocks(`@MockitoBean` or `@MockitoSpanBean`) as possible in integration tests.
+- All integration tests run sequentially by configuring `IntegrationTest` with `@Execution(SAME_THREAD)`, we cannot enable concurrent
+  execution due to:
+    - Spring mock beans(`@MockitoBean` and `@MockitoSpanBean`) cannot be shared by concurrent tests.
+    - The embedded MongoDB server does not support concurrent transactions (This only applies to `application-it.yaml` but not
+      `application-it-local.yaml`).
+    - In the future, if we can use real MongoDB server and minimize the use of mock beans, we should be able to configure integration tests
+      to run concurrently.
 
 ### Unit Tests
 
@@ -117,15 +142,15 @@ assist you testing.
 
 ```java
 class EquipmentTest {
-    @Test
-    void shouldCreateEquipment() {
-        Operator operator = RandomTestUtils.randomUserOperator();
-        Equipment equipment = new Equipment("name", operator);
-        assertEquals("name", equipment.getName());
-        assertEquals(1, equipment.getEvents().size());
-        assertTrue(equipment.getEvents().stream()
-                .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
-    }
+  @Test
+  void shouldCreateEquipment() {
+    Operator operator = RandomTestUtils.randomUserOperator();
+    Equipment equipment = new Equipment("name", operator);
+    assertEquals("name", equipment.getName());
+    assertEquals(1, equipment.getEvents().size());
+    assertTrue(equipment.getEvents().stream()
+        .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
+  }
 }
 ```
 
@@ -133,24 +158,25 @@ class EquipmentTest {
   simplify the mocking setup:
 
 ```java
+
 @ExtendWith(MockitoExtension.class)
 class EquipmentDomainServiceTest {
 
-    @Mock
-    private EquipmentRepository equipmentRepository;
+  @Mock
+  private EquipmentRepository equipmentRepository;
 
-    @InjectMocks
-    private EquipmentDomainService equipmentDomainService;
+  @InjectMocks
+  private EquipmentDomainService equipmentDomainService;
 
-    @Test
-    void shouldUpdateName() {
-        Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-        Equipment equipment = new Equipment("name", randomUserOperator());
+  @Test
+  void shouldUpdateName() {
+    Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+    Equipment equipment = new Equipment("name", randomUserOperator());
 
-        equipmentDomainService.updateEquipmentName(equipment, "newName");
+    equipmentDomainService.updateEquipmentName(equipment, "newName");
 
-        assertEquals("newName", equipment.getName());
-    }
+    assertEquals("newName", equipment.getName());
+  }
 }
 ```
 

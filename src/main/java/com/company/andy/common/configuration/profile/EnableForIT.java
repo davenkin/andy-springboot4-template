@@ -1,14 +1,13 @@
 package com.company.andy.common.configuration.profile;
 
-import org.springframework.context.annotation.Profile;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 
-import static com.company.andy.common.util.Constants.IT_PROFILE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.springframework.context.annotation.Profile;
 
 // Enable for integration tests
 @Retention(RUNTIME)
-@Profile(IT_PROFILE)
+@Profile("it | it-local")
 public @interface EnableForIT {
 }
