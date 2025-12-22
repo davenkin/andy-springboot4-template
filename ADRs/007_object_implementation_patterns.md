@@ -141,9 +141,8 @@ Repository [CachedMongoEquipmentRepository](../src/test/java/com/company/andy/sa
 @Repository
 @RequiredArgsConstructor
 public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equipment> {
-    private static final String ORG_EQUIPMENT_CACHE = "ORG_EQUIPMENTS";
 
-    @Cacheable(value = ORG_EQUIPMENT_CACHE, key = "#orgId")
+    @Cacheable(value = ORG_EQUIPMENTS_CACHE, key = "#orgId")
     public CachedOrgEquipmentSummaries cachedEquipmentSummaries(String orgId) {
         requireNonBlank(orgId, "orgId must not be blank.");
 

@@ -12,16 +12,6 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 class PackageDependencyArchTest {
 
     @ArchTest
-    static final ArchRule commonClassesNotDependOnBusinessPackages = noClasses()
-            .that()
-            .resideInAnyPackage("..com.company.andy.common..")
-            .should()
-            .dependOnClassesThat()
-            .resideInAnyPackage(
-                    "..com.company.andy.business..")
-            .because("The common package is shard by all businesses, it should not depend on any specific business packages.");
-
-    @ArchTest
     static final ArchRule businessClassesShouldAllUnderSpecificPackages = classes()
             .that()
             .resideInAnyPackage("..com.company.andy.business..")

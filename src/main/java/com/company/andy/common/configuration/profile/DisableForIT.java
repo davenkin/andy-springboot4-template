@@ -1,10 +1,10 @@
 package com.company.andy.common.configuration.profile;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.springframework.context.annotation.Profile;
 
 import java.lang.annotation.Retention;
 
-import org.springframework.context.annotation.Profile;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 // Disable for integration tests
 @Retention(RUNTIME)
