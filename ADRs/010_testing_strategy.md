@@ -48,7 +48,6 @@ No need to write tests for:
 @Slf4j
 @ActiveProfiles("it")
 //@ActiveProfiles("it-local")
-@Execution(SAME_THREAD)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
   private static RedisServer redisServer;
@@ -77,21 +76,27 @@ You can use `@Autowired` to get an instance of the bean that should be tested, o
 assist you testing.
 
 There are two profiles for integration test: [application-it.yaml](../src/test/resources/application-it.yaml)
-and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can choose to enable one
+and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
+choose to enable one
 of them, but not both.
 
-The main difference between `application-it.yaml` and `application-it-local.yaml` is that the former uses embedded MongoDB and Redis while
+The main difference between `application-it.yaml` and `application-it-local.yaml` is that the former uses embedded
+MongoDB and Redis while
 the latter uses real ones from your local machine.
 
-- `application-it.yaml`: This is the default profile and should be enabled for Jenkins CI. This profile enables developers to run
-  integration tests without setting up any middlewares locally like MongoDB, Redis or Kafka. You can just pull the code and run the tests.
+- `application-it.yaml`: This is the default profile and should be enabled for Jenkins CI. This profile enables
+  developers to run
+  integration tests without setting up any middlewares locally like MongoDB, Redis or Kafka. You can just pull the code
+  and run the tests.
   It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
     - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
+    - Transaction disabled as flapdoodle reports error for concurrent transactions
     - Mongock disabled
     - Kafka disabled for both sending and consuming events
     - Job schedulers are disabled
-- `application-it-local.yaml`: This is only for your local testing and should not be enabled for Jenkins CI, it has the following
+- `application-it-local.yaml`: This is only for your local testing and should not be enabled for Jenkins CI, it has the
+  following
   configurations:
     - Use your local MongoDB serve
     - Use your local Redis server
@@ -126,15 +131,9 @@ void should_create_equipment() {
 }
 ```
 
-- In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing context repeatedly,
+- In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
+  context repeatedly,
   please use as less mocks(`@MockitoBean` or `@MockitoSpanBean`) as possible in integration tests.
-- All integration tests run sequentially by configuring `IntegrationTest` with `@Execution(SAME_THREAD)`, we cannot enable concurrent
-  execution due to:
-    - Spring mock beans(`@MockitoBean` and `@MockitoSpanBean`) cannot be shared by concurrent tests.
-    - The embedded MongoDB server does not support concurrent transactions (This only applies to `application-it.yaml` but not
-      `application-it-local.yaml`).
-    - In the future, if we can use real MongoDB server and minimize the use of mock beans, we should be able to configure integration tests
-      to run concurrently.
 
 ### Unit Tests
 
