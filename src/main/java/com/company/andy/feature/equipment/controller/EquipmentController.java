@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ import java.util.List;
 import static com.company.andy.common.model.Role.ORG_ADMIN;
 import static org.springframework.http.HttpStatus.CREATED;
 
+@Profile("local | it | it-local")
 @Tag(name = "EquipmentController", description = "Equipment management APIs")
 @Validated
 @RestController

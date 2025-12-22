@@ -23,8 +23,12 @@ by a simple glimpse at the business packages.
 
 ## Implementation
 
+At the top level, there are two packages:
+- `common`: contains all common code, such as Spring configuration, event infrastructure and database migration etc.
+- `feature`: contains all domain features categorised by business entities.
+
 When implementing, keep the folder structure as flat as possible. The Aggregate Root is at the highest level under
-`business` package, then followed by other
+`feature` package, then followed by other
 technical layers, use the following structure:
 
 The `1` in `(class:1)` indicates there can be only one class, `(class:N)` for multiple.
