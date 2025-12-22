@@ -1,7 +1,7 @@
 package com.company.andy.common.configuration;
 
-import com.company.andy.business.equipment.infrastructure.CachedOrgEquipmentSummaries;
 import com.company.andy.common.util.Constants;
+import com.company.andy.feature.equipment.infrastructure.CachedOrgEquipmentSummaries;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

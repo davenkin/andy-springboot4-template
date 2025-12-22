@@ -1,9 +1,9 @@
 package com.company.andy.common.infrastructure.transaction;
 
 import com.company.andy.common.model.operator.Operator;
-import com.company.andy.business.equipment.command.EquipmentCommandService;
-import com.company.andy.business.equipment.command.UpdateEquipmentHolderCommand;
-import com.company.andy.business.equipment.command.UpdateEquipmentNameCommand;
+import com.company.andy.feature.equipment.command.EquipmentCommandService;
+import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
+import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

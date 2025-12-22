@@ -2,11 +2,11 @@ package com.company.andy;
 
 import com.company.andy.common.model.Role;
 import com.company.andy.common.model.operator.UserOperator;
-import com.company.andy.business.equipment.command.CreateEquipmentCommand;
-import com.company.andy.business.equipment.command.UpdateEquipmentHolderCommand;
-import com.company.andy.business.equipment.command.UpdateEquipmentNameCommand;
-import com.company.andy.business.equipment.domain.EquipmentStatus;
-import com.company.andy.business.maintenance.command.CreateMaintenanceRecordCommand;
+import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
+import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
+import com.company.andy.feature.equipment.domain.EquipmentStatus;
+import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import static org.apache.commons.lang3.RandomUtils.secure;
