@@ -75,7 +75,7 @@ public class EquipmentFactory {
 ```
 
 4. In the `Equipment` constructor, generate the ID for `Equipment` using `newEquipmentId()`, set data fields, and raise
-   `EquipmentCreatedEvent`. After `raiseEvent()` is called, the `EquipmentCreatedEvent` will be send to Kafka
+   `EquipmentCreatedEvent`. After `raiseEvent()` is called, the `EquipmentCreatedEvent` will be sent to Kafka
    automatically by the event infrastructure and no further actions are required from your side:
 
 ```java

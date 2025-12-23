@@ -32,16 +32,17 @@ events:
 - Example event handler:
 
 ```java
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
-    private final EquipmentRepository equipmentRepository;
+  private final EquipmentRepository equipmentRepository;
 
-    @Override
-    public void handle(EquipmentCreatedEvent event) {
-        equipmentRepository.evictCachedEquipmentSummaries(event.getArOrgId());
-    }
+  @Override
+  public void handle(EquipmentCreatedEvent event) {
+    equipmentRepository.evictCachedEquipmentSummaries(event.getArOrgId());
+  }
 }
 ```
 
@@ -74,8 +75,12 @@ events with type `EquipmentCreatedEvent`.
     - If `isIdempotent()` return `true` and `isTransactional()` return `false`, the `consuming-event` table is not used
       for
       idempotency as the handler is already idempotent itself, the handler will not be put inside a transaction
+- During the processing of events, new events can be raised by calling `AggregateRoot.raiseEvent()`
 
 ## Event consuming infrastructure
+
+![event consuming](../ADRs/asset/event-consuming.png)
+
 
 The below section explains how the event consuming infrastructure works.
 
@@ -86,18 +91,17 @@ The below section explains how the event consuming infrastructure works.
 
 ```java
 public class SpringKafkaEventListener {
-    private final EventConsumer eventConsumer;
+  private final EventConsumer eventConsumer;
 
-    @KafkaListener(id = "domain-event-listener",
-            groupId = "domain-event-listener",
-            topics = {KAFKA_DOMAIN_EVENT_TOPIC},
-            concurrency = "3")
-    public void listenDomainEvent(DomainEvent event) {
-        this.eventConsumer.consumeDomainEvent(event);
-    }
+  @KafkaListener(id = "domain-event-listener",
+      groupId = "domain-event-listener",
+      topics = {KAFKA_DOMAIN_EVENT_TOPIC},
+      concurrency = "3")
+  public void listenDomainEvent(DomainEvent event) {
+    this.eventConsumer.consumeDomainEvent(event);
+  }
 
-    // add more listeners
-
+  // add more listeners
 }
 ```
 
@@ -110,11 +114,12 @@ public class SpringKafkaEventListener {
 
 ```java
     public void consumeDomainEvent(DomainEvent event) { // This works for all sub-types of DomainEvent
-        this.consume(new ConsumingEvent(event.getId(), event));
-    }
-    public void consumeXxxEvent(XxxEvent event) { // This works for all sub-types of XxxEvent
-        this.consume(new ConsumingEvent(event.getId(), event));
-    }
+  this.consume(new ConsumingEvent(event.getId(), event));
+}
+
+public void consumeXxxEvent(XxxEvent event) { // This works for all sub-types of XxxEvent
+  this.consume(new ConsumingEvent(event.getId(), event));
+}
 ```
 
 - `EventConsumer` finds all handlers that can handle the event, and calls their `handle()` methods, the handlers'
@@ -130,21 +135,21 @@ public class SpringKafkaEventListener {
 
 ```java
     // return true means this event has never been consumed before
-    public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, AbstractEventHandler<?> handler) {
-        Query query = query(where(eventId).is(consumingEvent.getEventId()).and(ConsumingEvent.Fields.handler).is(handler.getName()));
+public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, AbstractEventHandler<?> handler) {
+  Query query = query(where(eventId).is(consumingEvent.getEventId()).and(ConsumingEvent.Fields.handler).is(handler.getName()));
 
-        Update update = new Update()
-                .setOnInsert(type, consumingEvent.getType())
-                .setOnInsert(event, consumingEvent.getEvent())
-                .setOnInsert(consumedAt, consumingEvent.getConsumedAt());
+  Update update = new Update()
+      .setOnInsert(type, consumingEvent.getType())
+      .setOnInsert(event, consumingEvent.getEvent())
+      .setOnInsert(consumedAt, consumingEvent.getConsumedAt());
 
-        UpdateResult result = this.mongoTemplate.update(ConsumingEvent.class)
-                .matching(query)
-                .apply(update)
-                .upsert();
+  UpdateResult result = this.mongoTemplate.update(ConsumingEvent.class)
+      .matching(query)
+      .apply(update)
+      .upsert();
 
-        return result.getMatchedCount() == 0;
-    }
+  return result.getMatchedCount() == 0;
+}
 ```
 
 - The `ConsumingEventDao` achieves idempotency based on the event's ID and the event handler's fully qualified class
@@ -158,18 +163,19 @@ public class SpringKafkaEventListener {
   handler that raises exception will result in retry on all handlers.
 
 ```java
-    @Bean
-    public DefaultErrorHandler defaultErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
-        ExponentialBackOff backOff = new ExponentialBackOff(500L, 2);
-        backOff.setMaxAttempts(2); // the message will be processed at most [2 + 1 = 3] times
-        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
-                kafkaTemplate,
-                (record, ex) -> {
-                    String dlt = record.topic() + dltSuffix;
-                    log.error("Error consuming message[key={}], moving to dead letter topic[{}].", record.key(), dlt, ex);
-                    return new TopicPartition(dlt, record.partition());
-                }
-        );
-        return new DefaultErrorHandler(recoverer, backOff);
-    }
+
+@Bean
+public DefaultErrorHandler defaultErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
+  ExponentialBackOff backOff = new ExponentialBackOff(500L, 2);
+  backOff.setMaxAttempts(2); // the message will be processed at most [2 + 1 = 3] times
+  DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
+      kafkaTemplate,
+      (record, ex) -> {
+        String dlt = record.topic() + dltSuffix;
+        log.error("Error consuming message[key={}], moving to dead letter topic[{}].", record.key(), dlt, ex);
+        return new TopicPartition(dlt, record.partition());
+      }
+  );
+  return new DefaultErrorHandler(recoverer, backOff);
+}
 ```
