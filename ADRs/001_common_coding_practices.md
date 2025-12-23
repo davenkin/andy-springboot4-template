@@ -111,7 +111,9 @@ public class SpringBootWebApplication {
 
 ```java
 @FieldNameConstants
-public class Equipment extends AggregateRoot {}
+public class Equipment extends AggregateRoot {
+  private EquipmentStatus status;
+}
 ```
 
 ```java
