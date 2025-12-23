@@ -2,7 +2,7 @@
 
 This is a template Spring Boot 4 project with the following features:
 
-- Data persistence with MongoDB
+- Data persistence using MongoDB
 - Messaging using Kafka
 - Cache using Redis
 - API documentation using [Springdoc](./ADRs/011_api_documentation.md)
@@ -48,7 +48,7 @@ This is a template Spring Boot 4 project with the following features:
     - Run `main` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs
   successfully.
-- To stop docker-compose and delete data, run `./stop-docker-compose.sh`.
+- To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
 - If you need integrate with Keycloak, open [http://localhost:7125](http://localhost:7125) for Keycloak management.
 
 ## How to build

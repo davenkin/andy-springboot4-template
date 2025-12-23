@@ -16,19 +16,19 @@ We choose to focus more on integration tests than unit tests.
 We write integration tests for:
 
 - CommandService,
-  e.g. [EquipmentCommandServiceIntegrationTest](../src/test/java/com/company/andy/sample/equipment/command/EquipmentCommandServiceIntegrationTest.java)
+  e.g. [EquipmentCommandServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/command/EquipmentCommandServiceIntegrationTest.java)
 - QueryService,
-  e.g. [EquipmentQueryServiceIntegrationTest](../src/test/java/com/company/andy/sample/equipment/query/EquipmentQueryServiceIntegrationTest.java)
+  e.g. [EquipmentQueryServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/query/EquipmentQueryServiceIntegrationTest.java)
 - DomainEventHandler,
-  e.g. [EquipmentDeletedEventEventHandlerIntegrationTest](../src/test/java/com/company/andy/sample/equipment/eventhandler/EquipmentDeletedEventEventHandlerIntegrationTest.java)
+  e.g. [EquipmentDeletedEventEventHandlerIntegrationTest](../src/test/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandlerIntegrationTest.java)
 - Job,
-  e.g. [RemoveOldMaintenanceRecordsJobIntegrationTest](../src/test/java/com/company/andy/sample/maintenance/job/RemoveOldMaintenanceRecordsJobIntegrationTest.java)
+  e.g. [RemoveOldMaintenanceRecordsJobIntegrationTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobIntegrationTest.java)
 
 We write unit tests for:
 
-- Aggregate Roots, e.g. [EquipmentTest](../src/test/java/com/company/andy/sample/equipment/domain/EquipmentTest.java)
+- Aggregate Roots, e.g. [EquipmentTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentTest.java)
 - Other domain models under `domain` package,
-  e.g. [EquipmentDomainServiceTest](../src/test/java/com/company/andy/sample/equipment/domain/EquipmentDomainServiceTest.java)
+  e.g. [EquipmentDomainServiceTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentDomainServiceTest.java)
 - Actually these objects are already covered in integration tests, but integration tests can be quite heavy, so the plan
   is to let integration tests cover the main flow and unit tests cover other corner cases
 

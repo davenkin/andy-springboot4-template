@@ -59,7 +59,7 @@
         - `@NoArgsConstructor(access = PRIVATE)`: for Json deserialization
 
 Example query
-class [PageEquipmentQuery](../src/test/java/com/company/andy/sample/equipment/query/PageEquipmentQuery.java):
+class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter

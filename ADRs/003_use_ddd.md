@@ -34,7 +34,7 @@ This is an ADR but not a lecture on DDD, so here we only list some common DDD pr
   business
   entity classes in you code. Aggregate Roots are the major places where your business logic happens.
 
-Example Aggregate Root [Equipment](../src/test/java/com/company/andy/sample/equipment/domain/Equipment.java):
+Example Aggregate Root [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
 @FieldNameConstants
@@ -55,7 +55,7 @@ public class Equipment extends AggregateRoot {
   of the time you should put business logic code inside your Aggregate Roots.
 
 Example
-DomainService [EquipmentDomainService](../src/test/java/com/company/andy/sample/equipment/domain/EquipmentDomainService.java):
+DomainService [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
 ```java
 @Component
@@ -83,7 +83,7 @@ public class EquipmentDomainService {
   CommandService deals with the write side and QueryService handles the read side.
 
 Example
-CommandService: [EquipmentCommandService](../src/test/java/com/company/andy/sample/equipment/command/EquipmentCommandService.java):
+CommandService: [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
 ```java
 @Component
@@ -104,7 +104,7 @@ public class EquipmentCommandService {
 ```
 
 Example
-QueryService [EquipmentQueryService](../src/test/java/com/company/andy/sample/equipment/query/EquipmentQueryService.java):
+QueryService [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
 
 ```java
 @Component
@@ -130,7 +130,7 @@ public class EquipmentQueryService {
   Repository. Also, Repository handles the whole Aggregate Root, but not partially.
 
 Example
-Repository [MongoEquipmentRepository](../src/test/java/com/company/andy/sample/equipment/infrastructure/MongoEquipmentRepository.java):
+Repository [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java):
 
 ```java
 @Repository

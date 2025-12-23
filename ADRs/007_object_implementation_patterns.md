@@ -54,7 +54,7 @@ For the same type of objects, we follow the same implementation patterns.
 - Aggregate Root should not be annotated with `@Setter`, `@Builder` or `@Data`
 - Besides Aggregate Root, there can be other types of domain objects in the domain model, such as `EquipmentStatus`
 
-Example [Equipment](../src/test/java/com/company/andy/sample/equipment/domain/Equipment.java):
+Example [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
 @Slf4j
@@ -97,7 +97,7 @@ public class Equipment extends AggregateRoot {
 - Repositories should firstly have an interface class and then a concrete implementation class
 
 Example for Repository
-interface [EquipmentRepository](../src/test/java/com/company/andy/sample/equipment/domain/EquipmentRepository.java):
+interface [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
 
 ```java
 public interface EquipmentRepository {
@@ -112,7 +112,7 @@ public interface EquipmentRepository {
 ```
 
 Example for Repository
-implementation [MongoEquipmentRepository](../src/test/java/com/company/andy/sample/equipment/infrastructure/MongoEquipmentRepository.java):
+implementation [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java):
 
 ```java
 @Repository
@@ -134,7 +134,7 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
   `AbstractMongoRepository`
 
 Example of cache
-Repository [CachedMongoEquipmentRepository](../src/test/java/com/company/andy/sample/equipment/infrastructure/CachedMongoEquipmentRepository.java):
+Repository [CachedMongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/CachedMongoEquipmentRepository.java):
 
 ```java
 @Slf4j
@@ -164,7 +164,7 @@ public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equi
   from the reqeust and passed to CommandService or QueryService
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
-Example [EquipmentController](../src/test/java/com/company/andy/sample/equipment/controller/EquipmentController.java):
+Example [EquipmentController](../src/main/java/com/company/andy/feature/equipment/controller/EquipmentController.java):
 
 ```java
 @Validated // To enable request validation
@@ -195,7 +195,7 @@ public class EquipmentController {
 - CommandService returns the Aggregate Root's ID for creating objects, and return `void` for updating or deleting
   Aggregate Roots
 
-Example [EquipmentCommandService](../src/test/java/com/company/andy/sample/equipment/command/EquipmentCommandService.java):
+Example [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
 ```java
 @Slf4j
@@ -223,7 +223,7 @@ public class EquipmentCommandService {
 - Command can be annotated with `@Builder` for testing purpose
 - Command object should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 
-Example [CreateMaintenanceRecordCommand](../src/test/java/com/company/andy/sample/maintenance/command/CreateMaintenanceRecordCommand.java):
+Example [CreateMaintenanceRecordCommand](../src/main/java/com/company/andy/feature/maintenance/command/CreateMaintenanceRecordCommand.java):
 
 ```java
 @Builder
@@ -243,7 +243,7 @@ public record CreateMaintenanceRecordCommand(
 - Normally we don't want DomainService, as domain logic should best be reside in Aggregate Roots. DomainService is
   our last resort if the business logic is not suitable to be put inside Aggregate Roots.
 
-Example [EquipmentDomainService](../src/test/java/com/company/andy/sample/equipment/domain/EquipmentDomainService.java):
+Example [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
 ```java
 @Component
@@ -287,7 +287,7 @@ itself, hence `EquipmentDomainService` is used instead.
       `DomainEventType` such as `MAINTENANCE_RECORD_CREATED_EVENT`
     - `@NoArgsConstructor(access = PRIVATE)`: for Jackson deserialization
 
-Example [MaintenanceRecordCreatedEvent](../src/test/java/com/company/andy/sample/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
+Example [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
 
 ```java
 @Getter
@@ -328,7 +328,7 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 - EventHandler can use `ExceptionSwallowRunner` to run multiple independent operations, in which exceptions raised in
   one operation does not affect other operations
 
-Example [EquipmentDeletedEventEventHandler](../src/test/java/com/company/andy/sample/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
+Example [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
 
 ```java
 @Slf4j
@@ -358,7 +358,7 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
 - Use Factory to create Aggregate Roots makes our code more explict as the creation of Aggregate Roots is an important
   moment in software
 
-Example [MaintenanceRecordFactory](../src/test/java/com/company/andy/sample/maintenance/domain/MaintenanceRecordFactory.java):
+Example [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecordFactory.java):
 
 ```java
 @Component
@@ -380,7 +380,7 @@ public class MaintenanceRecordFactory {
 - Tasks is like DomainService, but for convenience it can access database directly using `MongoTemplate`
 - Tasks are usually called by EventHandlers but not always
 
-Example [SyncEquipmentNameToMaintenanceRecordsTask](../src/test/java/com/company/andy/sample/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
+Example [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 
 ```java
 @Slf4j
@@ -407,7 +407,7 @@ public class SyncEquipmentNameToMaintenanceRecordsTask {
 - Jobs are quite similar to Tasks, the difference is that Job is relatively heavy weight and addresses a systematic
   problem, yet Tasks handles a single specific problem
 
-Example [RemoveOldMaintenanceRecordsJob](../src/test/java/com/company/andy/sample/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
+Example [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
 
 ```java
 @Slf4j
@@ -434,11 +434,11 @@ public class RemoveOldMaintenanceRecordsJob {
 - QueryService follows CQRS principle in that it can access database directly, bypassing the Domain Model which
   CommandService relies on
 - QueryService can have its own data model just for querying data, for
-  example [QPagedEquipment](../src/test/java/com/company/andy/sample/equipment/query/QPagedEquipment.java) represents
+  example [QPagedEquipment](../src/main/java/com/company/andy/feature/equipment/query/QPagedEquipment.java) represents
   an
   Equipment item in the list
 
-Example [EquipmentQueryService](../src/test/java/com/company/andy/sample/equipment/query/EquipmentQueryService.java):
+Example [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
 
 ```java
 @Component
@@ -467,7 +467,7 @@ public class EquipmentQueryService {
 - Query objects should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 - For API documentation, `@Schema` should be used to on query fields
 
-Example [PageEquipmentQuery](../src/test/java/com/company/andy/sample/equipment/query/PageEquipmentQuery.java):
+Example [PageEquipmentQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentQuery.java):
 
 ```java
 @Getter
