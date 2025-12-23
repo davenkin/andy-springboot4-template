@@ -133,6 +133,6 @@ More detailed explanation:
           calling other classes.
           Example: [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java).
         - `XxxQuery`(class:N): Request class of a query, should end with "Query".
-          Example: [PageEquipmentQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentQuery.java).
+          Example: [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java).
         - `QXxx`(class:N): Response class of a query, should start with the letter "Q".
           Example: [QPagedEquipment](../src/main/java/com/company/andy/feature/equipment/query/QPagedEquipment.java).

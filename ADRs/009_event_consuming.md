@@ -13,7 +13,7 @@ events:
 - Every event can be handled by multiple handlers, these handlers process the same event independently, exceptions from
   one handler does not impact other handlers
 - For multiple handlers processing the same event, higher priority handler process the event earlier
-- Upon exceptions, the event will be retried 3 times within the same consuming thread, if retry exhausts, the
+- Upon exceptions, the event will be retried 3 times within the same consuming thread, accumulated for all handlers but not within a single handler. If retry exhausts, the
   event will be put into Dead Letter Topic(DLT), for simplicity there is no automatic listener on DLT hence human
   investigation and action is needed
 - Event consuming idempotency is achieved by either:
@@ -108,12 +108,12 @@ public class SpringKafkaEventListener {
 - `SpringKafkaEventListener` passes the event
   to [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java). `EventConsumer` is
   agnostic to
-  messaging middlewares and it manages all handlers. The below code uses `consumeDomainEvent(DomainEvent event)` to
+  messaging middlewares, and it manages all handlers. The below code uses `consumeDomainEvent(DomainEvent event)` to
   handle Domain Events. If you are also consuming other types of events from other external systems, you may add more
   methods in addition to `consumeDomainEvent()`, like `consumeXxxEvent(XxxEvent event)`
 
 ```java
-    public void consumeDomainEvent(DomainEvent event) { // This works for all sub-types of DomainEvent
+public void consumeDomainEvent(DomainEvent event) { // This works for all sub-types of DomainEvent
   this.consume(new ConsumingEvent(event.getId(), event));
 }
 
@@ -134,7 +134,7 @@ public void consumeXxxEvent(XxxEvent event) { // This works for all sub-types of
   `consuming-event` to achieve idempotency
 
 ```java
-    // return true means this event has never been consumed before
+// return true means this event has never been consumed before
 public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, AbstractEventHandler<?> handler) {
   Query query = query(where(eventId).is(consumingEvent.getEventId()).and(ConsumingEvent.Fields.handler).is(handler.getName()));
 

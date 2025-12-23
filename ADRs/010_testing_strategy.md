@@ -44,7 +44,6 @@ No need to write tests for:
 - All integration tests should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java):
 
 ```java
-
 @Slf4j
 @ActiveProfiles("it")
 //@ActiveProfiles("it-local")
@@ -113,7 +112,6 @@ For both profiles:
   verify the existence of domain events:
 
 ```java
-
 @Test
 void should_create_equipment() {
   Operator operator = randomUserOperator();
@@ -137,7 +135,7 @@ void should_create_equipment() {
 
 ### Unit Tests
 
-- For unit tests without mocks, it's quite straight forward. Unit tests for Aggregate Roots fall under this category.
+- For unit tests without mocks, it's quite straight forward. 
 
 ```java
 class EquipmentTest {
@@ -157,7 +155,6 @@ class EquipmentTest {
   simplify the mocking setup:
 
 ```java
-
 @ExtendWith(MockitoExtension.class)
 class EquipmentDomainServiceTest {
 

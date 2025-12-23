@@ -23,11 +23,13 @@ Whenever you need to throw an exception, throw this `ServiceException` with the 
 - Context data: key-value pairs that hold the context data of the exception, usually used by consumers to create their
   own messages
 
-  ```java
+```java
+someMethod() {
   throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
-            "Equipment Name Already Exists.",
-            NullableMapUtils.mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
-  ```
+      "Equipment Name Already Exists.",
+      NullableMapUtils.mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
+}
+```
 
 ## API error responses
 
@@ -47,7 +49,7 @@ built from
     "traceId": "string",
     "data": {
       "additionalProp1": "string",
-      "additionalProp2": 0,
+      "additionalProp2": 0
     }
   }
 }
@@ -58,8 +60,7 @@ There are 2 places of configuration that enables unified API errors:
 - [GlobalExceptionHandler](../src/main/java/com/company/andy/common/exception/GlobalExceptionHandler.java): handles
   exceptions
   raised from Spring MVC
-- [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a fall
-  back for
+- [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a fallback for
   handling exceptions for the whole application  
 
 

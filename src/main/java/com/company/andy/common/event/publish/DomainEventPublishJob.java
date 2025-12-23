@@ -40,7 +40,7 @@ public class DomainEventPublishJob {
         }
 
         try {
-            // Use a distributed lock to ensure only one node runs as a time, otherwise it may result in duplicated events
+            // Use a distributed lock to ensure only one node runs as a time, otherwise it may result in duplicated events or ordering issue
             var result = lockingTaskExecutor.executeWithLock(() -> doPublishStagedDomainEvents(batchSize),
                     new LockConfiguration(now(), "publish-domain-events", ofMinutes(1), ofMillis(1)));
             List<String> publishedEventIds = result.getResult();

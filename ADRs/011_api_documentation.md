@@ -27,11 +27,11 @@ public class EquipmentController {
 - `@Operation`: Used on the controller's method level to describe a single method
 
 ```java
-    @Operation(summary = "Update an equipment's name")
-    @PutMapping("/{equipmentId}/name")
-    public void updateEquipmentName(@PathVariable("equipmentId") @NotBlank String equipmentId,
-                                    @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand) {
-    }
+@Operation(summary = "Update an equipment's name")
+@PutMapping("/{equipmentId}/name")
+public void updateEquipmentName(@PathVariable("equipmentId") @NotBlank String equipmentId,
+                                @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand) {
+}
 ```
 
 - `@Schema`: Used on request/response's class level and field level to describe the class and field respectively, if the
@@ -49,13 +49,13 @@ public record UpdateEquipmentNameCommand(
   self-descriptive, then no need to use `@Parameter`
 
 ```java
-    @Operation(summary = "Update an equipment's name")
-    @PutMapping("/{equipmentId}/name")
-    public void updateEquipmentName(@PathVariable("equipmentId") @NotBlank
-                                    @Parameter(description = "Id of the equipment")
-                                    String equipmentId,
-                                    @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand) {
-    }
+@Operation(summary = "Update an equipment's name")
+@PutMapping("/{equipmentId}/name")
+public void updateEquipmentName(@PathVariable("equipmentId") @NotBlank
+                                @Parameter(description = "Id of the equipment")
+                                String equipmentId,
+                                @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand) {
+}
 ```
 
 Configurations for Springdoc can be found

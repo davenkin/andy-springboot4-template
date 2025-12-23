@@ -35,7 +35,7 @@ refer to [event consuming](./009_event_consuming.md) for more detail.
 - For sending a Domain Event, the only action that you need is calling `raiseEvent()` from an Aggregate Root:
 
 ```java
-    public void updateName(String newName) {
+public void updateName(String newName) {
   if (Objects.equals(newName, this.name)) {
     return;
   }
@@ -53,7 +53,7 @@ The following steps are already been implemented for you, but for illustration l
 - After `AggregateRoot.raiseEvent()` is called, the event is stored inside the Aggregate Root object temporarily:
 
 ```java
-    protected final void raiseEvent(DomainEvent event) {
+protected final void raiseEvent(DomainEvent event) {
   requireNonNull(event, "event must not be null.");
   requireNonNull(event.getType(), "event's type must not be null.");
   requireNonBlank(event.getArId(), "event's arId must not be null.");
@@ -139,7 +139,7 @@ publishing of Domain Events to Kafka.
   collection and send them to Kafka in the order they are created:
 
 ```java
-    public void publishStagedDomainEvents(int batchSize) {
+public void publishStagedDomainEvents(int batchSize) {
   if (batchSize > MAX_BATCH_SIZE || batchSize < 1) {
     throw new IllegalArgumentException("batchSize must be greater than or equal to 1 and less than 500.");
   }

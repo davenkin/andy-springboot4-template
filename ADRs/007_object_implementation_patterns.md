@@ -467,7 +467,7 @@ public class EquipmentQueryService {
 - Query objects should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 - For API documentation, `@Schema` should be used to on query fields
 
-Example [PageEquipmentQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentQuery.java):
+Example [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter

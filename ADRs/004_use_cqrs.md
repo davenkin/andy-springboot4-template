@@ -28,9 +28,9 @@ different. In command side, business rules should be strictly validated and the
 business logic should be modeled
 according to commonly accepted principles like [SOLID](https://en.wikipedia.org/wiki/SOLID)
 and [GRASP](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)). In query side, the restrictions are more
-loosen and we can use whatever means to hit the database for fast and high performant queries.
+loosen, and we can use whatever means to hit the database for fast and high performant queries.
 
-Also we think CQRS should not be a heavyweight architecture that scares developers away, but should be just enough to
+Also, we think CQRS should not be a heavyweight architecture that scares developers away, but should be just enough to
 fulfil its job.
 
 Based on the above, the **lightweight CQRS** approach meets our needs and is our way to go.
@@ -73,9 +73,10 @@ Based on the above, the **lightweight CQRS** approach meets our needs and is our
 
 ```java
 public class Equipment extends AggregateRoot {
-    private String name; 
-    private EquipmentStatus status;
-    private String holder;
-    private long maintenanceRecordCount; // Query side field
+  private String name;
+  private EquipmentStatus status;
+  private String holder;
+  private long maintenanceRecordCount; // Query side field
+}
 ```
 
