@@ -56,7 +56,7 @@ public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, O
   don't use the domain object `Equipment`, instead a query model `QPagedEquipment` is used.
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
   Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
 
   // more code omitted

@@ -69,7 +69,7 @@ class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = PRIVATE)
-public class PageEquipmentQuery extends PageQuery {
+public class PageEquipmentsQuery extends PageQuery {
   @Schema(description = "Search text")
   @Max(50)
   private String search;
@@ -84,7 +84,7 @@ The controller receives a query object using POST method:
 ```java
 @Operation(summary = "Query equipments")
 @PostMapping("/paged")
-public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentQuery query) {
+public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query) {
   // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
   Operator operator = SAMPLE_USER_OPERATOR;
 

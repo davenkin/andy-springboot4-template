@@ -240,7 +240,7 @@ example, when querying a list of `Equipment`s:
 ```java
 @Operation(summary = "Query equipments")
 @PostMapping("/paged")
-public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentQuery query) {
+public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query) {
   // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
   Operator operator = SAMPLE_USER_OPERATOR;
 
@@ -255,7 +255,7 @@ public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEqu
    query model `QPagedEquipment`:
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
   Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
 
   if (isNotBlank(query.getSearch())) {

@@ -447,7 +447,7 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
         Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
         
         // code omitted
@@ -474,7 +474,7 @@ Example [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipmen
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = PRIVATE)
-public class PageEquipmentQuery extends PageQuery {
+public class PageEquipmentsQuery extends PageQuery {
     @Schema(description = "Search text")
     @Max(50)
     private String search;
