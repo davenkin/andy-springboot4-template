@@ -58,7 +58,7 @@ public void updateName(String newName) {
 }
 ```
 
-The event infrastructure will take care of sending the raised event into Kafka.
+After the entity is saved into MongoDB, the event infrastructure will take care of sending the raised event into Kafka.
 
 #### Domain event publishing architecture
 
