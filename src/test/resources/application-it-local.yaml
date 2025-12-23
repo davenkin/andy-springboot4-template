@@ -4,8 +4,8 @@ mongock:
 spring:
   autoconfigure:
     exclude:
-      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable embedded MongoDB as real one will be used
       - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable embedded MongoDB as real one will be used
   data:
     redis:
       database: 0
