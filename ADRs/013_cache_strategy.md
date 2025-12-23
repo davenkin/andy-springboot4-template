@@ -17,7 +17,6 @@ In order to implement a cache object, go through the following steps:
 2. For new cache classes, it's often created with Java's Record, for example:
 
 ```java
-
 @Builder
 public record EquipmentSummary(String id,
                                String orgId,
@@ -30,7 +29,6 @@ public record EquipmentSummary(String id,
    `withCacheConfiguration()`:
 
 ```java
-
 @Bean
 public RedisCacheManagerBuilderCustomizer redisBuilderCustomizer(ObjectMapper objectMapper) {
   return builder -> builder

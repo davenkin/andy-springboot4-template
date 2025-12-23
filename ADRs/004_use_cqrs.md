@@ -41,13 +41,13 @@ Based on the above, the **lightweight CQRS** approach meets our needs and is our
   Aggregate Roots, and the Aggregate Roots contains the domain logic.
 
 ```java
-    @Transactional
-    public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
+@Transactional
+public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
         Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
         equipmentDomainService.updateEquipmentName(equipment, command.name());
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
-    }
+}
 ```
 
 - Apart from CommandServices, we create standalone QueryServices to implement the query side. In
@@ -56,15 +56,15 @@ Based on the above, the **lightweight CQRS** approach meets our needs and is our
   don't use the domain object `Equipment`, instead a query model `QPagedEquipment` is used.
 
 ```java
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
-        
-        // more code omitted
-  
-        // use query model QPagedEquipment instead of domain model Equipment
-        List<QPagedEquipment> equipments = mongoTemplate.find(query.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);
-        return new PagedResponse<>(equipments, pageable, count);
-    }
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
+  Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+
+  // more code omitted
+
+  // use query model QPagedEquipment instead of domain model Equipment
+  List<QPagedEquipment> equipments = mongoTemplate.find(query.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);
+  return new PagedResponse<>(equipments, pageable, count);
+}
 ```
 
 - Database table serves as a container for both command side data and query side data. For

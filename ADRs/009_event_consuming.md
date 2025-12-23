@@ -32,7 +32,6 @@ events:
 - Example event handler:
 
 ```java
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -163,7 +162,6 @@ public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, Abstr
   handler that raises exception will result in retry on all handlers.
 
 ```java
-
 @Bean
 public DefaultErrorHandler defaultErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
   ExponentialBackOff backOff = new ExponentialBackOff(500L, 2);

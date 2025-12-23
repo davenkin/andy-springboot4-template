@@ -40,7 +40,6 @@ flow is:
 1. Receive the request in the `EquipmentController`, controller calls `EquipmentCommandService`:
 
 ```java
-
 @PostMapping
 public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command) {
   // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
@@ -53,7 +52,6 @@ public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand com
 2. `EquipmentCommandService` orchestrates the creation process:
 
 ```java
-
 @Transactional
 public String createEquipment(CreateEquipmentCommand command, Operator operator) {
   Equipment equipment = equipmentFactory.create(command.name(), operator);
@@ -79,7 +77,7 @@ public class EquipmentFactory {
    automatically by the event infrastructure and no further actions are required from your side:
 
 ```java
-    public Equipment(String name, Operator operator) {
+public Equipment(String name, Operator operator) {
   super(newEquipmentId(), operator);
   this.name = name;
   raiseEvent(new EquipmentCreatedEvent(this));
@@ -109,7 +107,6 @@ database. Take "updating `Equipment`'s holder name" as an example.
 1. The request first arrives at `EquipmentController.updateEquipmentHolder()`:
 
 ```java
-
 @PutMapping("/{equipmentId}/holder")
 public void updateEquipmentHolder(
     @PathVariable("equipmentId") @NotBlank String equipmentId,
@@ -124,7 +121,6 @@ public void updateEquipmentHolder(
 2. The controller calls `EquipmentCommandService.updateEquipmentHolder()`:
 
 ```java
-
 @Transactional
 public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Operator operator) {
   Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
@@ -137,20 +133,20 @@ public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand comman
 3. `EquipmentCommandService` loads the `Equipment` by its ID:
 
 ```java
-        Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
 ```
 
 4. Then call `Equipment`'s business method `Equipment.updateHolder()`:
 
 ```java
-        equipment.updateHolder(command.name());
+equipment.updateHolder(command.name());
 ```
 
 5. Inside the business method, Domain Event can be raised according to requirements.
 6. Save the updated `Equipment` back into database:
 
 ```java
-        equipmentRepository.save(equipment);
+equipmentRepository.save(equipment);
 ```
 
 7. No need to return anything from `EquipmentCommandService.updateEquipmentHolder()`.
@@ -162,7 +158,6 @@ directly from `EquipmentCommandService`, `EquipmentDomainService.updateEquipment
 `EquipmentCommandService`:
 
 ```java
-
 @Transactional
 public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
   Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
@@ -176,7 +171,7 @@ Inside `EquipmentDomainService.updateEquipmentName()`, it first checks whether t
 update `Equipment`'s name:
 
 ```java
-    public void updateEquipmentName(Equipment equipment, String newName) {
+public void updateEquipmentName(Equipment equipment, String newName) {
   if (!Objects.equals(newName, equipment.getName()) &&
       equipmentRepository.existsByName(newName, equipment.getOrgId())) {
     throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -195,7 +190,6 @@ For deleting data, first load the `AggregateRoot` and then delete it. For exampl
 1. Request arrives at `EquipmentController`:
 
 ```java
-
 @DeleteMapping("/{equipmentId}")
 public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId) {
   // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
@@ -209,7 +203,6 @@ public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipm
 2. `EquipmentController` calls `EquipmentCommandService`:
 
 ```java
-
 @Transactional
 public void deleteEquipment(String equipmentId, Operator operator) {
   Equipment equipment = equipmentRepository.byId(equipmentId, operator.getOrgId());
@@ -227,7 +220,6 @@ public void deleteEquipment(String equipmentId, Operator operator) {
    by `Equipment` to raise `EquipmentDeletedEvent`:
 
 ```java
-
 @Override
 public void onDelete() {
   raiseEvent(new EquipmentDeletedEvent(this));
@@ -246,7 +238,6 @@ example, when querying a list of `Equipment`s:
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
 
 ```java
-
 @Operation(summary = "Query equipments")
 @PostMapping("/paged")
 public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentQuery query) {
@@ -264,7 +255,7 @@ public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEqu
    query model `QPagedEquipment`:
 
 ```java
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentQuery query, Operator operator) {
   Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
 
   if (isNotBlank(query.getSearch())) {
@@ -340,7 +331,6 @@ You may add more `@KafkaListener` methods if a different category of events are 
 2. Create an EventHandler class that extends `AbstractEventHandler`:
 
 ```java
-
 @Slf4j
 @Component
 @RequiredArgsConstructor

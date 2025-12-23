@@ -65,7 +65,6 @@ Example query
 class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
-
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
@@ -83,7 +82,6 @@ public class PageEquipmentQuery extends PageQuery {
 The controller receives a query object using POST method:
 
 ```java
-
 @Operation(summary = "Query equipments")
 @PostMapping("/paged")
 public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentQuery query) {
@@ -102,7 +100,6 @@ All pagination response should return [PagedResponse](../src/main/java/com/compa
   unified default timezone makes time handling much easier.
 
 ```java
-
 @SpringBootApplication
 public class SpringBootWebApplication {
   public static void main(String[] args) {
@@ -116,7 +113,6 @@ public class SpringBootWebApplication {
   are usually needed.
 
 ```java
-
 @FieldNameConstants
 public class Equipment extends AggregateRoot {
   private EquipmentStatus status;
@@ -139,7 +135,6 @@ private someMethod() {
   gives you more freedom.
 
 ```java
-
 @Repository
 @RequiredArgsConstructor
 public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment> implements EquipmentRepository {}
@@ -151,7 +146,6 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
   `JsonMapperBuilderCustomizer` is created for building an `ObjectMapper`:
 
 ```java
-
 @Bean
 public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
   return builder -> builder
@@ -172,7 +166,6 @@ expose getters/setters.
 - Always enable transaction in CommandServices by using `@Transactional`.
 
 ```java
-
 @Transactional
 public String createEquipment(CreateEquipmentCommand command, Operator operator) {
   Equipment equipment = equipmentFactory.create(command.name(), operator);

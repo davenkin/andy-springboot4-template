@@ -66,7 +66,7 @@ protected final void raiseEvent(DomainEvent event) {
   staged(saved) into a MongoDB collection named `publishing-event`:
 
 ```java
-    //AbstractMongoRepository
+//AbstractMongoRepository
 
 @Transactional
 public void save(AR ar) {
@@ -90,7 +90,7 @@ private void stageEvents(List<DomainEvent> events) {
 ```
 
 ```java
-    //PublishingDomainEventDao
+//PublishingDomainEventDao
 
 public void stage(List<DomainEvent> events) {
   requireNonNull(events, "Domain events must not be null.");
@@ -108,7 +108,6 @@ or rollback together.
   configuration in `EventConfiguration`:
 
 ```java
-
 @Bean(destroyMethod = "stop")
 MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
     MongoTemplate mongoTemplate,
