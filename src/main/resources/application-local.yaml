@@ -12,3 +12,9 @@ spring:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
   kafka:
     bootstrap-servers: localhost:9125
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

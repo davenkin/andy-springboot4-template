@@ -25,3 +25,7 @@ mongock:
 
 springdoc:
   default-produces-media-type: application/json
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

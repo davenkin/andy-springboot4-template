@@ -48,6 +48,7 @@ This is a template Spring Boot 4 project with the following features:
     - Run `main` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs
   successfully.
+- Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
 - If you need integrate with Keycloak, open [http://localhost:7125](http://localhost:7125) for Keycloak management.
 
