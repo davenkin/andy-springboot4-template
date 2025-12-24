@@ -17,13 +17,13 @@ public class SpringdocConfiguration {
         return openApi -> {
             openApi.getPaths().values().forEach(pathItem -> {
                 pathItem.readOperations().forEach(operation -> {
-                    Content content = new Content().addMediaType(
+                    Content errorContent = new Content().addMediaType(
                             "application/json",
                             new MediaType().schema(new ObjectSchema().$ref("#/components/schemas/QErrorResponse"))
                     );
 
                     ApiResponses responses = operation.getResponses();
-                    responses.putIfAbsent("400", new ApiResponse().description("Bad request").content(content));
+                    responses.putIfAbsent("400", new ApiResponse().description("Bad request").content(errorContent));
                     responses.putIfAbsent("401", new ApiResponse().description("Authentication failed, same error structure as 400"));
                     responses.putIfAbsent("403", new ApiResponse().description("Access denied, same error structure as 400"));
                     responses.putIfAbsent("404", new ApiResponse().description("Not found, same error structure as 400"));
