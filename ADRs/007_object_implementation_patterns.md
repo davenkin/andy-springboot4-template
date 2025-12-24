@@ -307,6 +307,53 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 }
 ```
 
+- For every domain event class, you need to register it
+  inside [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java) using `@JsonTypeInfo`. This is for Jackson to work
+  properly even without
+  the type information(`__TypeId__`) in Kafka message headers.
+
+```java
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true)
+@JsonSubTypes(value = {
+    @Type(value = MaintenanceRecordCreatedEvent.class, name = "MAINTENANCE_RECORD_CREATED_EVENT"),
+})
+```
+
+- Domain event can extends another abstract domain event, this abstract domain event should extend `DomainEvent`. For
+  example, `EquipmentNameUpdatedEvent` extends `EquipmentUpdatedEvent` which further extends `DomainEvent`. Again, you
+  should register the concrete `EquipmentNameUpdatedEvent` inside `DomainEvent` but not the abstract
+  `EquipmentUpdatedEvent`.
+
+```java
+@Getter
+@TypeAlias("EQUIPMENT_NAME_UPDATED_EVENT")
+@NoArgsConstructor(access = PRIVATE)
+public class EquipmentNameUpdatedEvent extends EquipmentUpdatedEvent {
+    private String updatedName;
+
+    public EquipmentNameUpdatedEvent(String updatedName, Equipment equipment) {
+        super(EQUIPMENT_NAME_UPDATED_EVENT, equipment);
+        this.updatedName = updatedName;
+    }
+}
+```
+
+```java
+@Getter
+@NoArgsConstructor(access = PROTECTED)
+public abstract class EquipmentUpdatedEvent extends DomainEvent {
+    private String equipmentId;
+
+    public EquipmentUpdatedEvent(DomainEventType type, Equipment equipment) {
+        super(type, equipment);
+        this.equipmentId = equipment.getId();
+    }
+}
+```
+
 ### EventHandler
 
 - All EventHandlers should
