@@ -19,7 +19,7 @@ We write integration tests for:
   e.g. [EquipmentCommandServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/command/EquipmentCommandServiceIntegrationTest.java)
 - QueryService,
   e.g. [EquipmentQueryServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/query/EquipmentQueryServiceIntegrationTest.java)
-- DomainEventHandler,
+- EventHandler,
   e.g. [EquipmentDeletedEventEventHandlerIntegrationTest](../src/test/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandlerIntegrationTest.java)
 - Job,
   e.g. [RemoveOldMaintenanceRecordsJobIntegrationTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobIntegrationTest.java)
@@ -39,7 +39,7 @@ No need to write tests for:
 
 ## Implementation
 
-#### Integration Tests
+### Integration Tests
 
 - All integration tests should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java):
 
@@ -73,6 +73,19 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
 
 You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
 assist you testing.
+
+When prepare testing data, try use CommandService's methods to insert data into database as it mimics the real use case,
+do not use Repository directly to insert data into database.
+
+Since integration tests write data into database, in order avoid errors like database primary key duplication, you
+should use random IDs for your entities and domain events for every test method, do not reused IDs across test methods.
+You can use `RandomTestUtils` for getting various random test fixtures and also you can add more to it.
+
+In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
+context repeatedly,
+please use as less mocks(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests.
+
+#### Testing profiles
 
 There are two profiles for integration test: [application-it.yaml](../src/test/resources/application-it.yaml)
 and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
@@ -111,31 +124,123 @@ For both profiles:
   Domain Events will firstly be stored into database and then publish, you may use `IntegrationTest.latestEventFor()` to
   verify the existence of domain events:
 
+#### Testing CommandService
+
+1. Prepared command
+2. Execute the method your want to test on CommandService
+3. Verify results
+4. If the method raises domain events, you can verify is raised using `latestEventFor()`
+
 ```java
 @Test
 void should_create_equipment() {
-  Operator operator = randomUserOperator();
+        //Prepare data
+        Operator operator = randomUserOperator();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
-  CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-  String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        //Execute 
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
 
-  Equipment equipment = equipmentRepository.byId(equipmentId);
-  assertEquals(createEquipmentCommand.name(), equipment.getName());
-  assertEquals(operator.getOrgId(), equipment.getOrgId());
+        //Verify results
+        Equipment equipment = equipmentRepository.byId(equipmentId);
+        assertEquals(createEquipmentCommand.name(), equipment.getName());
+        assertEquals(operator.getOrgId(), equipment.getOrgId());
 
-  // Verify the existence of Domain Events in database
-  EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-  assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
-}
+        // Verify domain events
+        // Only need to check the existence of domain event in database,
+        // no need to further test event handler as that will be handled in event handlers' own tests
+        EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
+        assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
+    }
 ```
 
-- In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
-  context repeatedly,
-  please use as less mocks(`@MockitoBean` or `@MockitoSpanBean`) as possible in integration tests.
+#### Testing QueryService
+
+1. Prepare data using CommandService
+2. Execute the method your want to test on QueryService
+3. Verify results
+
+```java
+    @Test
+    void should_page_equipments() {
+        //Prepare data
+        Operator operator = randomUserOperator();
+        IntStream.range(0, 20).forEach(i -> {
+            equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
+        });
+
+        // Fetch data
+        PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
+        PagedResponse<QPagedEquipment> equipments = equipmentQueryService.pageEquipments(query, operator);
+
+        // Verify results
+        assertEquals(12, equipments.getContent().size());
+    }
+
+```
+
+#### Testing EventHandler
+
+1. Prepare data using CommandService
+2. Execute the EventHandler
+3. Verify results
+4. If the method raises domain events, you can verify is raised using `latestEventFor()`
+
+```java
+    @Test
+    void delete_equipment_should_also_delete_all_its_maintenance_records() {
+        // Prepare data
+        Operator operator = randomUserOperator();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+        
+        // Run event handler
+        equipmentCommandService.deleteEquipment(equipmentId, operator);
+        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
+        
+        // Verify results
+        assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
+    }
+```
+
+#### Testing Job
+
+1. Prepare data using CommandService
+2. Run the job
+3. Verify results
+
+```java
+    @Test
+    void should_remove_old_maintenance_records() {
+        // Prepare data
+        Operator operator = randomUserOperator();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+
+        Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
+        Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
+        mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
+
+        // Run the job
+        removeOldMaintenanceRecordsJob.run();
+
+        // Verify results
+        assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));
+        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+    }
+```
 
 ### Unit Tests
 
-- For unit tests without mocks, it's quite straight forward. 
+- For unit tests without mocks, it's quite straight forward.
 
 ```java
 class EquipmentTest {

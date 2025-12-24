@@ -1,7 +1,7 @@
 package com.company.andy.common.infrastructure.transaction;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.event.publish.PublishingDomainEventDao;
+import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.operator.Operator;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
@@ -12,23 +12,17 @@ import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 
 import static com.company.andy.RandomTestUtils.*;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doThrow;
 
 @DisabledIf(value = "#{environment.acceptsProfiles('it')}", loadContext = true)
 class TransactionIntegrationTest extends IntegrationTest {
 
     @Autowired
     private EquipmentRepository equipmentRepository;
-
-    @MockitoSpyBean
-    private PublishingDomainEventDao publishingDomainEventDao;
 
     @Autowired
     private EquipmentCommandService equipmentCommandService;
@@ -40,11 +34,13 @@ class TransactionIntegrationTest extends IntegrationTest {
     void transaction_should_work_for_aggregate_root_and_domain_event() {
         Operator operator = randomUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
-        doThrow(new RuntimeException("stub exception")).when(publishingDomainEventDao).stage(anyList());
+        equipmentCommandService.createEquipment(createAnotherEquipmentCommand, operator);
 
-        assertThrows(RuntimeException.class,
-                () -> equipmentCommandService.updateEquipmentName(equipmentId, randomUpdateEquipmentNameCommand(), operator));
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = new UpdateEquipmentNameCommand(createAnotherEquipmentCommand.name());
+        assertThrows(ServiceException.class,
+                () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, operator));
 
         assertEquals(createEquipmentCommand.name(), equipmentRepository.byId(equipmentId).getName());
         assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));

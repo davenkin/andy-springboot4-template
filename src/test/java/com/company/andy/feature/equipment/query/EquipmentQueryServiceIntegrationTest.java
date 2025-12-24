@@ -22,14 +22,17 @@ class EquipmentQueryServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_page_equipments() {
+        //Prepare data
         Operator operator = randomUserOperator();
         IntStream.range(0, 20).forEach(i -> {
             equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         });
 
+        // Fetch data
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
         PagedResponse<QPagedEquipment> equipments = equipmentQueryService.pageEquipments(query, operator);
 
+        // Verify results
         assertEquals(12, equipments.getContent().size());
     }
 }

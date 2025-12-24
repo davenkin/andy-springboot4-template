@@ -31,6 +31,7 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
 
     @Test
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
+        // Prepare data
         Operator operator = randomUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -38,10 +39,12 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
 
+        // Run event handler
         equipmentCommandService.deleteEquipment(equipmentId, operator);
         EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
-
         equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
+
+        // Verify results
         assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
     }
 }

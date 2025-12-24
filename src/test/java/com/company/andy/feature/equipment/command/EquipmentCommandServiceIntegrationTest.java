@@ -23,17 +23,21 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_create_equipment() {
+        //Prepare data
         Operator operator = randomUserOperator();
-
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+
+        //Execute
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
 
+        //Verify results
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(operator.getOrgId(), equipment.getOrgId());
 
+        // Verify domain events
         // Only need to check the existence of domain event in database,
-        // no need to further test event handler as that will be addressed in event handlers' own tests
+        // no need to further test event handler as that will be handled in event handlers' own tests
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }

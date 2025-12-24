@@ -38,6 +38,7 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_remove_old_maintenance_records() {
+        // Prepare data
         Operator operator = randomUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -50,8 +51,10 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
         mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
+        // Run the job
         removeOldMaintenanceRecordsJob.run();
 
+        // Verify results
         assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
     }

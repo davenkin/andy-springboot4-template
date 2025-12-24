@@ -7,21 +7,14 @@ import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-
-import java.util.concurrent.CompletableFuture;
 
 import static com.company.andy.RandomTestUtils.randomEquipmentName;
 import static com.company.andy.RandomTestUtils.randomUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.*;
-import static java.util.concurrent.CompletableFuture.failedFuture;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doReturn;
 
 class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
@@ -34,7 +27,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
     @Autowired
     private PublishingDomainEventDao publishingDomainEventDao;
 
-    @MockitoSpyBean
+    @Autowired
     private FakeDomainEventSender domainEventSender;
 
     @Test
@@ -72,8 +65,8 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
         Operator operator = randomUserOperator();
         String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        doReturn(failedFuture(new RuntimeException("stub exception")))
-                .when(domainEventSender).send(argThat(it -> it.getId().equals(event.getId())));
+        domainEventSender.throwExceptionFor(event.getId());
+
         domainEventPublishJob.publishStagedDomainEvents(500);
         PublishingDomainEvent publishingDomainEvent1 = publishingDomainEventDao.byId(event.getId());
         assertEquals(PUBLISH_FAILED, publishingDomainEvent1.getStatus());
@@ -93,6 +86,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
         PublishingDomainEvent publishingDomainEvent4 = publishingDomainEventDao.byId(event.getId());
         assertEquals(PUBLISH_FAILED, publishingDomainEvent4.getStatus());
         assertEquals(3, publishingDomainEvent4.getPublishedCount());
+        domainEventSender.removeExceptionFor(event.getId());
     }
 
     @Test
@@ -100,15 +94,14 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
         Operator operator = randomUserOperator();
         String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        doReturn(failedFuture(new RuntimeException("stub exception")))
-                .doReturn(CompletableFuture.completedFuture(event.getId()))
-                .when(domainEventSender).send(ArgumentMatchers.argThat(it -> it.getId().equals(event.getId())));
 
+        domainEventSender.throwExceptionFor(event.getId());
         domainEventPublishJob.publishStagedDomainEvents(500);
         PublishingDomainEvent publishingDomainEvent1 = publishingDomainEventDao.byId(event.getId());
         assertEquals(PUBLISH_FAILED, publishingDomainEvent1.getStatus());
         assertEquals(1, publishingDomainEvent1.getPublishedCount());
 
+        domainEventSender.removeExceptionFor(event.getId()); // recover
         domainEventPublishJob.publishStagedDomainEvents(500);
         PublishingDomainEvent publishingDomainEvent2 = publishingDomainEventDao.byId(event.getId());
         assertEquals(PUBLISH_SUCCEED, publishingDomainEvent2.getStatus());
