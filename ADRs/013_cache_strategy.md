@@ -25,7 +25,7 @@ public record EquipmentSummary(String id,
 }
 ```
 
-3. Register the cache class into [RedisConfiguration](../src/main/java/com/company/andy/common/configuration/RedisConfiguration.java) using
+3. Register the cache class into [CacheConfiguration](../src/main/java/com/company/andy/common/configuration/CacheConfiguration.java) using
    `withCacheConfiguration()`:
 
 ```java
