@@ -54,14 +54,14 @@ public class EventConfiguration {
     }
 
     @Bean
-    public DefaultKafkaProducerFactoryCustomizer defaultKafkaProducerFactoryCustomizer(JsonMapper objectMapper) {
-        return producerFactory -> producerFactory.setValueSerializer(new JacksonJsonSerializer<>(objectMapper));
+    public DefaultKafkaProducerFactoryCustomizer defaultKafkaProducerFactoryCustomizer(JsonMapper jsonMapper) {
+        return producerFactory -> producerFactory.setValueSerializer(new JacksonJsonSerializer<>(jsonMapper));
     }
 
     @Bean
-    public DefaultKafkaConsumerFactoryCustomizer defaultKafkaConsumerFactoryCustomizer(JsonMapper objectMapper) {
+    public DefaultKafkaConsumerFactoryCustomizer defaultKafkaConsumerFactoryCustomizer(JsonMapper jsonMapper) {
         return consumerFactory -> {
-            JacksonJsonDeserializer valueDeserializer = new JacksonJsonDeserializer<>(objectMapper);
+            JacksonJsonDeserializer valueDeserializer = new JacksonJsonDeserializer<>(jsonMapper);
             valueDeserializer.addTrustedPackages("*");
 
             //we must wrap the JsonDeserializer into an ErrorHandlingDeserializer, otherwise deserialization error will result in endless message retry
