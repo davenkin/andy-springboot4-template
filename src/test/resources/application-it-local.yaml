@@ -5,7 +5,7 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
-      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable embedded MongoDB as real one will be used
+      - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable flapdoodle explicitly otherwise the embedded MongoDB will replace your local real MongoDB servers
   data:
     redis:
       database: 0
