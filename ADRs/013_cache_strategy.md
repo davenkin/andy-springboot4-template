@@ -6,10 +6,26 @@ Cache should be used to enhance performance.
 
 ## Decision
 
-We implement cache on `Repository` layer. The caller should know whether to use cache methods or not, namely cache is not transparent to
+We implement cache on `Repository` layer. The caller should know whether to use cache methods or not, namely cache is
+not transparent to
 callers.
 
+For updating data, you should retrieve it from the database directly, but not from cache. Cache is only for query data
+for direct response to the client or for reference data.
+
 ## Implementation
+
+The cache architecture (take `CachedMongoEquipmentRepository` as an example):
+
+![cache strategy](../ADRs/asset/cache-strategy.png)
+
+- Caller only knows the interface `EquipmentRepository`
+- `Equipment`'s own repository `MongoEquipmentRepository` implements `EquipmentRepository` and extends
+  `AbstractMongoRepository` for reusing common methods such as `byId()` and `save()`
+- The cache repository `CachedMongoEquipmentRepository` also extends  `AbstractMongoRepository` for reusing common
+  methods such as `byId()`
+- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository`, hence hides `CachedMongoEquipmentRepository` from
+  the caller
 
 In order to implement a cache object, go through the following steps:
 
@@ -25,7 +41,8 @@ public record EquipmentSummary(String id,
 }
 ```
 
-3. Register the cache class into [CacheConfiguration](../src/main/java/com/company/andy/common/configuration/CacheConfiguration.java) using
+3. Register the cache class
+   into [CacheConfiguration](../src/main/java/com/company/andy/common/configuration/CacheConfiguration.java) using
    `withCacheConfiguration()`:
 
 ```java
@@ -44,7 +61,8 @@ public RedisCacheManagerBuilderCustomizer redisBuilderCustomizer(ObjectMapper ob
 }
 ```
 
-4. Create a cache repository, this repository should only work for cache, callers should not use this repository directly:
+4. Create a cache repository, this repository should only work for cache, callers should not use this repository
+   directly:
 
 ```java
 public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equipment> {
@@ -96,7 +114,8 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
 }
 ```
 
-As you can see, the cache repository (`CachedMongoEquipmentRepository`) is hidden by `MongoEquipmentRepository`, the caller code can just
+As you can see, the cache repository (`CachedMongoEquipmentRepository`) is hidden by `MongoEquipmentRepository`, the
+caller code can just
 use
 `EquipmentRepository.cachedEquipmentSummaries()` to access caches.
 
