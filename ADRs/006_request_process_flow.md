@@ -274,7 +274,7 @@ public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, 
 First create a scheduler in the `job` package:
 
 ```java
-public class EquipmentScheduler {
+public class EquipmentJobScheduler {
   private final MaintenanceReminderJob maintenanceReminderJob;
 
   @Scheduled(cron = "0 10 2 1 * ?")

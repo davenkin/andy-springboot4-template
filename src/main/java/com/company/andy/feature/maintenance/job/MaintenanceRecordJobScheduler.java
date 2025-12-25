@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @DisableForIT
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
-public class MaintenanceRecordScheduler {
+public class MaintenanceRecordJobScheduler {
     private final RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
 
     @Scheduled(cron = "0 0 2 1 * ?")

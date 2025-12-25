@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @DisableForIT
 @RequiredArgsConstructor
-public class DomainEventScheduler {
+public class DomainEventJobScheduler {
     private final DomainEventPublishJob domainEventPublishJob;
     private final DomainEventHouseKeepingJob domainEventHouseKeepingJob;
 

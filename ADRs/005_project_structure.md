@@ -118,8 +118,8 @@ More detailed explanation:
         - `MongoXxxRepository`(class:N): The repository implementations, should end with "Repository".
           Example: [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java).
     - `job`(folder:1):Contains background jobs that are related to the Aggregate Root.
-        - `XxxScheduler`(class:N): Scheduling configuration, should end with "Scheduler".
-          Example: [EquipmentScheduler](../src/main/java/com/company/andy/feature/equipment/job/EquipmentScheduler.java).
+        - `XxxJobScheduler`(class:N): Scheduling configuration, should end with "Scheduler".
+          Example: [EquipmentJobScheduler](../src/main/java/com/company/andy/feature/equipment/job/EquipmentJobScheduler.java).
         - `XxxJob`(class:N): Represents a background job, should end with "Job". A job might run multiple tasks.
           Example:
           [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java).
