@@ -20,7 +20,7 @@ import static org.springframework.data.redis.serializer.RedisSerializationContex
 public class CacheConfiguration {
 
     @Bean
-    public RedisCacheManagerBuilderCustomizer redisBuilderCustomizer(ObjectMapper objectMapper) {
+    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(ObjectMapper objectMapper) {
         return builder -> builder
                 .cacheDefaults(defaultCacheConfig()
                         .prefixCacheNameWith(Constants.CACHE_PREFIX)
