@@ -8,12 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -30,6 +32,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @Slf4j
 @ActiveProfiles("it")
 //@ActiveProfiles("it-local")
+@AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
     private static RedisServer redisServer;
@@ -45,6 +48,9 @@ public abstract class IntegrationTest {
 
     @Autowired
     protected Environment environment;
+
+    @Autowired
+    protected RestTestClient restTestClient;
 
     @BeforeAll
     public static void beforeAll() {

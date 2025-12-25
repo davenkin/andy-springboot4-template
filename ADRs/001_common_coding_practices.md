@@ -4,7 +4,8 @@
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/util/SnowflakeIdGenerator.java).
   This
   means when the object is created,
-  its ID should already been generated in the constructor. Reason: This decouples the code from database implementations and also makes
+  its ID should already been generated in the constructor. Reason: This decouples the code from database implementations
+  and also makes
   testing much easier.
 
 ```java
@@ -142,7 +143,8 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
 
 - Use a single instance of `ObjectMapper` across the whole application as much as possible. Reason: A single
   `ObjectMapper` behaves
-  the same for all scenarios. In [CommonConfiguration](../src/main/java/com/company/andy/common/configuration/CommonConfiguration.java) a
+  the same for all scenarios.
+  In [CommonConfiguration](../src/main/java/com/company/andy/common/configuration/CommonConfiguration.java) a
   `JsonMapperBuilderCustomizer` is created for building an `ObjectMapper`:
 
 ```java
@@ -178,12 +180,18 @@ public String createEquipment(CreateEquipmentCommand command, Operator operator)
 - If distributed lock is required, used
   Shedlock's [LockingTaskExecutor](../src/main/java/com/company/andy/common/configuration/DistributedLockConfiguration.java).
 - Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code.
-- Do not create interface classes for services until really needed. Reason: the public methods on service classes already serve
+- Do not create interface classes for services until really needed. Reason: the public methods on service classes
+  already serve
   as interfaces.
 - Use [Operator](../src/main/java/com/company/andy/common/model/operator/Operator.java) to pass current user context
   around, do
   not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
   `SecurityContextHolder`s are essentially thread scoped global variables, it makes the code implicit and also makes
   testing harder. In practices, we cannot get rid of `SecurityContextHolder`, but what we can do is: upon receiving
-  HTTP request in the Controller, convert `SecurityContextHolder` into a `Operator`(`UserOperator`) and pass it down the way. Also for
-  background tasks, such as event handlers and jobs, you may use `PlatformOperator.PLATFORM_OPERATOR` instead of `UserOperator`.
+  HTTP request in the Controller, convert `SecurityContextHolder` into a `Operator`(`UserOperator`) and pass it down the
+  way. Also for
+  background tasks, such as event handlers and jobs, you may use `PlatformOperator.PLATFORM_OPERATOR` instead of
+  `UserOperator`.
+- Use [RestClient](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-restclient) for
+  calling remote APIs. Do not use Webclient as it's from the Webflux ecosystem. Do not use RestTemplate as is already
+  marked as deprecated. Do not use HTTP Service Clients (`@HttpExchange` etc.) as it requires extra configuration. 
