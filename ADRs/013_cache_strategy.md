@@ -24,9 +24,13 @@ The cache architecture (take `CachedMongoEquipmentRepository` as an example):
   `AbstractMongoRepository` for reusing common methods such as `byId()` and `save()`
 - The cache repository `CachedMongoEquipmentRepository` also extends  `AbstractMongoRepository` for reusing common
   methods such as `byId()`
-- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository` internally and proxies cache related methods to it, hence hides
+- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository` internally and proxies cache related methods to it,
+  hence hides
   `CachedMongoEquipmentRepository` from
   the caller
+- Cache repository should not escape outside of the repository layer, but can be referenced across different
+  repositories, for example `MongoMaintenanceRecordRepository` can reference `Equipment`'s cache repository
+  `CachedMongoEquipmentRepository`
 
 In order to implement a cache object, go through the following steps:
 
@@ -127,3 +131,21 @@ public List<EquipmentSummary> getAllEquipmentSummaries(Operator operator) {
   return equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
 }
 ```
+
+8. Cache eviction often happens inside Repositories' data mutation methods such `save()` and `delete()`:
+
+```java
+@Override
+  public void save(Equipment equipment) {
+    super.save(equipment);
+    cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(equipment.getOrgId());
+}
+```
+
+Notes:
+
+- We could build the cache methods(those annotated`@Cacheable` and `@CacheEvict` etc.) directly on
+  `MongoEquipmentRepository` and remove `CachedMongoEquipmentRepository`, but in reality we cannot, because:
+    - Due to Spring AOP's limitation, calling `@Cacheable` annotated methods from within the same class
+      will [not work](https://www.baeldung.com/spring-aop-method-call-within-same-class)
+    - From a design perspective, isolate cache related methods promotes separation of concerns principle

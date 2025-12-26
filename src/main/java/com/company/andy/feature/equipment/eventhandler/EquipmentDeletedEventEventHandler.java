@@ -2,7 +2,6 @@ package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.util.ExceptionSwallowRunner;
-import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.maintenance.domain.task.DeleteAllMaintenanceRecordsUnderEquipmentTask;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
-    private final EquipmentRepository equipmentRepository;
 
     @Override
     public void handle(EquipmentDeletedEvent event) {
-        ExceptionSwallowRunner.run(() -> equipmentRepository.evictCachedEquipmentSummaries(event.getArOrgId()));
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 

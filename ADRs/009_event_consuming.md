@@ -13,7 +13,8 @@ events:
 - Every event can be handled by multiple handlers, these handlers process the same event independently, exceptions from
   one handler does not impact other handlers
 - For multiple handlers processing the same event, higher priority handler process the event earlier
-- Upon exceptions, the event will be retried 3 times within the same consuming thread, accumulated for all handlers but not within a single handler. If retry exhausts, the
+- Upon exceptions, the event will be retried 3 times within the same consuming thread, accumulated for all handlers but
+  not within a single handler. If retry exhausts, the
   event will be put into Dead Letter Topic(DLT), for simplicity there is no automatic listener on DLT hence human
   investigation and action is needed
 - Event consuming idempotency is achieved by either:
@@ -36,11 +37,9 @@ events:
 @Component
 @RequiredArgsConstructor
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
-  private final EquipmentRepository equipmentRepository;
 
   @Override
   public void handle(EquipmentCreatedEvent event) {
-    equipmentRepository.evictCachedEquipmentSummaries(event.getArOrgId());
   }
 }
 ```
@@ -79,7 +78,6 @@ events with type `EquipmentCreatedEvent`.
 ## Event consuming infrastructure
 
 ![event consuming](../ADRs/asset/event-consuming.png)
-
 
 The below section explains how the event consuming infrastructure works.
 

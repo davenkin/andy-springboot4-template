@@ -308,7 +308,8 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 ```
 
 - For every domain event class, you need to register it
-  inside [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java) using `@JsonTypeInfo`. This is for Jackson to work
+  inside [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java) using `@JsonTypeInfo`. This is
+  for Jackson to work
   properly even without
   the type information(`__TypeId__`) in Kafka message headers.
 
@@ -383,14 +384,9 @@ Example [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/fe
 @RequiredArgsConstructor
 public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
-    private final EquipmentRepository equipmentRepository;
 
     @Override
     public void handle(EquipmentDeletedEvent event) {
-        ExceptionSwallowRunner.run(() -> {
-            equipmentRepository.evictCachedEquipmentSummaries(event.getArOrgId());
-        });
-
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 }

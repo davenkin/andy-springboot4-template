@@ -31,6 +31,30 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
     }
 
     @Override
+    public void save(Equipment equipment) {
+        super.save(equipment);
+        cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(equipment.getOrgId());
+    }
+
+    @Override
+    public void save(List<Equipment> equipment) {
+        super.save(equipment);
+        equipment.stream().findFirst().ifPresent(it -> cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(it.getOrgId()));
+    }
+
+    @Override
+    public void delete(Equipment equipment) {
+        super.delete(equipment);
+        cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(equipment.getOrgId());
+    }
+
+    @Override
+    public void delete(List<Equipment> equipment) {
+        super.delete(equipment);
+        equipment.stream().findFirst().ifPresent(it -> cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(it.getOrgId()));
+    }
+
+    @Override
     public boolean existsByName(String name, String orgId) {
         requireNonBlank(name, "name must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");

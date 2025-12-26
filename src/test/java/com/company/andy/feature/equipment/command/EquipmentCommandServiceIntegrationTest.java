@@ -4,15 +4,18 @@ import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.operator.Operator;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
+import com.company.andy.feature.equipment.domain.EquipmentSummary;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 import static com.company.andy.RandomTestUtils.*;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     @Autowired
@@ -57,5 +60,28 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
         assertEquals(equipmentId, equipmentNameUpdatedEvent.getEquipmentId());
         assertEquals(updateEquipmentNameCommand.name(), equipmentNameUpdatedEvent.getUpdatedName());
+    }
+
+    @Test
+    void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
+        //Prepare data
+        Operator operator = randomUserOperator();
+        String cacheKey = "Cache:ORG_EQUIPMENTS::" + operator.getOrgId();
+        assertFalse(stringRedisTemplate.hasKey(cacheKey));
+        CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
+        equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        assertFalse(stringRedisTemplate.hasKey(cacheKey));
+        List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+        assertNotNull(equipmentSummaries);
+        List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+        assertNotNull(cachedEquipmentSummaries);
+        assertTrue(stringRedisTemplate.hasKey(cacheKey));
+
+        // Create another equipment to evict the cache
+        String anotherEquipmentId = equipmentCommandService.createEquipment(new CreateEquipmentCommand(randomEquipmentName()), operator);
+        Thread.sleep(100);//wait for cache to evict
+
+        // Verify results
+        assertFalse(stringRedisTemplate.hasKey(cacheKey));
     }
 }
