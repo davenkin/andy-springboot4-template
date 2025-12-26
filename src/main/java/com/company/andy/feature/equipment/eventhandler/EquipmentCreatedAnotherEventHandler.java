@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentCreatedEventHandler2 extends AbstractEventHandler<EquipmentCreatedEvent> {
+public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
     public void handle(EquipmentCreatedEvent event) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());

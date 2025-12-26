@@ -8,7 +8,7 @@ import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedEventHandler;
-import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedEventHandler2;
+import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedAnotherEventHandler;
 import com.company.andy.feature.equipment.eventhandler.EquipmentNameUpdatedEventHandler;
 import com.company.andy.feature.equipment.eventhandler.EquipmentUpdatedEventHandler;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
     private EquipmentCreatedEventHandler createdEventHandler;
 
     @MockitoSpyBean
-    private EquipmentCreatedEventHandler2 createdEventHandler2;
+    private EquipmentCreatedAnotherEventHandler createdAnotherEventHandler;
 
     @MockitoSpyBean
     private EquipmentUpdatedEventHandler updatedEventHandler;
@@ -80,15 +80,15 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(0);
-        when(createdEventHandler2.priority()).thenReturn(1);
+        when(createdAnotherEventHandler.priority()).thenReturn(1);
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdEventHandler2);
+        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdAnotherEventHandler);
         inOrder.verify(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
-        inOrder.verify(createdEventHandler2).handle(any(EquipmentCreatedEvent.class));
+        inOrder.verify(createdAnotherEventHandler).handle(any(EquipmentCreatedEvent.class));
         assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler2));
+        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdAnotherEventHandler));
     }
 
     @Test
@@ -97,15 +97,15 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(1);
-        when(createdEventHandler2.priority()).thenReturn(0);
+        when(createdAnotherEventHandler.priority()).thenReturn(0);
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdEventHandler2);
-        inOrder.verify(createdEventHandler2).handle(any(EquipmentCreatedEvent.class));
+        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdAnotherEventHandler);
+        inOrder.verify(createdAnotherEventHandler).handle(any(EquipmentCreatedEvent.class));
         inOrder.verify(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
         assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler2));
+        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdAnotherEventHandler));
     }
 
     @Test
@@ -147,7 +147,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         eventConsumer.consumeDomainEvent(createdEvent);
 
         verify(consumingEventDao, times(0)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedEventHandler.class));
-        verify(consumingEventDao, times(1)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedEventHandler2.class));
+        verify(consumingEventDao, times(1)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedAnotherEventHandler.class));
         assertFalse(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
         verify(createdEventHandler, times(1)).handle(any(EquipmentCreatedEvent.class));
     }
