@@ -24,7 +24,8 @@ The cache architecture (take `CachedMongoEquipmentRepository` as an example):
   `AbstractMongoRepository` for reusing common methods such as `byId()` and `save()`
 - The cache repository `CachedMongoEquipmentRepository` also extends  `AbstractMongoRepository` for reusing common
   methods such as `byId()`
-- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository`, hence hides `CachedMongoEquipmentRepository` from
+- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository` internally and proxies cache related methods to it, hence hides
+  `CachedMongoEquipmentRepository` from
   the caller
 
 In order to implement a cache object, go through the following steps:
