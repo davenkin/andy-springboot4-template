@@ -95,6 +95,9 @@ private void stageEvents(List<DomainEvent> events) {
 }
 ```
 
+The `PublishingDomainEventDao` is responsible to stage the event, namely save the event into MongoDB temporarily for
+later retrieve and publish.
+
 ```java
 //PublishingDomainEventDao
 
