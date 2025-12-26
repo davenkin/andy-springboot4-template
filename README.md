@@ -19,7 +19,7 @@ This is a template Spring Boot 4 project with the following features:
   using [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern
 - [Event consuming](./ADRs/009_event_consuming.md) mechanism with idempotency support
 - Standardized [exception handling](./ADRs/012_exception_handling.md)
-- Lightweight [Command Query Responsibility Segregation (CQRS)](./ADRs/004_use_cqrs.md) implementation
+- Lightweight [Command Query Responsibility Segregation (CQRS)](./ADRs/004_use_lightweight_cqrs.md) implementation
 - Domain modeling using [Domain Driven Design (DDD)](./ADRs/003_use_ddd.md)
 - Standardized [request process flow](./ADRs/006_request_process_flow.md)
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)

@@ -231,10 +231,10 @@ public void onDelete() {
 There are two ways to query data:
 
 1. Load the domain entity from DB using Repository, then convert the domain entity into response object
-2. Use [CQRS](./004_use_cqrs.md), namely bypass the domain layer and query the database directly, this is preferred as
+2. Use [CQRS](./004_use_lightweight_cqrs.md), namely bypass the domain layer and query the database directly, this is preferred as
    it does not couple with the domain layer and also fetches just enough data from database which improves performance
 
-For using [CQRS](./004_use_cqrs.md), querying data can bypass the domain models and talk to database directly. For
+For using [CQRS](./004_use_lightweight_cqrs.md), querying data can bypass the domain models and talk to database directly. For
 example, when querying a list of `Equipment`s:
 
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
