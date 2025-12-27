@@ -49,7 +49,6 @@ No need to write tests for:
 //@ActiveProfiles("it-local")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
-  private static RedisServer redisServer;
 }
 ```
 
