@@ -17,6 +17,10 @@ public class EmbeddedRedisServer {
 
     @PostConstruct
     public synchronized void startRedisServer() {
+        if (redisServer != null) {
+            return;
+        }
+
         try {
             redisServer = new RedisServer(6126);
             redisServer.start();
