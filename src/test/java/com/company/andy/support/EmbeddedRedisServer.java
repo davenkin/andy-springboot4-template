@@ -16,7 +16,7 @@ public class EmbeddedRedisServer {
     private static RedisServer redisServer;
 
     @PostConstruct
-    public void startRedisServer() {
+    public synchronized void startRedisServer() {
         try {
             redisServer = new RedisServer(6126);
             redisServer.start();
@@ -26,7 +26,11 @@ public class EmbeddedRedisServer {
     }
 
     @PreDestroy
-    public void stopRedisServer() {
+    public synchronized void stopRedisServer() {
+        if (redisServer == null) {
+            return;
+        }
+
         try {
             redisServer.stop();
         } catch (IOException e) {
