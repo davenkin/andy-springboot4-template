@@ -1,26 +1,25 @@
 package com.company.andy.common.configuration;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-import static java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor;
-
+@Slf4j
 @EnableAsync
 @Configuration
 public class TaskExecutionConfiguration implements AsyncConfigurer {
 
     @Primary
-    @Bean(name = "applicationTaskExecutor")
+    @Bean(name = "applicationTaskExecutor") // Default task executor uses virtual threads
     public TaskExecutor applicationTaskExecutor() {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setVirtualThreads(true);
@@ -47,5 +46,12 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         return applicationTaskExecutor();
+    }
+
+    @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        return (ex, method, params) -> {
+            log.error("Async error happened in method {}.", method.getName(), ex);
+        };
     }
 }
