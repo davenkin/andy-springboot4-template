@@ -109,7 +109,7 @@ the latter uses real ones from your local machine.
 - `application-it-local.yaml`: This is only for your local testing and should not be enabled for Jenkins CI, it has the
   following
   configurations:
-    - Use your local MongoDB serve
+    - Use your local MongoDB server
     - Use your local Redis server
     - Mongock disabled (same as `application-it.yaml`)
     - Kafka disabled for both sending and consuming events (same as `application-it.yaml`)

@@ -26,7 +26,7 @@ This is a template Spring Boot 4 project with the following features:
 
 ## Tech stack
 
-- Java 17
+- Java 25
 - Spring Boot 4.0.1
 - Spring Data Mongodb
 - Spring Data Redis

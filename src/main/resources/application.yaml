@@ -15,6 +15,9 @@ spring:
     active: local # use "local" profile by default for local run
   cache:
     type: redis
+  threads:
+    virtual:
+      enabled: true
 
 mongock:
   enabled: true

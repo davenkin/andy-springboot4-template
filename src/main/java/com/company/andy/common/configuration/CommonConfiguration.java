@@ -5,37 +5,16 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.resilience.annotation.EnableResilientMethods;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
 
-@EnableAsync
 @EnableResilientMethods
 @Configuration(proxyBeanMethods = false)
 public class CommonConfiguration {
-
-    @Bean
-    @Primary
-    public TaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(100);
-        executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("default-executor-");
-        executor.setKeepAliveSeconds(60);
-        executor.setAllowCoreThreadTimeOut(false);
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(30);
-        executor.initialize();
-        return executor;
-    }
 
     @Bean
     public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {

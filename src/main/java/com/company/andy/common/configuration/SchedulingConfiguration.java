@@ -20,7 +20,7 @@ public class SchedulingConfiguration {
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(5);
-        scheduler.setThreadNamePrefix("default-scheduler-");
+        scheduler.setThreadNamePrefix("taskScheduler-");
         scheduler.setRemoveOnCancelPolicy(true);
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(30);
