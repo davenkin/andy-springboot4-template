@@ -1,3 +1,6 @@
+common:
+  limitRate: false
+
 de.flapdoodle.mongodb.embedded.version: 7.0.12 # Enable flapdoodle Embedded MongoDB by specifying a version, otherwise flapdoodle will fail to start
 
 mongock:

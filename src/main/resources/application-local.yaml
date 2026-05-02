@@ -1,3 +1,6 @@
+common:
+  limitRate: true
+
 server:
   port: 5125
 spring:
