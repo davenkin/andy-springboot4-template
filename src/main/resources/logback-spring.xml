@@ -1,0 +1,23 @@
+<configuration>
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <version>[ignore]</version>
+                <levelValue>[ignore]</levelValue>
+                <thread>[ignore]</thread>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="JSON"/>
+        <queueSize>512</queueSize>
+        <neverBlock>false</neverBlock>
+        <maxFlushTime>3000</maxFlushTime>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC"/>
+    </root>
+</configuration>
