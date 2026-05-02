@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.infrastructure;
 
-import com.company.andy.common.infrastructure.AbstractMongoRepository;
+import com.company.andy.common.infrastructure.*;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
 import lombok.RequiredArgsConstructor;

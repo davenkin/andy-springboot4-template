@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.infrastructure;
 
-import com.company.andy.common.infrastructure.AbstractMongoRepository;
+import com.company.andy.common.infrastructure.*;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;

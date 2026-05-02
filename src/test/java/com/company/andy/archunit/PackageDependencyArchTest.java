@@ -4,6 +4,9 @@ import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.ListPagingAndSortingRepository;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
@@ -39,6 +42,17 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..infrastructure..",
                     "..com.company.andy.feature..job..",
                     "..com.company.andy.feature..query..")
-            .because("Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and  should not depend on other outer packages.");
+            .because("Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and should not depend on other outer packages.");
 
+    @ArchTest
+    static final ArchRule mapStructShouldNotBeUsed = noClasses()
+            .should()
+            .dependOnClassesThat().resideInAPackage("org.mapstruct..")
+            .because("We don't MapStruct as we think manual mapper implementations are more straightforward and easier to debug, and also manual mappers do not take much effort.");
+
+    @ArchTest
+    static final ArchRule springDataRepositoriesShouldNotBeUsed = noClasses()
+            .should()
+            .dependOnClassesThat().belongToAnyOf(MongoRepository.class, ListCrudRepository.class, ListPagingAndSortingRepository.class)
+            .because("We don't use Spring Data's repository interfaces directly as it's too rigid for method names, instead we use AbstractMongoRepository as the base repository class and define our own repository interfaces for better flexibility and readability.");
 }
