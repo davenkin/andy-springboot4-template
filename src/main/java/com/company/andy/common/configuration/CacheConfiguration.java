@@ -1,6 +1,5 @@
 package com.company.andy.common.configuration;
 
-import com.company.andy.common.util.Constants;
 import com.company.andy.feature.equipment.infrastructure.CachedOrgEquipmentSummaries;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -10,6 +9,7 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import tools.jackson.databind.ObjectMapper;
 
+import static com.company.andy.common.util.Constants.CACHE_PREFIX;
 import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
 import static java.time.Duration.ofDays;
 import static org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig;
@@ -23,11 +23,11 @@ public class CacheConfiguration {
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(ObjectMapper objectMapper) {
         return builder -> builder
                 .cacheDefaults(defaultCacheConfig()
-                        .prefixCacheNameWith(Constants.CACHE_PREFIX)
+                        .prefixCacheNameWith(CACHE_PREFIX)
                         .serializeValuesWith(fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper)))
                         .entryTtl(ofDays(7)))
                 .withCacheConfiguration(ORG_EQUIPMENTS_CACHE, defaultCacheConfig()
-                        .prefixCacheNameWith(Constants.CACHE_PREFIX)
+                        .prefixCacheNameWith(CACHE_PREFIX)
                         .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, CachedOrgEquipmentSummaries.class)))
                         .entryTtl(ofDays(7)))
                 ;

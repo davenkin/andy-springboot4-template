@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -38,18 +40,17 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ex, request.getRequestURI());
     }
 
-    // todo: bring back once spring security is added
-//    @ResponseBody
-//    @ExceptionHandler({AccessDeniedException.class})
-//    public ResponseEntity<QErrorResponse> handleAccessDinedException(HttpServletRequest request) {
-//        return createErrorResponse(MryException.accessDeniedException(), request.getRequestURI());
-//    }
-//
-//    @ResponseBody
-//    @ExceptionHandler({AuthenticationException.class})
-//    public ResponseEntity<QErrorResponse> handleAuthenticationFailedException(HttpServletRequest request) {
-//        return createErrorResponse(MryException.authenticationException(), request.getRequestURI());
-//    }
+    @ResponseBody
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<QErrorResponse> handleAccessDinedException(HttpServletRequest request) {
+        return createErrorResponse(ServiceException.accessDeniedException(), request.getRequestURI());
+    }
+
+    @ResponseBody
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<QErrorResponse> handleAuthenticationFailedException(HttpServletRequest request) {
+        return createErrorResponse(ServiceException.authenticationException(), request.getRequestURI());
+    }
 
     @ResponseBody
     @ExceptionHandler({MethodArgumentNotValidException.class})
