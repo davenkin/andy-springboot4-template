@@ -1,6 +1,6 @@
 package com.company.andy.common.configuration;
 
-import com.company.andy.common.tracing.PropagateSecurityContextTaskDecorator;
+import com.company.andy.common.tracing.SecurityContextPropagatingTaskDecorator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +54,7 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
     public TaskDecorator taskDecorator() {
         return new CompositeTaskDecorator(List.of(
                 new ContextPropagatingTaskDecorator(),
-                new PropagateSecurityContextTaskDecorator()
+                new SecurityContextPropagatingTaskDecorator()
         ));
     }
 
