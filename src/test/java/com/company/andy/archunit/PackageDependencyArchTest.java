@@ -1,5 +1,6 @@
 package com.company.andy.archunit;
 
+import com.fasterxml.jackson.annotation.*;
 import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -8,6 +9,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
 
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.equivalentTo;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
@@ -55,4 +59,20 @@ class PackageDependencyArchTest {
             .should()
             .dependOnClassesThat().belongToAnyOf(MongoRepository.class, ListCrudRepository.class, ListPagingAndSortingRepository.class)
             .because("We don't use Spring Data's repository interfaces directly as it's too rigid for method names, instead we use AbstractMongoRepository as the base repository class and define our own repository interfaces for better flexibility and readability.");
+
+    @ArchTest
+    static final ArchRule usageOfJacksonAnnotationsShouldBeMinimized = noClasses()
+            .should()
+            .dependOnClassesThat(
+                    resideInAPackage("com.fasterxml.jackson.annotation..")
+                            .and(not(equivalentTo(JsonSubTypes.class)))
+                            .and(not(equivalentTo(JsonTypeInfo.class)))
+                            .and(not(equivalentTo(JsonSubTypes.Type.class)))
+                            .and(not(equivalentTo(JsonTypeInfo.As.class)))
+                            .and(not(equivalentTo(JsonTypeInfo.Id.class)))
+                            .and(not(equivalentTo(OptBoolean.class)))
+                            .and(not(equivalentTo(JsonAutoDetect.Visibility.class)))
+                            .and(not(equivalentTo(PropertyAccessor.class)))
+            )
+            .because("Jackson annotations make the code deeply coupled with the Jackson library, and also it might be bad for code navigability.");
 }
