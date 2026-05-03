@@ -1,8 +1,8 @@
 package com.company.andy.common.event.publish.infrastructure;
 
 import com.company.andy.common.configuration.profile.EnableForIT;
-import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.publish.DomainEventSender;
+import com.company.andy.common.event.publish.PublishingDomainEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +20,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @EnableForIT
 @RequiredArgsConstructor
 public class FakeDomainEventSender implements DomainEventSender {
-    private final Map<String, DomainEvent> events = new ConcurrentHashMap<>();
+    private final Map<String, PublishingDomainEvent> events = new ConcurrentHashMap<>();
     private final Set<String> errorEventIds = new HashSet<>();
 
     @Override
-    public CompletableFuture<String> send(DomainEvent event) {
-        if (this.errorEventIds.contains(event.getId())) {
+    public CompletableFuture<String> send(PublishingDomainEvent publishingDomainEvent) {
+        if (this.errorEventIds.contains(publishingDomainEvent.getId())) {
             return CompletableFuture.failedFuture(new RuntimeException("stub exception"));
         }
 
-        this.events.put(event.getId(), event);
-        return CompletableFuture.completedFuture(event.getId());
+        this.events.put(publishingDomainEvent.getId(), publishingDomainEvent);
+        return CompletableFuture.completedFuture(publishingDomainEvent.getId());
     }
 
     public void throwExceptionFor(String eventId) {

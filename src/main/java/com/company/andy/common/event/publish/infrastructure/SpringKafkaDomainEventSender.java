@@ -3,6 +3,8 @@ package com.company.andy.common.event.publish.infrastructure;
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.publish.DomainEventSender;
+import com.company.andy.common.event.publish.PublishingDomainEvent;
+import com.company.andy.common.tracing.TracingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,9 +22,16 @@ import static com.company.andy.common.util.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 @RequiredArgsConstructor
 public class SpringKafkaDomainEventSender implements DomainEventSender {
     private final KafkaTemplate<String, DomainEvent> kafkaTemplate;
+    private final TracingService tracingService;
 
     @Override
-    public CompletableFuture<String> send(DomainEvent event) {
+    public CompletableFuture<String> send(PublishingDomainEvent publishingDomainEvent) {
+        return this.tracingService.withRestoredTrace(publishingDomainEvent.getTraceparent(),
+                "domain.event.send",
+                () -> this.doSend(publishingDomainEvent.getEvent()));
+    }
+
+    private CompletableFuture<String> doSend(DomainEvent event) {
         return this.kafkaTemplate.send(KAFKA_DOMAIN_EVENT_TOPIC, event.getArId(), event)
                 .thenApply(record -> record.getProducerRecord().value().getId());
     }

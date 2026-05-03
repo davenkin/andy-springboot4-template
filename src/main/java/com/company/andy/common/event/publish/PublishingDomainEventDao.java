@@ -1,6 +1,7 @@
 package com.company.andy.common.event.publish;
 
 import com.company.andy.common.event.DomainEvent;
+import com.company.andy.common.tracing.TracingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,14 +28,16 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 public class PublishingDomainEventDao {
     private static final int MAX_PUBLISH_COUNT = 3;
     private final MongoTemplate mongoTemplate;
+    private final TracingService tracingService;
 
     public void stage(List<DomainEvent> events) {
         requireNonNull(events, "Domain events must not be null.");
-        List<PublishingDomainEvent> publishingDomainEvents = events.stream().map(PublishingDomainEvent::new).toList();
+        String currentTraceParent = tracingService.currentTraceParent();
+        List<PublishingDomainEvent> publishingDomainEvents = events.stream().map((DomainEvent it) -> new PublishingDomainEvent(it, currentTraceParent)).toList();
         mongoTemplate.insertAll(publishingDomainEvents);
     }
 
-    public List<DomainEvent> stagedEvents(String startId, int limit) {
+    public List<PublishingDomainEvent> stagedEvents(String startId, int limit) {
         requireNonBlank(startId, "Start ID must not be blank.");
 
         Query query = query(where(status).in(CREATED, PUBLISH_FAILED)
@@ -42,9 +45,8 @@ public class PublishingDomainEventDao {
                 .and(publishedCount).lt(MAX_PUBLISH_COUNT))
                 .with(by(ASC, raisedAt))
                 .limit(limit);
-        return mongoTemplate.find(query, PublishingDomainEvent.class).stream().map(PublishingDomainEvent::getEvent).toList();
+        return mongoTemplate.find(query, PublishingDomainEvent.class);
     }
-
 
     public void successPublish(String eventId) {
         requireNonBlank(eventId, "Domain event ID must not be blank.");

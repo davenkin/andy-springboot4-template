@@ -25,15 +25,17 @@ public class PublishingDomainEvent {
     private DomainEvent event;
     private DomainEventPublishStatus status;
     private int publishedCount;
+    private String traceparent;
     private Instant raisedAt;
 
-    public PublishingDomainEvent(DomainEvent event) {
+    public PublishingDomainEvent(DomainEvent event, String traceparent) {
         requireNonNull(event, "Domain event must not be null.");
 
         this.id = event.getId();
         this.event = event;
         this.status = CREATED;
         this.publishedCount = 0;
+        this.traceparent = traceparent;
         this.raisedAt = event.getRaisedAt();
     }
 }

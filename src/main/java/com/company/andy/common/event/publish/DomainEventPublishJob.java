@@ -1,6 +1,5 @@
 package com.company.andy.common.event.publish;
 
-import com.company.andy.common.event.DomainEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.LockAssert;
@@ -60,12 +59,12 @@ public class DomainEventPublishJob {
         List<CompletableFuture<String>> futures = new ArrayList<>();
 
         while (true) {
-            List<DomainEvent> domainEvents = publishingDomainEventDao.stagedEvents(startEventId, batchSize);
-            if (isEmpty(domainEvents)) {
+            List<PublishingDomainEvent> publishingDomainEvents = publishingDomainEventDao.stagedEvents(startEventId, batchSize);
+            if (isEmpty(publishingDomainEvents)) {
                 break;
             }
 
-            for (DomainEvent event : domainEvents) {
+            for (PublishingDomainEvent event : publishingDomainEvents) {
                 var future = this.domainEventSender.send(event)
                         .whenCompleteAsync((eventId, ex) -> {
                             if (ex == null) {
@@ -78,12 +77,12 @@ public class DomainEventPublishJob {
                 futures.add(future);
             }
 
-            counter = domainEvents.size() + counter;
+            counter = publishingDomainEvents.size() + counter;
             if (counter >= MAX_FETCH_SIZE) {
                 break;
             }
 
-            startEventId = domainEvents.get(domainEvents.size() - 1).getId(); // Start event ID for next batch
+            startEventId = publishingDomainEvents.get(publishingDomainEvents.size() - 1).getId(); // Start event ID for next batch
         }
 
         CompletableFuture<List<String>> allResults = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
