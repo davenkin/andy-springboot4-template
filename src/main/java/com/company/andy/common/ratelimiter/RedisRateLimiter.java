@@ -1,6 +1,6 @@
 package com.company.andy.common.ratelimiter;
 
-import com.company.andy.common.configuration.properties.CommonProperties;
+import com.company.andy.common.configuration.property.CommonProperties;
 import com.company.andy.common.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
