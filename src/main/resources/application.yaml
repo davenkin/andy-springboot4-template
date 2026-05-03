@@ -21,6 +21,11 @@ spring:
   threads:
     virtual:
       enabled: true
+  kafka:
+    template:
+      observation-enabled: true
+    listener:
+      observation-enabled: true
 
 mongock:
   enabled: true
