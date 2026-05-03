@@ -1,6 +1,5 @@
 package com.company.andy.common.configuration;
 
-import com.company.andy.common.tracing.PropagateMdcTaskDecorator;
 import com.company.andy.common.tracing.PropagateSecurityContextTaskDecorator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -11,6 +10,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.support.CompositeTaskDecorator;
+import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -52,8 +52,10 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
 
     @Bean
     public TaskDecorator taskDecorator() {
-        return new CompositeTaskDecorator(List.of(new PropagateMdcTaskDecorator(),
-                new PropagateSecurityContextTaskDecorator()));
+        return new CompositeTaskDecorator(List.of(
+                new ContextPropagatingTaskDecorator(),
+                new PropagateSecurityContextTaskDecorator()
+        ));
     }
 
     @Override

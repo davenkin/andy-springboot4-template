@@ -35,3 +35,12 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  defaults:
+    metrics:
+      export:
+        enabled: false
