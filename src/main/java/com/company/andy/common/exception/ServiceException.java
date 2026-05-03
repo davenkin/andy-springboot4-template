@@ -208,6 +208,10 @@ public final class ServiceException extends RuntimeException {
         return new ServiceException(REQUEST_VALIDATION_FAILED, "Request validation failed.", data);
     }
 
+    public static ServiceException systemException() {
+        return new ServiceException(SYSTEM_ERROR, "System error.");
+    }
+
     public void addData(String key, Object value) {
         this.data.put(key, value);
         this.message = formatMessage(this.userMessage);

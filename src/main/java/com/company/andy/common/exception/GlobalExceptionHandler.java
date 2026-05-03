@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,8 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
-import static com.company.andy.common.exception.ErrorCode.SYSTEM_ERROR;
-import static com.company.andy.common.exception.ServiceException.requestValidationException;
+import static com.company.andy.common.exception.ServiceException.*;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpStatus.valueOf;
@@ -43,13 +41,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<QErrorResponse> handleAccessDinedException(HttpServletRequest request) {
-        return createErrorResponse(ServiceException.accessDeniedException(), request.getRequestURI());
+        return createErrorResponse(accessDeniedException(), request.getRequestURI());
     }
 
     @ResponseBody
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<QErrorResponse> handleAuthenticationFailedException(HttpServletRequest request) {
-        return createErrorResponse(ServiceException.authenticationException(), request.getRequestURI());
+        return createErrorResponse(authenticationException(), request.getRequestURI());
     }
 
     @ResponseBody
@@ -76,12 +74,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> handleGeneralException(Throwable ex, HttpServletRequest request) {
-        String path = request.getRequestURI();
-        String traceId = tracingService.currentTraceId();
-
-        log.error("Error access[{}]:", path, ex);
-        Error error = new Error(SYSTEM_ERROR, SYSTEM_ERROR.getStatus(), "System error.", path, traceId, null);
-        return new ResponseEntity<>(error.toErrorResponse(), new HttpHeaders(), HttpStatus.valueOf(SYSTEM_ERROR.getStatus()));
+        log.error("Error access[{}]:", request.getRequestURI(), ex);
+        return createErrorResponse(systemException(), request.getRequestURI());
     }
 
     private ResponseEntity<QErrorResponse> createErrorResponse(ServiceException exception, String path) {
