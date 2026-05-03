@@ -2,13 +2,11 @@ package com.company.andy.common.event.consume;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.operator.Operator;
-import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
-import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
-import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedEventHandler;
 import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedAnotherEventHandler;
+import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedEventHandler;
 import com.company.andy.feature.equipment.eventhandler.EquipmentNameUpdatedEventHandler;
 import com.company.andy.feature.equipment.eventhandler.EquipmentUpdatedEventHandler;
 import org.junit.jupiter.api.Test;
@@ -17,8 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-import static com.company.andy.RandomTestUtils.randomEquipmentName;
-import static com.company.andy.RandomTestUtils.randomUserOperator;
+import static com.company.andy.RandomTestUtils.*;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -194,15 +191,6 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
         verify(consumingEventDao, times(2)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedEventHandler.class));
         verify(createdEventHandler, times(1)).handle(any(EquipmentCreatedEvent.class));
-    }
-
-
-    private static UpdateEquipmentNameCommand randomUpdateEquipmentNameCommand() {
-        return new UpdateEquipmentNameCommand(randomEquipmentName());
-    }
-
-    private static CreateEquipmentCommand randomCreateEquipmentCommand() {
-        return new CreateEquipmentCommand(randomEquipmentName());
     }
 
 }
