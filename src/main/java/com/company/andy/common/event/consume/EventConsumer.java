@@ -33,6 +33,8 @@ public class EventConsumer {
         this.consume(new ConsumingEvent(event.getId(), event));
     }
 
+    // you may add more consumeXxxEvent(XxxEvent event) here
+
     private void consume(ConsumingEvent event) {
         if (event == null) {
             return;
