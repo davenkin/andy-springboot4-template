@@ -3,15 +3,17 @@ package com.company.andy.feature.maintenance.query;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.operator.Operator;
 import com.company.andy.common.util.PagedResponse;
+import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
+import com.company.andy.feature.maintenance.MaintenanceRecordTestFixture;
 import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.RandomTestUtils.*;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
@@ -27,10 +29,10 @@ class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_page_maintenance_records() {
         Operator operator = randomOrgUserOperator();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         IntStream.range(0, 20).forEach(i -> {
-            maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), operator);
+            maintenanceRecordCommandService.createMaintenanceRecord(MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId), operator);
         });
 
         PageMaintenanceRecordsQuery query = PageMaintenanceRecordsQuery.builder().pageSize(12).build();

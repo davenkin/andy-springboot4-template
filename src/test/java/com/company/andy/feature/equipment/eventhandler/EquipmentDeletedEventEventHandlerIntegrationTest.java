@@ -2,16 +2,18 @@ package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.operator.Operator;
+import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
+import com.company.andy.feature.maintenance.MaintenanceRecordTestFixture;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
 import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.RandomTestUtils.*;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,9 +35,9 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
         Operator operator = randomOrgUserOperator();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
 

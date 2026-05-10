@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.RandomTestUtils.randomCreateEquipmentCommand;
-import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
+import static com.company.andy.feature.equipment.EquipmentTextFixture.randomCreateEquipmentCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EquipmentQueryServiceIntegrationTest extends IntegrationTest {

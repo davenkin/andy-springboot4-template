@@ -2,6 +2,7 @@ package com.company.andy.feature.equipment.command;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.operator.Operator;
+import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.EquipmentSummary;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.company.andy.RandomTestUtils.*;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     void should_create_equipment() {
         //Prepare data
         Operator operator = randomOrgUserOperator();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
 
         //Execute
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -49,10 +50,10 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     void should_update_equipment_name() {
         Operator operator = randomOrgUserOperator();
 
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
 
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = EquipmentTextFixture.randomUpdateEquipmentNameCommand();
         equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, operator);
 
         Equipment equipment = equipmentRepository.byId(equipmentId);
@@ -68,7 +69,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
         Operator operator = randomOrgUserOperator();
         String cacheKey = "Cache:ORG_EQUIPMENTS::" + operator.orgId();
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
-        CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
+        CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(EquipmentTextFixture.randomEquipmentName());
         equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
         List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.orgId());
@@ -78,7 +79,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
         assertTrue(stringRedisTemplate.hasKey(cacheKey));
 
         // Create another equipment to evict the cache
-        String anotherEquipmentId = equipmentCommandService.createEquipment(new CreateEquipmentCommand(randomEquipmentName()), operator);
+        String anotherEquipmentId = equipmentCommandService.createEquipment(new CreateEquipmentCommand(EquipmentTextFixture.randomEquipmentName()), operator);
         Thread.sleep(100);//wait for cache to evict
 
         // Verify results

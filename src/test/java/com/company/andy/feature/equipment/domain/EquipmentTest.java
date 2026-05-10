@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.domain;
 
-import com.company.andy.RandomTestUtils;
+import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.common.model.operator.Operator;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EquipmentTest {
     @Test
     void shouldCreateEquipment() {
-        Operator operator = RandomTestUtils.randomOrgUserOperator();
+        Operator operator = CommonRandomTestFixture.randomOrgUserOperator();
         Equipment equipment = new Equipment("name", operator);
         assertEquals("name", equipment.getName());
         assertEquals(1, equipment.getEvents().size());

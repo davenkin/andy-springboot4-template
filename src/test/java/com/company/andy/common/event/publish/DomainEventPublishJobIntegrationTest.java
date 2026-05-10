@@ -9,10 +9,10 @@ import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.RandomTestUtils.randomEquipmentName;
-import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.*;
+import static com.company.andy.feature.equipment.EquipmentTextFixture.randomEquipmentName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
