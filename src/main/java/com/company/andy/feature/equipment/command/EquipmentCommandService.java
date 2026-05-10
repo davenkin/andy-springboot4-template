@@ -28,7 +28,7 @@ public class EquipmentCommandService {
 
     @Transactional
     public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+        Equipment equipment = equipmentRepository.byId(id, operator.orgId());
         equipmentDomainService.updateEquipmentName(equipment, command.name());
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
@@ -36,7 +36,7 @@ public class EquipmentCommandService {
 
     @Transactional
     public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+        Equipment equipment = equipmentRepository.byId(id, operator.orgId());
         equipment.updateHolder(command.name());
         equipmentRepository.save(equipment);
         log.info("Updated holder for Equipment[{}].", equipment.getId());
@@ -44,7 +44,7 @@ public class EquipmentCommandService {
 
     @Transactional
     public void deleteEquipment(String equipmentId, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, operator.getOrgId());
+        Equipment equipment = equipmentRepository.byId(equipmentId, operator.orgId());
         equipmentRepository.delete(equipment);
         log.info("Deleted Equipment[{}].", equipmentId);
     }

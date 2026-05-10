@@ -69,7 +69,7 @@ public class RandomTestUtils {
     }
 
     public static Operator randomOrgUserOperator() {
-        return Operator.createOrgOperator(randomUserId(), randomUserName(), Set.of(randomRole()), randomOrgId(), HUMAN_USER);
+        return Operator.createOrgOperator(randomUserId(), randomUserName(), Set.of(randomRole()), randomOrgId(), HUMAN_USER, "some initiator");
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

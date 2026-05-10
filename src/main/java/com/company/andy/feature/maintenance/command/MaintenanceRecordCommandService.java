@@ -22,7 +22,7 @@ public class MaintenanceRecordCommandService {
 
     @Transactional
     public String createMaintenanceRecord(CreateMaintenanceRecordCommand command, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(command.equipmentId(), operator.getOrgId());
+        Equipment equipment = equipmentRepository.byId(command.equipmentId(), operator.orgId());
         MaintenanceRecord record = maintenanceRecordFactory.create(equipment,
                 command.status(),
                 command.description(),
@@ -34,7 +34,7 @@ public class MaintenanceRecordCommandService {
 
     @Transactional
     public void deleteMaintenanceRecord(String maintenanceRecordId, Operator operator) {
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, operator.getOrgId());
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, operator.orgId());
         maintenanceRecordRepository.delete(maintenanceRecord);
         log.info("Deleted MaintenanceRecord[{}].", maintenanceRecordId);
     }

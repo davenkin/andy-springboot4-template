@@ -46,7 +46,7 @@ public abstract class AggregateRoot {
         this.id = id;
         this.orgId = orgId;
         this.createdAt = Instant.now();
-        this.createdBy = operator.getId();
+        this.createdBy = operator.id();
     }
 
     protected AggregateRoot(String id, Operator operator) {
@@ -54,9 +54,9 @@ public abstract class AggregateRoot {
         requireNonNull(operator, "operator must not be null.");
 
         this.id = id;
-        this.orgId = operator.getOrgId();
+        this.orgId = operator.orgId();
         this.createdAt = Instant.now();
-        this.createdBy = operator.getId();
+        this.createdBy = operator.id();
     }
 
     // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object

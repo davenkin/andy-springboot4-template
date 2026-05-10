@@ -31,7 +31,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @RequestMapping(value = "/maintenance-records")
 public class MaintenanceRecordController {
-    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER);
+    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER, "/maintenance-records");
     private final MaintenanceRecordCommandService maintenanceRecordCommandService;
     private final MaintenanceRecordQueryService maintenanceRecordQueryService;
 

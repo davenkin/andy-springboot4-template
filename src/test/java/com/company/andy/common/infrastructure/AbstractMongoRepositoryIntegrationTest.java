@@ -122,15 +122,15 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
     void should_fetch_ar_by_id() {
         Operator operator = randomOrgUserOperator();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), operator);
-        assertFalse(equipmentRepository.exists(equipment.getId(), operator.getOrgId()));
+        assertFalse(equipmentRepository.exists(equipment.getId(), operator.orgId()));
 
         equipmentRepository.save(equipment);
 
         assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId()).getId());
-        assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId(), operator.getOrgId()).getId());
-        assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId(), operator.getOrgId()).get().getId());
+        assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId(), operator.orgId()).getId());
+        assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId(), operator.orgId()).get().getId());
         assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId()).get().getId());
-        assertTrue(equipmentRepository.exists(equipment.getId(), operator.getOrgId()));
+        assertTrue(equipmentRepository.exists(equipment.getId(), operator.orgId()));
 
         assertEquals(AR_NOT_FOUND, assertThrows(ServiceException.class, () -> equipmentRepository.byId(secure().nextAlphanumeric(5), secure().nextAlphanumeric(5))).getCode());
         assertEquals(AR_NOT_FOUND, assertThrows(ServiceException.class, () -> equipmentRepository.byId(secure().nextAlphanumeric(5))).getCode());

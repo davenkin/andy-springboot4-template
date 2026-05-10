@@ -36,7 +36,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @RequestMapping(value = "/equipments")
 public class EquipmentController {
-    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER);
+    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER, "/equipments");
     private final EquipmentCommandService equipmentCommandService;
     private final EquipmentQueryService equipmentQueryService;
 

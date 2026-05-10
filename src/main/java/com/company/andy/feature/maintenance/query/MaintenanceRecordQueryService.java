@@ -27,7 +27,7 @@ public class MaintenanceRecordQueryService {
     private final MongoTemplate mongoTemplate;
 
     public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(PageMaintenanceRecordsQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.orgId());
 
         if (isNotBlank(query.getSearch())) {
             criteria.orOperator(where(MaintenanceRecord.Fields.equipmentName).regex(query.getSearch()),
@@ -58,7 +58,7 @@ public class MaintenanceRecordQueryService {
     }
 
     public QDetailedMaintenanceRecord getMaintenanceRecordDetail(String maintenanceRecordId, Operator operator) {
-        Query query = Query.query(where(MONGO_ID).is(maintenanceRecordId).and(ORG_ID).is(operator.getOrgId()));
+        Query query = Query.query(where(MONGO_ID).is(maintenanceRecordId).and(ORG_ID).is(operator.orgId()));
 
         query.fields().include(
                 MaintenanceRecord.Fields.equipmentId,

@@ -26,7 +26,7 @@ public class EquipmentQueryService {
     private final EquipmentRepository equipmentRepository;
 
     public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.orgId());
 
         if (isNotBlank(query.getSearch())) {
             criteria.and(Equipment.Fields.name).regex(query.getSearch());
@@ -54,7 +54,7 @@ public class EquipmentQueryService {
     }
 
     public QDetailedEquipment getEquipmentDetail(String equipmentId, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, operator.getOrgId());
+        Equipment equipment = equipmentRepository.byId(equipmentId, operator.orgId());
         return QDetailedEquipment.builder()
                 .id(equipment.getId())
                 .orgId(equipment.getOrgId())
@@ -66,6 +66,6 @@ public class EquipmentQueryService {
     }
 
     public List<EquipmentSummary> getAllEquipmentSummaries(Operator operator) {
-        return equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+        return equipmentRepository.cachedEquipmentSummaries(operator.orgId());
     }
 }

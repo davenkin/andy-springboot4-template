@@ -36,7 +36,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
         //Verify results
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
-        assertEquals(operator.getOrgId(), equipment.getOrgId());
+        assertEquals(operator.orgId(), equipment.getOrgId());
 
         // Verify domain events
         // Only need to check the existence of domain event in database,
@@ -66,14 +66,14 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
         //Prepare data
         Operator operator = randomOrgUserOperator();
-        String cacheKey = "Cache:ORG_EQUIPMENTS::" + operator.getOrgId();
+        String cacheKey = "Cache:ORG_EQUIPMENTS::" + operator.orgId();
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
         equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
-        List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+        List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.orgId());
         assertNotNull(equipmentSummaries);
-        List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+        List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(operator.orgId());
         assertNotNull(cachedEquipmentSummaries);
         assertTrue(stringRedisTemplate.hasKey(cacheKey));
 
