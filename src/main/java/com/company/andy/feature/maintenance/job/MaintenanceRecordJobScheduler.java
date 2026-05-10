@@ -1,6 +1,8 @@
 package com.company.andy.feature.maintenance.job;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
+import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.LockAssert;
@@ -10,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
 import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
-import static com.company.andy.common.tracing.ActorMdcIncludedRunner.of;
 
 @Slf4j
 @DisableForIT
@@ -23,7 +24,8 @@ public class MaintenanceRecordJobScheduler {
     @SchedulerLock(name = "removeOldMaintenanceRecordsJob")
     public void removeOldMaintenanceRecordsJob() {
         LockAssert.assertLocked();
-        of(createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob"))
+        Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob");
+        ActorMdcSupport.of(operator)
                 .run(this.removeOldMaintenanceRecordsJob::run);
     }
 }

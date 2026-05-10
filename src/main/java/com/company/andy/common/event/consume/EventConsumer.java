@@ -2,8 +2,7 @@ package com.company.andy.common.event.consume;
 
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.operator.Operator;
-import com.company.andy.common.model.operator.OperatorSource;
-import com.company.andy.common.tracing.ActorMdcIncludedRunner;
+import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
+import static com.company.andy.common.model.operator.OperatorSource.EVENT_LISTENER;
 import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -70,8 +70,8 @@ public class EventConsumer {
 
     private void handleIdempotently(AbstractEventHandler<?> handler, ConsumingEvent consumingEvent) {
         if (handler.isIdempotent() || this.consumingEventDao.markEventAsConsumedByHandler(consumingEvent, handler)) {
-            Operator operator = createPlatformOperator(OperatorSource.EVENT_LISTENER, consumingEvent.getEvent().getClass().getName());
-            ActorMdcIncludedRunner.of(operator).run(() -> ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent()));
+            Operator operator = createPlatformOperator(EVENT_LISTENER, consumingEvent.getEvent().getClass().getSimpleName());
+            ActorMdcSupport.of(operator).run(() -> ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent()));
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
                     consumingEvent.getEventId(), consumingEvent.getType(), handler.getName());

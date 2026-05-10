@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -36,6 +37,14 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class EquipmentController {
     private final EquipmentCommandService equipmentCommandService;
     private final EquipmentQueryService equipmentQueryService;
+
+    // todo: delete me
+    @GetMapping
+    @ResponseStatus(CREATED)
+    @Operation(summary = "Create an equipment")
+    public ResponseId createTestEquipment(@AuthenticationPrincipal Operator operator) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(new CreateEquipmentCommand(LocalDateTime.now().toString()), operator));
+    }
 
     @PostMapping
     @ResponseStatus(CREATED)

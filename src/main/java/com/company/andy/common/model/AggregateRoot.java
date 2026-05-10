@@ -44,7 +44,7 @@ public abstract class AggregateRoot {
         requireNonNull(operator, "operator must not be null.");
 
         if (operator.isOrgOperator()) {
-            throw new IllegalArgumentException("Org operator is not allowed to specify orgId separately, but should use operator.ordId() instead.");
+            throw new IllegalArgumentException("Org operator is not allowed to specify another orgId separately, but should use operator.orgId() instead.");
         }
 
         this.id = id;

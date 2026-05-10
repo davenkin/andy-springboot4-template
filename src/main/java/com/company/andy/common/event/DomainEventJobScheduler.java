@@ -2,6 +2,8 @@ package com.company.andy.common.event;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.publish.DomainEventPublishJob;
+import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.LockAssert;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
 import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
-import static com.company.andy.common.tracing.ActorMdcIncludedRunner.of;
 
 @Slf4j
 @Component
@@ -26,7 +27,8 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish domain events.");
-        of(createPlatformOperator(BACKGROUND_JOB, "Job:houseKeepPublishStagedDomainEvents"))
+        Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:houseKeepPublishStagedDomainEvents");
+        ActorMdcSupport.of(operator)
                 .run(() -> domainEventPublishJob.publishStagedDomainEvents(100));
     }
 
@@ -35,7 +37,8 @@ public class DomainEventJobScheduler {
     @SchedulerLock(name = "removeOldDomainEvents", lockAtMostFor = "PT60M", lockAtLeastFor = "PT1M")
     public void removeOldDomainEvents() {
         LockAssert.assertLocked();
-        of(createPlatformOperator(BACKGROUND_JOB, "Job:removeOldDomainEvents"))
+        Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldDomainEvents");
+        ActorMdcSupport.of(operator)
                 .run(() -> {
                     try {
                         domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);
