@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,6 +17,7 @@ import static com.company.andy.common.model.Role.ORG_ADMIN;
 import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
+@Slf4j
 public class ConvertJwtToActorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -27,7 +29,7 @@ public class ConvertJwtToActorFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(new ActorAuthenticationToken(operator));
         } catch (Throwable ex) {
             SecurityContextHolder.clearContext();
-            response.sendError(SC_UNAUTHORIZED, ex.getMessage());
+            response.sendError(SC_UNAUTHORIZED);
             return;
         }
 

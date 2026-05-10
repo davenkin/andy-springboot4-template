@@ -100,7 +100,7 @@ when writing your own code.
 
 ## Todo:
 - rename operator to actor
-- integrate with spring security oauth 2 resource server
+- integrate with spring security oauth 2 resource server, decide where to put ConvertJwtToActorFilter
 - event handler handle() add actor param
 - domain event add actor field
 - remove currentOperatorId() from AbstractMongoRepository
