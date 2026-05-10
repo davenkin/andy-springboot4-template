@@ -13,6 +13,7 @@ public class EquipmentCreatedEventHandler extends AbstractEventHandler<Equipment
 
     @Override
     public void handle(EquipmentCreatedEvent event) {
+        log.info("EquipmentCreatedEvent received for Equipment[{}].", event.getEquipmentId());
         // imple
     }
 }
