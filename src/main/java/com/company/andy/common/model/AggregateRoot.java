@@ -92,4 +92,9 @@ public abstract class AggregateRoot {
         this.modifiedBy = modifiedBy;
         this.modifiedAt = Instant.now();
     }
+
+    protected void markModified(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+        this.modifiedAt = Instant.now();
+    }
 }
