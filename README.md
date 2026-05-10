@@ -105,4 +105,3 @@ when writing your own code.
 - domain event add actor field
 - remove currentOperatorId() from AbstractMongoRepository
 - AR.onDelete() to be called inside command service and passed in actor
-- remove AR.onModify() and modifiedBy and modifiedAt

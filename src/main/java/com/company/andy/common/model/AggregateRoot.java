@@ -31,8 +31,6 @@ public abstract class AggregateRoot {
     private List<DomainEvent> events;
     private Instant createdAt;
     private String createdBy;
-    private Instant modifiedAt;
-    private String modifiedBy;
 
     @Version
     @Getter(PRIVATE)
@@ -88,8 +86,4 @@ public abstract class AggregateRoot {
     public void onDelete() {
     }
 
-    public void onModify(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = Instant.now();
-    }
 }

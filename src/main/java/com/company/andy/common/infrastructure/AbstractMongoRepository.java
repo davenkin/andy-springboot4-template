@@ -50,7 +50,6 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         requireNonNull(ar, arType() + " must not be null.");
         requireNonBlank(ar.getId(), arType() + " ID must not be blank.");
 
-        ar.onModify(this.currentOperatorId());
         mongoTemplate.save(ar);
         stageEvents(ar.getEvents());
         ar.clearEvents();
@@ -67,7 +66,7 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
             if (isNotEmpty(ar.getEvents())) {
                 events.addAll(ar.getEvents());
             }
-            ar.onModify(this.currentOperatorId());
+
             mongoTemplate.save(ar);
             ar.clearEvents();
         });
