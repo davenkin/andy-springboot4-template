@@ -1,7 +1,6 @@
 package com.company.andy.feature.maintenance.controller;
 
 import com.company.andy.common.model.operator.Operator;
-import com.company.andy.common.model.operator.UserOperator;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
@@ -19,7 +18,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 import static com.company.andy.common.model.Role.ORG_ADMIN;
+import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it | it-local")
@@ -29,7 +31,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @RequestMapping(value = "/maintenance-records")
 public class MaintenanceRecordController {
-    private static final Operator SAMPLE_USER_OPERATOR = UserOperator.of("sampleUserId", "sampleUserName", ORG_ADMIN, "sampleOrgId");
+    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER);
     private final MaintenanceRecordCommandService maintenanceRecordCommandService;
     private final MaintenanceRecordQueryService maintenanceRecordQueryService;
 
@@ -38,7 +40,7 @@ public class MaintenanceRecordController {
     @PostMapping
     public ResponseId createMaintenanceRecord(@RequestBody @Valid CreateMaintenanceRecordCommand command) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return new ResponseId(maintenanceRecordCommandService.createMaintenanceRecord(command, operator));
     }
@@ -47,7 +49,7 @@ public class MaintenanceRecordController {
     @DeleteMapping("/{maintenanceRecordId}")
     public void deleteMaintenanceRecord(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, operator);
     }
@@ -56,7 +58,7 @@ public class MaintenanceRecordController {
     @PostMapping("/paged")
     public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(@RequestBody @Valid PageMaintenanceRecordsQuery query) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return maintenanceRecordQueryService.pageMaintenanceRecords(query, operator);
     }
@@ -65,7 +67,7 @@ public class MaintenanceRecordController {
     @GetMapping("/{maintenanceRecordId}")
     public QDetailedMaintenanceRecord getMaintenanceRecordDetail(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, operator);
     }

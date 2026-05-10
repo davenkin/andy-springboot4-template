@@ -15,7 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 
 import static com.company.andy.RandomTestUtils.randomEquipmentName;
-import static com.company.andy.RandomTestUtils.randomUserOperator;
+import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
 import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +35,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_remove_old_publishing_domain_events_from_mongo() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
         EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
         ReflectionTestUtils.setField(event1, DomainEvent.Fields.raisedAt, now().minus(110, DAYS));
@@ -52,7 +52,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_remove_old_consuming_domain_events_from_mongo() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
         EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
         ConsumingEvent consumingEvent1 = new ConsumingEvent(event1.getId(), event1);

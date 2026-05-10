@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.stream.IntStream;
 
 import static com.company.andy.RandomTestUtils.randomCreateEquipmentCommand;
-import static com.company.andy.RandomTestUtils.randomUserOperator;
+import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EquipmentQueryServiceIntegrationTest extends IntegrationTest {
@@ -23,7 +23,7 @@ class EquipmentQueryServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_page_equipments() {
         //Prepare data
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         IntStream.range(0, 20).forEach(i -> {
             equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         });

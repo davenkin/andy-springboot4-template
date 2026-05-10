@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.domain;
 
-import com.company.andy.common.model.operator.UserOperator;
+import com.company.andy.common.model.operator.Operator;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.RandomTestUtils.*;
@@ -10,7 +10,7 @@ class MaintenanceRecordTest {
 
     @Test
     void should_create_maintenance_record() {
-        UserOperator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord("equipment",
                 "name",

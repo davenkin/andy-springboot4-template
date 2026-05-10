@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static com.company.andy.RandomTestUtils.randomEquipmentName;
-import static com.company.andy.RandomTestUtils.randomUserOperator;
+import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
 import static com.company.andy.common.exception.ErrorCode.AR_NOT_FOUND;
@@ -32,7 +32,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_save_ar() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), operator);
         assertEquals(1, equipment.getEvents().size());
         assertInstanceOf(EquipmentCreatedEvent.class, equipment.getEvents().get(0));
@@ -48,7 +48,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_save_ars() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), operator);
         Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), operator);
 
@@ -64,8 +64,8 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_throw_exception_if_not_the_same_org() {
-        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomUserOperator());
-        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomUserOperator());
+        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomOrgUserOperator());
+        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomOrgUserOperator());
 
         ServiceException exception = assertThrows(ServiceException.class, () -> equipmentRepository.save(List.of(equipment1, equipment2)));
         assertEquals(NOT_SAME_ORG, exception.getCode());
@@ -73,7 +73,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_delete_ar() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), operator);
 
         equipmentRepository.save(equipment);
@@ -88,7 +88,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_delete_ars() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), operator);
         Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), operator);
 
@@ -111,8 +111,8 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_throw_exception_if_not_the_same_org_for_delete() {
-        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomUserOperator());
-        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomUserOperator());
+        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomOrgUserOperator());
+        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomOrgUserOperator());
 
         ServiceException exception = assertThrows(ServiceException.class, () -> equipmentRepository.delete(List.of(equipment1, equipment2)));
         assertEquals(NOT_SAME_ORG, exception.getCode());
@@ -120,7 +120,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_fetch_ar_by_id() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), operator);
         assertFalse(equipmentRepository.exists(equipment.getId(), operator.getOrgId()));
 

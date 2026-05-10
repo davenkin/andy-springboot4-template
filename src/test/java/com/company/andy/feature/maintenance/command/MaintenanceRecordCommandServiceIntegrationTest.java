@@ -25,7 +25,7 @@ class MaintenanceRecordCommandServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_create_maintenance_record() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
 

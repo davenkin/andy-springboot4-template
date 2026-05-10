@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.RandomTestUtils.randomEquipmentName;
-import static com.company.andy.RandomTestUtils.randomUserOperator;
+import static com.company.andy.RandomTestUtils.randomOrgUserOperator;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +32,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_publish_domain_events() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId1 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         String arId2 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         String arId3 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
@@ -62,7 +62,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_fail_publish_domain_events_with_max_of_3_attempts() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         domainEventSender.throwExceptionFor(event.getId());
@@ -91,7 +91,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_publish_successfully_if_sender_recovered() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 

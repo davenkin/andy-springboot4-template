@@ -27,7 +27,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_create_equipment() {
         //Prepare data
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         //Execute
@@ -47,7 +47,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_update_equipment_name() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
 
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -65,7 +65,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
         //Prepare data
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String cacheKey = "Cache:ORG_EQUIPMENTS::" + operator.getOrgId();
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());

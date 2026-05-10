@@ -44,7 +44,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_only_handle_events_that_can_be_handled() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -58,7 +58,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_call_handler_for_event_hierarchy() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), operator);
         EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
@@ -73,7 +73,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(0);
@@ -90,7 +90,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority_reversely() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(1);
@@ -107,7 +107,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_mark_as_consumed_if_non_transactional_handler_throws_exception() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
@@ -122,7 +122,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_mark_as_consumed_if_transactional_handler_throws_exception() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
@@ -136,7 +136,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_mark_as_consumed_for_idempotent_handler() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(true);
@@ -151,7 +151,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_independently() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), operator);
         EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
@@ -168,7 +168,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_run_again_for_idempotent_handler() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(true);
@@ -181,7 +181,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_handle_again_for_non_idempotent_handler() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(false);

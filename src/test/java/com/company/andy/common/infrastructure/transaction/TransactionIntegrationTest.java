@@ -32,7 +32,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
@@ -48,7 +48,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -66,7 +66,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -84,7 +84,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();

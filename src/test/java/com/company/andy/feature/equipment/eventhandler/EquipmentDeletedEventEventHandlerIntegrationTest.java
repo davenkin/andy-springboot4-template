@@ -32,7 +32,7 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     @Test
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);

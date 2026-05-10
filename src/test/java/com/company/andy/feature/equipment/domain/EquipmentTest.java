@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EquipmentTest {
     @Test
     void shouldCreateEquipment() {
-        Operator operator = RandomTestUtils.randomUserOperator();
+        Operator operator = RandomTestUtils.randomOrgUserOperator();
         Equipment equipment = new Equipment("name", operator);
         assertEquals("name", equipment.getName());
         assertEquals(1, equipment.getEvents().size());

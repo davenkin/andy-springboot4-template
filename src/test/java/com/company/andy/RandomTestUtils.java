@@ -1,7 +1,7 @@
 package com.company.andy;
 
 import com.company.andy.common.model.Role;
-import com.company.andy.common.model.operator.UserOperator;
+import com.company.andy.common.model.operator.Operator;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
@@ -9,6 +9,9 @@ import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.Set;
+
+import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class RandomTestUtils {
@@ -65,8 +68,8 @@ public class RandomTestUtils {
         return randomEnum(Role.class);
     }
 
-    public static UserOperator randomUserOperator() {
-        return UserOperator.of(randomUserId(), randomUserName(), randomRole(), randomOrgId());
+    public static Operator randomOrgUserOperator() {
+        return Operator.createOrgOperator(randomUserId(), randomUserName(), Set.of(randomRole()), randomOrgId(), HUMAN_USER);
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

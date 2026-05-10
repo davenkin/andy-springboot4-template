@@ -31,7 +31,7 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
 
     @Test
     void should_count_maintenance_records_for_equipment() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
@@ -48,7 +48,7 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
 
     @Test
     void should_update_status_for_equipment_using_maintenance_record_status() {
-        Operator operator = randomUserOperator();
+        Operator operator = randomOrgUserOperator();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);

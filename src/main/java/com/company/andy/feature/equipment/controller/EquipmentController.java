@@ -1,7 +1,6 @@
 package com.company.andy.feature.equipment.controller;
 
 import com.company.andy.common.model.operator.Operator;
-import com.company.andy.common.model.operator.UserOperator;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -24,8 +23,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.company.andy.common.model.Role.ORG_ADMIN;
+import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it | it-local")
@@ -35,7 +36,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @RequestMapping(value = "/equipments")
 public class EquipmentController {
-    private static final Operator SAMPLE_USER_OPERATOR = UserOperator.of("sampleUserId", "sampleUserName", ORG_ADMIN, "sampleOrgId");
+    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER);
     private final EquipmentCommandService equipmentCommandService;
     private final EquipmentQueryService equipmentQueryService;
 
@@ -44,7 +45,7 @@ public class EquipmentController {
     @Operation(summary = "Create an equipment")
     public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return new ResponseId(this.equipmentCommandService.createEquipment(command, operator));
     }
@@ -56,7 +57,7 @@ public class EquipmentController {
                                     String equipmentId,
                                     @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         this.equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, operator);
     }
@@ -66,7 +67,7 @@ public class EquipmentController {
     public void updateEquipmentHolder(@PathVariable("equipmentId") @NotBlank String equipmentId,
                                       @RequestBody @Valid UpdateEquipmentHolderCommand command) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, operator);
     }
@@ -75,7 +76,7 @@ public class EquipmentController {
     @DeleteMapping("/{equipmentId}")
     public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         this.equipmentCommandService.deleteEquipment(equipmentId, operator);
     }
@@ -84,7 +85,7 @@ public class EquipmentController {
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return this.equipmentQueryService.pageEquipments(query, operator);
     }
@@ -93,7 +94,7 @@ public class EquipmentController {
     @GetMapping("/{equipmentId}")
     public QDetailedEquipment getEquipmentDetail(@PathVariable("equipmentId") @NotBlank String equipmentId) {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return this.equipmentQueryService.getEquipmentDetail(equipmentId, operator);
     }
@@ -102,7 +103,7 @@ public class EquipmentController {
     @GetMapping("/summaries")
     public List<EquipmentSummary> getAllEquipmentSummaries() {
         // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
+        Operator operator = SAMPLE_ORG_USER_OPERATOR;
 
         return this.equipmentQueryService.getAllEquipmentSummaries(operator);
     }
