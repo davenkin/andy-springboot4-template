@@ -9,6 +9,10 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
+import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
+import static com.company.andy.common.tracing.ActorMdcIncludedRunner.of;
+
 @Slf4j
 @Component
 @DisableForIT
@@ -22,7 +26,8 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish domain events.");
-        domainEventPublishJob.publishStagedDomainEvents(100);
+        of(createPlatformOperator(BACKGROUND_JOB, "Job:houseKeepPublishStagedDomainEvents"))
+                .run(() -> domainEventPublishJob.publishStagedDomainEvents(100));
     }
 
     // PublishingDomainEvent and ConsumingEvent are temporary and should be removed regularly
@@ -30,16 +35,19 @@ public class DomainEventJobScheduler {
     @SchedulerLock(name = "removeOldDomainEvents", lockAtMostFor = "PT60M", lockAtLeastFor = "PT1M")
     public void removeOldDomainEvents() {
         LockAssert.assertLocked();
-        try {
-            domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);
-        } catch (Throwable t) {
-            log.error("Failed remove old publishing domain events from mongo.", t);
-        }
+        of(createPlatformOperator(BACKGROUND_JOB, "Job:removeOldDomainEvents"))
+                .run(() -> {
+                    try {
+                        domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);
+                    } catch (Throwable t) {
+                        log.error("Failed remove old publishing domain events from mongo.", t);
+                    }
 
-        try {
-            domainEventHouseKeepingJob.removeOldConsumingDomainEventsFromMongo(100);
-        } catch (Throwable t) {
-            log.error("Failed remove old consuming domain events from mongo.", t);
-        }
+                    try {
+                        domainEventHouseKeepingJob.removeOldConsumingDomainEventsFromMongo(100);
+                    } catch (Throwable t) {
+                        log.error("Failed remove old consuming domain events from mongo.", t);
+                    }
+                });
     }
 }

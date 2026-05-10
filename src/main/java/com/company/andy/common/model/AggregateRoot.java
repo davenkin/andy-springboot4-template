@@ -43,6 +43,10 @@ public abstract class AggregateRoot {
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(operator, "operator must not be null.");
 
+        if (operator.isOrgOperator()) {
+            throw new IllegalArgumentException("Org operator is not allowed to specify orgId separately, but should use operator.ordId() instead.");
+        }
+
         this.id = id;
         this.orgId = orgId;
         this.createdAt = Instant.now();

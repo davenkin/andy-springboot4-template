@@ -8,6 +8,10 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
+import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
+import static com.company.andy.common.tracing.ActorMdcIncludedRunner.of;
+
 @Slf4j
 @DisableForIT
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class MaintenanceRecordJobScheduler {
     @SchedulerLock(name = "removeOldMaintenanceRecordsJob")
     public void removeOldMaintenanceRecordsJob() {
         LockAssert.assertLocked();
-        this.removeOldMaintenanceRecordsJob.run();
+        of(createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob"))
+                .run(this.removeOldMaintenanceRecordsJob::run);
     }
 }

@@ -19,6 +19,7 @@ public record Operator(String id,
                        String initiator) {
     public static final String PLATFORM_OPERATOR_ID = "PLATFORM_001";
     public static final String PLATFORM_OPERATOR_NAME = "PLATFORM";
+    public static final String PLATFORM_ORG_ID = "PLATFORM_ORG_001";
 
     public static Operator createOrgOperator(String id, String name, Set<Role> roles, String orgId, OperatorSource source, String initiator) {
         requireNonBlank(id, "id must not be blank.");
@@ -35,7 +36,7 @@ public record Operator(String id,
         requireNonNull(source, "source must not be null.");
         requireNonBlank(initiator, "initiator must not be blank.");
 
-        return new Operator(PLATFORM_OPERATOR_ID, PLATFORM_OPERATOR_NAME, Set.of(PLATFORM), null, source, PLATFORM_OPERATOR, initiator);
+        return new Operator(PLATFORM_OPERATOR_ID, PLATFORM_OPERATOR_NAME, Set.of(PLATFORM), PLATFORM_ORG_ID, source, PLATFORM_OPERATOR, initiator);
     }
 
     public boolean isOrgOperator() {

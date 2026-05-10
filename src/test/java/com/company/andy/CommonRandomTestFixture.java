@@ -6,11 +6,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Set;
 
-import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
-import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
+import static com.company.andy.common.model.operator.OperatorSource.*;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class CommonRandomTestFixture {
+    public static Operator TEST_EVENT_LISTENER_OPERATOR = Operator.createPlatformOperator(EVENT_LISTENER, "some event listener");
+    public static Operator TEST_JOB_OPERATOR = Operator.createPlatformOperator(BACKGROUND_JOB, "some job");
 
     public static String randomDescription() {
         return RandomStringUtils.secure().nextAscii(20);

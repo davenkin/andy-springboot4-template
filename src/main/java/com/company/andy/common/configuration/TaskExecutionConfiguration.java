@@ -1,5 +1,6 @@
 package com.company.andy.common.configuration;
 
+import com.company.andy.common.tracing.ActorMdcPropagatingTaskDecorator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +52,7 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
 
     @Bean
     public TaskDecorator taskDecorator() {
-        return new CompositeTaskDecorator(List.of(new ContextPropagatingTaskDecorator()));
+        return new CompositeTaskDecorator(List.of(new ContextPropagatingTaskDecorator(), new ActorMdcPropagatingTaskDecorator()));
     }
 
     @Override
