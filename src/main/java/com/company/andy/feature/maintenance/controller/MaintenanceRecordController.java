@@ -15,13 +15,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-
-import static com.company.andy.common.model.Role.ORG_ADMIN;
-import static com.company.andy.common.model.operator.OperatorSource.HUMAN_USER;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it | it-local")
@@ -31,44 +28,31 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @RequestMapping(value = "/maintenance-records")
 public class MaintenanceRecordController {
-    private static final Operator SAMPLE_ORG_USER_OPERATOR = Operator.createOrgOperator("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER, "/maintenance-records");
     private final MaintenanceRecordCommandService maintenanceRecordCommandService;
     private final MaintenanceRecordQueryService maintenanceRecordQueryService;
 
     @Operation(summary = "Create a maintenance record")
     @ResponseStatus(CREATED)
     @PostMapping
-    public ResponseId createMaintenanceRecord(@RequestBody @Valid CreateMaintenanceRecordCommand command) {
-        // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_ORG_USER_OPERATOR;
-
+    public ResponseId createMaintenanceRecord(@RequestBody @Valid CreateMaintenanceRecordCommand command, @AuthenticationPrincipal Operator operator) {
         return new ResponseId(maintenanceRecordCommandService.createMaintenanceRecord(command, operator));
     }
 
     @Operation(summary = "Delete a maintenance record")
     @DeleteMapping("/{maintenanceRecordId}")
-    public void deleteMaintenanceRecord(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId) {
-        // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_ORG_USER_OPERATOR;
-
+    public void deleteMaintenanceRecord(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId, @AuthenticationPrincipal Operator operator) {
         this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, operator);
     }
 
     @Operation(summary = "Query maintenance records")
     @PostMapping("/paged")
-    public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(@RequestBody @Valid PageMaintenanceRecordsQuery query) {
-        // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_ORG_USER_OPERATOR;
-
+    public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(@RequestBody @Valid PageMaintenanceRecordsQuery query, @AuthenticationPrincipal Operator operator) {
         return maintenanceRecordQueryService.pageMaintenanceRecords(query, operator);
     }
 
     @Operation(summary = "Get maintenance record detail")
     @GetMapping("/{maintenanceRecordId}")
-    public QDetailedMaintenanceRecord getMaintenanceRecordDetail(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId) {
-        // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_ORG_USER_OPERATOR;
-
+    public QDetailedMaintenanceRecord getMaintenanceRecordDetail(@PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId, @AuthenticationPrincipal Operator operator) {
         return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, operator);
     }
 
