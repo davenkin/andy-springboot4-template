@@ -1,7 +1,7 @@
 package com.company.andy.feature.equipment.query;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -25,8 +25,8 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.orgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.orgId());
 
         if (isNotBlank(query.getSearch())) {
             criteria.and(Equipment.Fields.name).regex(query.getSearch());
@@ -53,8 +53,8 @@ public class EquipmentQueryService {
         return new PagedResponse<>(equipments, pageable, count);
     }
 
-    public QDetailedEquipment getEquipmentDetail(String equipmentId, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, operator.orgId());
+    public QDetailedEquipment getEquipmentDetail(String equipmentId, Actor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
         return QDetailedEquipment.builder()
                 .id(equipment.getId())
                 .orgId(equipment.getOrgId())
@@ -65,7 +65,7 @@ public class EquipmentQueryService {
                 .build();
     }
 
-    public List<EquipmentSummary> getAllEquipmentSummaries(Operator operator) {
-        return equipmentRepository.cachedEquipmentSummaries(operator.orgId());
+    public List<EquipmentSummary> getAllEquipmentSummaries(Actor actor) {
+        return equipmentRepository.cachedEquipmentSummaries(actor.orgId());
     }
 }

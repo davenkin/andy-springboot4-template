@@ -45,8 +45,8 @@ firstly fetch domain models using `Repository` and then convert to query models.
 
 ```java
 @Transactional
-public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
-        Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
+        Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
         equipmentDomainService.updateEquipmentName(equipment, command.name());
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
@@ -59,8 +59,8 @@ public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, O
   don't use the domain object `Equipment`, instead a query model `QPagedEquipment` is used.
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-  Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+  Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
 
   // more code omitted
 

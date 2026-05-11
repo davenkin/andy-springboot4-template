@@ -70,8 +70,8 @@ public class Equipment extends AggregateRoot {
     private String holder;
     private long maintenanceRecordCount;
 
-    public Equipment(String name, Operator operator) { // Explict contructors
-        super(newEquipmentId(), operator);
+    public Equipment(String name, Actor actor) { // Explict contructors
+        super(newEquipmentId(), actor);
         this.name = name;
         raiseEvent(new EquipmentCreatedEvent(this)); // Raise Domain Event
     }
@@ -159,8 +159,8 @@ public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equi
   data
 - Controller classes should be annotated with `@Validated` to enable request validation
 - Request objects in method parameters should be annotated with `@Valid` to enable request validation
-- Controller ensures an [Operator](../src/main/java/com/company/andy/common/model/operator/Operator.java) is
-  fetched/created
+- Controller ensures an [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is
+  injected using `@AuthenticationPrincipal`, this `Actor` is then passed down the whole processing flow
   from the reqeust and passed to CommandService or QueryService
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
@@ -176,11 +176,10 @@ public class EquipmentController {
     private final EquipmentQueryService equipmentQueryService;
 
     @PostMapping
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command) {
-        // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-        Operator operator = SAMPLE_USER_OPERATOR;
-
-        return new ResponseId(this.equipmentCommandService.createEquipment(command, operator));
+    @ResponseStatus(CREATED)
+    @Operation(summary = "Create an equipment")
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 }
 ```
@@ -190,7 +189,7 @@ public class EquipmentController {
 - CommandService serves as the facade for the domain model
 - Every public method in CommandService should represent a use case, and should be annotated with `@Transactional` if it
   writes to database
-- Methods in CommandService usually accepts a Command object as parameter, as well as an `Operator` object
+- Methods in CommandService usually accepts a Command object as parameter, as well as an `Actor` object
 - CommandService should not contain business logic
 - CommandService returns the Aggregate Root's ID for creating objects, and return `void` for updating or deleting
   Aggregate Roots
@@ -207,8 +206,8 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, Operator operator) {
-        Equipment equipment = equipmentFactory.create(command.name(), operator);
+    public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+        Equipment equipment = equipmentFactory.create(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
         return equipment.getId();
@@ -411,8 +410,8 @@ public class MaintenanceRecordFactory {
     public MaintenanceRecord create(Equipment equipment,
                                     EquipmentStatus status,
                                     String description,
-                                    Operator operator) {
-        return new MaintenanceRecord(equipment.getId(), equipment.getName(), status, description, operator);
+                                    Actor actor) {
+        return new MaintenanceRecord(equipment.getId(), equipment.getName(), status, description, actor);
     }
 }
 ```
@@ -490,8 +489,8 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
         
         // code omitted
         

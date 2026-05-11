@@ -1,7 +1,7 @@
 package com.company.andy.common.model;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -36,29 +36,29 @@ public abstract class AggregateRoot {
     @Getter(PRIVATE)
     private Long _version;
 
-    protected AggregateRoot(String id, String orgId, Operator operator) {
+    protected AggregateRoot(String id, String orgId, Actor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
-        requireNonNull(operator, "operator must not be null.");
+        requireNonNull(actor, "actor must not be null.");
 
-        if (operator.isOrgOperator()) {
-            throw new IllegalArgumentException("Org operator is not allowed to specify another orgId separately, but should use operator.orgId() instead.");
+        if (actor.isOrgActor()) {
+            throw new IllegalArgumentException("Org actor is not allowed to specify another orgId separately, but should use AggregateRoot(String id, Actor actor) instead.");
         }
 
         this.id = id;
         this.orgId = orgId;
         this.createdAt = Instant.now();
-        this.createdBy = operator.id();
+        this.createdBy = actor.id();
     }
 
-    protected AggregateRoot(String id, Operator operator) {
+    protected AggregateRoot(String id, Actor actor) {
         requireNonBlank(id, "id must not be blank.");
-        requireNonNull(operator, "operator must not be null.");
+        requireNonNull(actor, "actor must not be null.");
 
         this.id = id;
-        this.orgId = operator.orgId();
+        this.orgId = actor.orgId();
         this.createdAt = Instant.now();
-        this.createdBy = operator.id();
+        this.createdBy = actor.id();
     }
 
     // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object

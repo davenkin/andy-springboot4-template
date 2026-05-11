@@ -1,7 +1,7 @@
 package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.CommonRandomTestFixture;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EquipmentTest {
     @Test
-    void shouldCreateEquipment() {
-        Operator operator = CommonRandomTestFixture.randomOrgUserOperator();
-        Equipment equipment = new Equipment("name", operator);
+    void should_create_equipment() {
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Equipment equipment = new Equipment("name", actor);
         assertEquals("name", equipment.getName());
         assertEquals(1, equipment.getEvents().size());
         assertTrue(equipment.getEvents().stream()

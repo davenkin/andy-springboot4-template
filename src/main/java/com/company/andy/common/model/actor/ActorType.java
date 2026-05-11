@@ -1,6 +1,6 @@
-package com.company.andy.common.model.operator;
+package com.company.andy.common.model.actor;
 
-public enum OperatorSource {
+public enum ActorType {
     HUMAN_USER,
     SERVICE_ACCOUNT,
     BACKGROUND_JOB,

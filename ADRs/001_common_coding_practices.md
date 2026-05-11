@@ -9,8 +9,8 @@
   testing much easier.
 
 ```java
-public Equipment(String name, Operator operator) {
-  super(newEquipmentId(), operator);
+public Equipment(String name, Actor actor) {
+  super(newEquipmentId(), actor);
   this.name = name;
   raiseEvent(new EquipmentCreatedEvent(this));
 }
@@ -83,14 +83,11 @@ public class PageEquipmentsQuery extends PageQuery {
 The controller receives a query object using POST method:
 
 ```java
-@Operation(summary = "Query equipments")
-@PostMapping("/paged")
-public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query) {
-  // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-  Operator operator = SAMPLE_USER_OPERATOR;
-
-  return this.equipmentQueryService.pageEquipments(query, operator);
-}
+    @Operation(summary = "Query equipments")
+    @PostMapping("/paged")
+    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal Actor actor) {
+        return this.equipmentQueryService.pageEquipments(query, actor);
+    }
 ```
 
 All pagination response should return [PagedResponse](../src/main/java/com/company/andy/common/util/PagedResponse.java).
@@ -169,8 +166,8 @@ expose getters/setters.
 
 ```java
 @Transactional
-public String createEquipment(CreateEquipmentCommand command, Operator operator) {
-  Equipment equipment = equipmentFactory.create(command.name(), operator);
+public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+  Equipment equipment = equipmentFactory.create(command.name(), actor);
   equipmentRepository.save(equipment);
   log.info("Created Equipment[{}].", equipment.getId());
   return equipment.getId();
@@ -183,15 +180,11 @@ public String createEquipment(CreateEquipmentCommand command, Operator operator)
 - Do not create interface classes for services until really needed. Reason: the public methods on service classes
   already serve
   as interfaces.
-- Use [Operator](../src/main/java/com/company/andy/common/model/operator/Operator.java) to pass current user context
+- Use [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) to pass current user context
   around, do
   not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
   `SecurityContextHolder`s are essentially thread scoped global variables, it makes the code implicit and also makes
-  testing harder. In practices, we cannot get rid of `SecurityContextHolder`, but what we can do is: upon receiving
-  HTTP request in the Controller, convert `SecurityContextHolder` into a `Operator`(`UserOperator`) and pass it down the
-  way. Also for
-  background tasks, such as event handlers and jobs, you may use `PlatformOperator.PLATFORM_OPERATOR` instead of
-  `UserOperator`.
+  testing harder. 
 - Use [RestClient](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-restclient) for
   calling remote APIs. Do not use Webclient as it's from the Webflux ecosystem. Do not use RestTemplate as is already
   marked as deprecated. Do not use HTTP Service Clients (`@HttpExchange` etc.) as it requires extra configuration. 

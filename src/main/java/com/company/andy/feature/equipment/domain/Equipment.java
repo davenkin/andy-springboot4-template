@@ -1,7 +1,7 @@
 package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
@@ -32,8 +32,8 @@ public class Equipment extends AggregateRoot {
     private String holder;
     private long maintenanceRecordCount;
 
-    public Equipment(String name, Operator operator) {
-        super(newEquipmentId(), operator);
+    public Equipment(String name, Actor actor) {
+        super(newEquipmentId(), actor);
         this.name = name;
         raiseEvent(new EquipmentCreatedEvent(this));
     }

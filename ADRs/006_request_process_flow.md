@@ -40,21 +40,20 @@ flow is:
 1. Receive the request in the `EquipmentController`, controller calls `EquipmentCommandService`:
 
 ```java
-@PostMapping
-public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command) {
-  // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-  Operator operator = SAMPLE_USER_OPERATOR;
-
-  return new ResponseId(this.equipmentCommandService.createEquipment(command, operator));
-}
+    @PostMapping
+    @ResponseStatus(CREATED)
+    @Operation(summary = "Create an equipment")
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
+    }
 ```
 
 2. `EquipmentCommandService` orchestrates the creation process:
 
 ```java
 @Transactional
-public String createEquipment(CreateEquipmentCommand command, Operator operator) {
-  Equipment equipment = equipmentFactory.create(command.name(), operator);
+public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+  Equipment equipment = equipmentFactory.create(command.name(), actor);
   equipmentRepository.save(equipment);
   log.info("Created Equipment[{}].", equipment.getId());
   return equipment.getId();
@@ -66,8 +65,8 @@ public String createEquipment(CreateEquipmentCommand command, Operator operator)
 
 ```java
 public class EquipmentFactory {
-  public Equipment create(String name, Operator operator) {
-    return new Equipment(name, operator);
+  public Equipment create(String name, Actor actor) {
+    return new Equipment(name, actor);
   }
 }
 ```
@@ -77,8 +76,8 @@ public class EquipmentFactory {
    automatically by the event infrastructure and no further actions are required from your side:
 
 ```java
-public Equipment(String name, Operator operator) {
-  super(newEquipmentId(), operator);
+public Equipment(String name, Actor actor) {
+  super(newEquipmentId(), actor);
   this.name = name;
   raiseEvent(new EquipmentCreatedEvent(this));
 }
@@ -107,23 +106,21 @@ database. Take "updating `Equipment`'s holder name" as an example.
 1. The request first arrives at `EquipmentController.updateEquipmentHolder()`:
 
 ```java
-@PutMapping("/{equipmentId}/holder")
-public void updateEquipmentHolder(
-    @PathVariable("equipmentId") @NotBlank String equipmentId,
-    @RequestBody @Valid UpdateEquipmentHolderCommand command) {
-  // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-  Operator operator = SAMPLE_USER_OPERATOR;
-
-  this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, operator);
-}
+    @Operation(summary = "Update an equipment's holder")
+    @PutMapping("/{equipmentId}/holder")
+    public void updateEquipmentHolder(@PathVariable("equipmentId") @NotBlank String equipmentId,
+                                      @RequestBody @Valid UpdateEquipmentHolderCommand command,
+                                      @AuthenticationPrincipal Actor actor) {
+        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
+    }
 ```
 
 2. The controller calls `EquipmentCommandService.updateEquipmentHolder()`:
 
 ```java
 @Transactional
-public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Operator operator) {
-  Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Actor actor) {
+  Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
   equipment.updateHolder(command.name());
   equipmentRepository.save(equipment);
   log.info("Updated holder for Equipment[{}].", equipment.getId());
@@ -133,7 +130,7 @@ public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand comman
 3. `EquipmentCommandService` loads the `Equipment` by its ID:
 
 ```java
-Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
 ```
 
 4. Then call `Equipment`'s business method `Equipment.updateHolder()`:
@@ -159,8 +156,8 @@ directly from `EquipmentCommandService`, `EquipmentDomainService.updateEquipment
 
 ```java
 @Transactional
-public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Operator operator) {
-  Equipment equipment = equipmentRepository.byId(id, operator.getOrgId());
+public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
+  Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
   equipmentDomainService.updateEquipmentName(equipment, command.name());
   equipmentRepository.save(equipment);
   log.info("Updated name for Equipment[{}].", equipment.getId());
@@ -190,22 +187,19 @@ For deleting data, first load the `AggregateRoot` and then delete it. For exampl
 1. Request arrives at `EquipmentController`:
 
 ```java
-@DeleteMapping("/{equipmentId}")
-public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId) {
-  // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-  Operator operator = SAMPLE_USER_OPERATOR;
-
-  this.equipmentCommandService.deleteEquipment(equipmentId, operator);
-}
-
+    @Operation(summary = "Delete an equipment")
+    @DeleteMapping("/{equipmentId}")
+    public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Actor actor) {
+        this.equipmentCommandService.deleteEquipment(equipmentId, actor);
+    }
 ```
 
 2. `EquipmentController` calls `EquipmentCommandService`:
 
 ```java
 @Transactional
-public void deleteEquipment(String equipmentId, Operator operator) {
-  Equipment equipment = equipmentRepository.byId(equipmentId, operator.getOrgId());
+public void deleteEquipment(String equipmentId, Actor actor) {
+  Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
   equipmentRepository.delete(equipment);
   log.info("Deleted Equipment[{}].", equipmentId);
 }
@@ -240,14 +234,11 @@ example, when querying a list of `Equipment`s:
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
 
 ```java
-@Operation(summary = "Query equipments")
-@PostMapping("/paged")
-public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query) {
-  // In real situations, operator is normally created from the current user in context, such as Spring Security's SecurityContextHolder
-  Operator operator = SAMPLE_USER_OPERATOR;
-
-  return this.equipmentQueryService.pageEquipments(query, operator);
-}
+    @Operation(summary = "Query equipments")
+    @PostMapping("/paged")
+    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal Actor actor) {
+        return this.equipmentQueryService.pageEquipments(query, actor);
+    }
 ```
 
 `EquipmentQueryService` is at the same level with `EquipmentCommandService`, they both are under the category of
@@ -257,8 +248,8 @@ public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEqu
    query model `QPagedEquipment`:
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-  Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+  Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
 
   if (isNotBlank(query.getSearch())) {
     criteria.and(Equipment.Fields.name).regex(query.getSearch());

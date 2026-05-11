@@ -127,8 +127,8 @@ use
 7. In caller code, call `EquipmentRepository.cachedEquipmentSummaries()` explicitly to get the cached data:
 
 ```java
-public List<EquipmentSummary> getAllEquipmentSummaries(Operator operator) {
-  return equipmentRepository.cachedEquipmentSummaries(operator.getOrgId());
+public List<EquipmentSummary> getAllEquipmentSummaries(Actor actor) {
+  return equipmentRepository.cachedEquipmentSummaries(actor.getOrgId());
 }
 ```
 

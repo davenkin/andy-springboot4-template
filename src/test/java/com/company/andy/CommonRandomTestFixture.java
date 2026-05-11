@@ -1,17 +1,17 @@
 package com.company.andy;
 
 import com.company.andy.common.model.Role;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Set;
 
-import static com.company.andy.common.model.operator.OperatorSource.*;
+import static com.company.andy.common.model.actor.ActorType.*;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class CommonRandomTestFixture {
-    public static Operator TEST_EVENT_LISTENER_OPERATOR = Operator.createPlatformOperator(EVENT_LISTENER, "some event listener");
-    public static Operator TEST_JOB_OPERATOR = Operator.createPlatformOperator(BACKGROUND_JOB, "some job");
+    public static Actor testEventListenerActor = Actor.createPlatformActor(EVENT_LISTENER, "some event listener");
+    public static Actor testJobActor = Actor.createPlatformActor(BACKGROUND_JOB, "some job");
 
     public static String randomDescription() {
         return RandomStringUtils.secure().nextAscii(20);
@@ -33,16 +33,16 @@ public class CommonRandomTestFixture {
         return randomEnum(Role.class);
     }
 
-    public static Operator randomOrgUserOperator() {
-        return Operator.createOrgOperator(randomUserId(), randomUserName(), Set.of(randomRole()), randomOrgId(), HUMAN_USER, "some initiator");
+    public static Actor randomOrgUserActor() {
+        return Actor.createOrgActor(randomUserId(), randomUserName(), Set.of(randomRole()), randomOrgId(), HUMAN_USER, "some initiator");
     }
 
-    public static Operator randomOrgUserOperator(String userId, String orgId) {
-        return Operator.createOrgOperator(userId, randomUserName(), Set.of(randomRole()), orgId, HUMAN_USER, "some initiator");
+    public static Actor randomOrgUserActor(String userId, String orgId) {
+        return Actor.createOrgActor(userId, randomUserName(), Set.of(randomRole()), orgId, HUMAN_USER, "some initiator");
     }
 
-    public static Operator randomPlatformOperator() {
-        return Operator.createPlatformOperator(BACKGROUND_JOB, "some initiator");
+    public static Actor randomPlatformActor() {
+        return Actor.createPlatformActor(BACKGROUND_JOB, "some initiator");
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

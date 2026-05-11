@@ -1,10 +1,11 @@
 package com.company.andy.common.event;
 
+import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.event.consume.ConsumingEvent;
 import com.company.andy.common.event.consume.ConsumingEventDao;
 import com.company.andy.common.event.publish.PublishingDomainEventDao;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.eventhandler.EquipmentCreatedEventHandler;
@@ -14,7 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
 import static com.company.andy.feature.equipment.EquipmentTextFixture.randomEquipmentName;
 import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -35,9 +36,9 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_remove_old_publishing_domain_events_from_mongo() {
-        Operator operator = randomOrgUserOperator();
-        EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
-        EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), actor));
+        EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), actor));
         ReflectionTestUtils.setField(event1, DomainEvent.Fields.raisedAt, now().minus(110, DAYS));
         ReflectionTestUtils.setField(event2, DomainEvent.Fields.raisedAt, now().minus(90, DAYS));
         publishingDomainEventDao.stage(List.of(event1, event2));
@@ -52,9 +53,9 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_remove_old_consuming_domain_events_from_mongo() {
-        Operator operator = randomOrgUserOperator();
-        EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
-        EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), operator));
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        EquipmentCreatedEvent event1 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), actor));
+        EquipmentCreatedEvent event2 = new EquipmentCreatedEvent(new Equipment(randomEquipmentName(), actor));
         ConsumingEvent consumingEvent1 = new ConsumingEvent(event1.getId(), event1);
         ConsumingEvent consumingEvent2 = new ConsumingEvent(event2.getId(), event1);
         ReflectionTestUtils.setField(consumingEvent1, ConsumingEvent.Fields.consumedAt, now().minus(110, DAYS));

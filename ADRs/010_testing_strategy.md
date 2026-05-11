@@ -134,16 +134,16 @@ For both profiles:
 @Test
 void should_create_equipment() {
         //Prepare data
-        Operator operator = randomUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         //Execute 
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         //Verify results
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
-        assertEquals(operator.getOrgId(), equipment.getOrgId());
+        assertEquals(actor.getOrgId(), equipment.getOrgId());
 
         // Verify domain events
         // Only need to check the existence of domain event in database,
@@ -163,14 +163,14 @@ void should_create_equipment() {
     @Test
     void should_page_equipments() {
         //Prepare data
-        Operator operator = randomUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         IntStream.range(0, 20).forEach(i -> {
-            equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), operator);
+            equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         });
 
         // Fetch data
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
-        PagedResponse<QPagedEquipment> equipments = equipmentQueryService.pageEquipments(query, operator);
+        PagedResponse<QPagedEquipment> equipments = equipmentQueryService.pageEquipments(query, actor);
 
         // Verify results
         assertEquals(12, equipments.getContent().size());
@@ -189,15 +189,15 @@ void should_create_equipment() {
     @Test
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
-        Operator operator = randomUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
         
         // Run event handler
-        equipmentCommandService.deleteEquipment(equipmentId, operator);
+        equipmentCommandService.deleteEquipment(equipmentId, actor);
         EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
         equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
         
@@ -216,13 +216,13 @@ void should_create_equipment() {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare data
-        Operator operator = randomUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
-        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
 
         Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
@@ -244,9 +244,9 @@ void should_create_equipment() {
 ```java
 class EquipmentTest {
   @Test
-  void shouldCreateEquipment() {
-    Operator operator = RandomTestUtils.randomUserOperator();
-    Equipment equipment = new Equipment("name", operator);
+  void should_create_equipment() {
+    Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+    Equipment equipment = new Equipment("name", actor);
     assertEquals("name", equipment.getName());
     assertEquals(1, equipment.getEvents().size());
     assertTrue(equipment.getEvents().stream()
@@ -269,9 +269,9 @@ class EquipmentDomainServiceTest {
   private EquipmentDomainService equipmentDomainService;
 
   @Test
-  void shouldUpdateName() {
+  void should_update_name() {
     Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-    Equipment equipment = new Equipment("name", randomUserOperator());
+    Equipment equipment = new Equipment("name", CommonRandomTestFixture.randomOrgUserActor());
 
     equipmentDomainService.updateEquipmentName(equipment, "newName");
 

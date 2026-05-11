@@ -1,11 +1,11 @@
 package com.company.andy.common.event;
 
-import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
-import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
+import static com.company.andy.common.model.actor.Actor.createPlatformActor;
+import static com.company.andy.common.model.actor.ActorType.BACKGROUND_JOB;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.publish.DomainEventPublishJob;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +27,8 @@ public class DomainEventJobScheduler {
   @Scheduled(cron = "0 */5 * * * ?")
   public void houseKeepPublishStagedDomainEvents() {
     log.debug("Start house keep publish domain events.");
-    Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:houseKeepPublishStagedDomainEvents");
-    ActorMdcSupport.runWithMdc(operator, () -> domainEventPublishJob.publishStagedDomainEvents(100));
+    Actor actor = createPlatformActor(BACKGROUND_JOB, "Job:houseKeepPublishStagedDomainEvents");
+    ActorMdcSupport.runWithMdc(actor, () -> domainEventPublishJob.publishStagedDomainEvents(100));
   }
 
   // PublishingDomainEvent and ConsumingEvent are temporary and should be removed regularly
@@ -36,8 +36,8 @@ public class DomainEventJobScheduler {
   @SchedulerLock(name = "removeOldDomainEvents", lockAtMostFor = "PT60M", lockAtLeastFor = "PT1M")
   public void removeOldDomainEvents() {
     LockAssert.assertLocked();
-    Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldDomainEvents");
-    ActorMdcSupport.runWithMdc(operator, () -> {
+    Actor actor = createPlatformActor(BACKGROUND_JOB, "Job:removeOldDomainEvents");
+    ActorMdcSupport.runWithMdc(actor, () -> {
       try {
         domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);
       } catch (Throwable t) {

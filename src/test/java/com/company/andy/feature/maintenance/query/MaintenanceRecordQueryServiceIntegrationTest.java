@@ -1,7 +1,8 @@
 package com.company.andy.feature.maintenance.query;
 
+import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
@@ -28,15 +29,15 @@ class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_page_maintenance_records() {
-        Operator operator = randomOrgUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         IntStream.range(0, 20).forEach(i -> {
-            maintenanceRecordCommandService.createMaintenanceRecord(MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId), operator);
+            maintenanceRecordCommandService.createMaintenanceRecord(MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId), actor);
         });
 
         PageMaintenanceRecordsQuery query = PageMaintenanceRecordsQuery.builder().pageSize(12).build();
-        PagedResponse<QPagedMaintenanceRecord> records = maintenanceRecordQueryService.pageMaintenanceRecords(query, operator);
+        PagedResponse<QPagedMaintenanceRecord> records = maintenanceRecordQueryService.pageMaintenanceRecords(query, actor);
 
         assertEquals(12, records.getContent().size());
     }

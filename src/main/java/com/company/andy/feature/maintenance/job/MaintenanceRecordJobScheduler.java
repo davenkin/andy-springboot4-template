@@ -1,10 +1,10 @@
 package com.company.andy.feature.maintenance.job;
 
-import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
-import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
+import static com.company.andy.common.model.actor.Actor.createPlatformActor;
+import static com.company.andy.common.model.actor.ActorType.BACKGROUND_JOB;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class MaintenanceRecordJobScheduler {
   @SchedulerLock(name = "removeOldMaintenanceRecordsJob")
   public void removeOldMaintenanceRecordsJob() {
     LockAssert.assertLocked();
-    Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob");
-    ActorMdcSupport.runWithMdc(operator, this.removeOldMaintenanceRecordsJob::run);
+    Actor actor = createPlatformActor(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob");
+    ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsJob::run);
   }
 }

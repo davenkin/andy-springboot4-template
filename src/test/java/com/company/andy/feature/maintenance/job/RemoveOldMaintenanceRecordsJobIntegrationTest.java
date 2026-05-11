@@ -1,8 +1,9 @@
 package com.company.andy.feature.maintenance.job;
 
+import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
@@ -18,7 +19,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import java.time.Instant;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
 import static com.company.andy.common.util.Constants.MONGO_ID;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,13 +42,13 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare data
-        Operator operator = randomOrgUserOperator();
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, operator);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
-        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, operator);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
 
         Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));

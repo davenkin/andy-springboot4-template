@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.controller;
 
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -42,15 +42,15 @@ public class EquipmentController {
     @GetMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createTestEquipment(@AuthenticationPrincipal Operator operator) {
-        return new ResponseId(this.equipmentCommandService.createEquipment(new CreateEquipmentCommand(LocalDateTime.now().toString()), operator));
+    public ResponseId createTestEquipment(@AuthenticationPrincipal Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(new CreateEquipmentCommand(LocalDateTime.now().toString()), actor));
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal Operator operator) {
-        return new ResponseId(this.equipmentCommandService.createEquipment(command, operator));
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 
     @Operation(summary = "Update an equipment's name")
@@ -59,40 +59,40 @@ public class EquipmentController {
                                     @Parameter(description = "Id of the equipment")
                                     String equipmentId,
                                     @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand,
-                                    @AuthenticationPrincipal Operator operator) {
-        this.equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, operator);
+                                    @AuthenticationPrincipal Actor actor) {
+        this.equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor);
     }
 
     @Operation(summary = "Update an equipment's holder")
     @PutMapping("/{equipmentId}/holder")
     public void updateEquipmentHolder(@PathVariable("equipmentId") @NotBlank String equipmentId,
                                       @RequestBody @Valid UpdateEquipmentHolderCommand command,
-                                      @AuthenticationPrincipal Operator operator) {
-        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, operator);
+                                      @AuthenticationPrincipal Actor actor) {
+        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{equipmentId}")
-    public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Operator operator) {
-        this.equipmentCommandService.deleteEquipment(equipmentId, operator);
+    public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Actor actor) {
+        this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 
     @Operation(summary = "Query equipments")
     @PostMapping("/paged")
-    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal Operator operator) {
-        return this.equipmentQueryService.pageEquipments(query, operator);
+    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal Actor actor) {
+        return this.equipmentQueryService.pageEquipments(query, actor);
     }
 
     @Operation(summary = "Get equipment detail")
     @GetMapping("/{equipmentId}")
-    public QDetailedEquipment getEquipmentDetail(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Operator operator) {
-        return this.equipmentQueryService.getEquipmentDetail(equipmentId, operator);
+    public QDetailedEquipment getEquipmentDetail(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Actor actor) {
+        return this.equipmentQueryService.getEquipmentDetail(equipmentId, actor);
     }
 
     @Operation(summary = "Get all equipment summaries for an organization")
     @GetMapping("/summaries")
-    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal Operator operator) {
-        return this.equipmentQueryService.getAllEquipmentSummaries(operator);
+    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal Actor actor) {
+        return this.equipmentQueryService.getAllEquipmentSummaries(actor);
     }
 
 }

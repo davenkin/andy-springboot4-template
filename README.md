@@ -99,9 +99,10 @@ when writing your own code.
 | MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
 
 ## Todo:
-- rename operator to actor
+- rename actor to actor
 - integrate with spring security oauth 2 resource server, decide where to put ConvertJwtToActorFilter
 - event handler handle() add actor param
 - domain event add actor field
 - remove currentOperatorId() from AbstractMongoRepository
 - AR.onDelete() to be called inside command service and passed in actor
+- event handle() 内部使用mdc

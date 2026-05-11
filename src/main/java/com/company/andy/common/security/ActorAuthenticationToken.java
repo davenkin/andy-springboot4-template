@@ -1,6 +1,6 @@
 package com.company.andy.common.security;
 
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,9 +9,9 @@ import static java.util.Objects.requireNonNull;
 
 @Getter
 public final class ActorAuthenticationToken extends AbstractAuthenticationToken {
-    private final Operator actor;
+    private final Actor actor;
 
-    public ActorAuthenticationToken(Operator actor) {
+    public ActorAuthenticationToken(Actor actor) {
         requireNonNull(actor, "User must not be null.");
 
         super(actor.roles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());

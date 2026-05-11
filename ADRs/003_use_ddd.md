@@ -94,8 +94,8 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, Operator operator) {
-        Equipment equipment = equipmentFactory.create(command.name(), operator);
+    public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+        Equipment equipment = equipmentFactory.create(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
         return equipment.getId();
@@ -113,8 +113,8 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Operator operator) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(operator.getOrgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
 
         // code omitted
     }

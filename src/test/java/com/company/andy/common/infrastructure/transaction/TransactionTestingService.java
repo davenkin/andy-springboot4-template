@@ -1,6 +1,6 @@
 package com.company.andy.common.infrastructure.transaction;
 
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
@@ -17,9 +17,9 @@ public class TransactionTestingService {
     public void throwExceptionWithTransaction(String equipmentId,
                                               UpdateEquipmentNameCommand nameCommand,
                                               UpdateEquipmentHolderCommand holderCommand,
-                                              Operator operator) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, operator);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, operator);
+                                              Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
         throw new RuntimeException("fake exception"); // mimic exception at the end of transaction flow
     }
 
@@ -27,21 +27,21 @@ public class TransactionTestingService {
     public void throwExceptionAtTheEndWithoutTransaction(String equipmentId,
                                                          UpdateEquipmentNameCommand nameCommand,
                                                          UpdateEquipmentHolderCommand holderCommand,
-                                                         Operator operator) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, operator);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, operator);
+                                                         Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
         throw new RuntimeException("fake exception");
     }
 
     public void throwExceptionInTheMiddleWithoutTransaction(String equipmentId,
                                                             UpdateEquipmentNameCommand nameCommand,
                                                             UpdateEquipmentHolderCommand holderCommand,
-                                                            Operator operator) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, operator);
+                                                            Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
         if (true) { // mimic exception in the middle of the transaction flow
             throw new RuntimeException("fake exception");
         }
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, operator);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
     }
 
 }

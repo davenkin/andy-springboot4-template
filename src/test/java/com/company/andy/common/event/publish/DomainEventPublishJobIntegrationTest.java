@@ -1,15 +1,16 @@
 package com.company.andy.common.event.publish;
 
+import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.event.publish.infrastructure.FakeDomainEventSender;
-import com.company.andy.common.model.operator.Operator;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserOperator;
+import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.*;
 import static com.company.andy.feature.equipment.EquipmentTextFixture.randomEquipmentName;
@@ -32,11 +33,11 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_publish_domain_events() {
-        Operator operator = randomOrgUserOperator();
-        String arId1 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
-        String arId2 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
-        String arId3 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
-        String arId4 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        String arId1 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
+        String arId2 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
+        String arId3 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
+        String arId4 = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
 
         EquipmentCreatedEvent event1 = latestEventFor(arId1, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         EquipmentCreatedEvent event2 = latestEventFor(arId2, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
@@ -62,8 +63,8 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_fail_publish_domain_events_with_max_of_3_attempts() {
-        Operator operator = randomOrgUserOperator();
-        String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         domainEventSender.throwExceptionFor(event.getId());
 
@@ -91,8 +92,8 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Test
     void should_publish_successfully_if_sender_recovered() {
-        Operator operator = randomOrgUserOperator();
-        String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), operator);
+        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        String arId = equipmentCommandService.createEquipment(CreateEquipmentCommand.builder().name(randomEquipmentName()).build(), actor);
         EquipmentCreatedEvent event = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         domainEventSender.throwExceptionFor(event.getId());
