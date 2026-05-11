@@ -330,7 +330,7 @@ You may add more `@KafkaListener` methods if a different category of events are 
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
   @Override
-  public void handle(EquipmentCreatedEvent event) {
+  public void handle(EquipmentCreatedEvent event, Actor actor) {
   }
 }
 ```

@@ -39,7 +39,7 @@ events:
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
   @Override
-  public void handle(EquipmentCreatedEvent event) {
+  public void handle(EquipmentCreatedEvent event, Actor actor) {
   }
 }
 ```

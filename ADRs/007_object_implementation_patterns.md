@@ -385,7 +385,7 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
     @Override
-    public void handle(EquipmentDeletedEvent event) {
+    public void handle(EquipmentDeletedEvent event, Actor actor) {
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 }

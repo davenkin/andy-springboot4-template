@@ -1,5 +1,10 @@
 package com.company.andy.common.event.consume;
 
+import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.tracing.ActorMdcSupport;
+
+import static com.company.andy.common.model.actor.Actor.createPlatformActor;
+import static com.company.andy.common.model.actor.ActorType.EVENT_LISTENER;
 import static com.company.andy.common.util.CommonUtils.singleParameterizedArgumentClassOf;
 
 // All event handlers should extend this class
@@ -30,5 +35,10 @@ public abstract class AbstractEventHandler<T> {
         return this.eventClass.isAssignableFrom(event.getClass());
     }
 
-    public abstract void handle(T event);
+    public void handle(T event) {
+        Actor actor = createPlatformActor(EVENT_LISTENER, event.getClass().getSimpleName());
+        ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
+    }
+
+    protected abstract void handle(T event, Actor actor);
 }

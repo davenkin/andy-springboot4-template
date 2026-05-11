@@ -1,6 +1,7 @@
 package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.equipment.domain.task.SyncEquipmentNameToMaintenanceRecordsTask;
@@ -15,7 +16,7 @@ public class EquipmentNameUpdatedEventHandler extends AbstractEventHandler<Equip
     private final SyncEquipmentNameToMaintenanceRecordsTask syncEquipmentNameToMaintenanceRecordsTask;
 
     @Override
-    public void handle(EquipmentNameUpdatedEvent event) {
+    protected void handle(EquipmentNameUpdatedEvent event, Actor actor) {
         ExceptionSwallowRunner.run(() -> syncEquipmentNameToMaintenanceRecordsTask.run(event.getEquipmentId()));
     }
 }

@@ -1,8 +1,6 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.model.actor.Actor;
-import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -12,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.company.andy.common.model.actor.Actor.createPlatformActor;
-import static com.company.andy.common.model.actor.ActorType.EVENT_LISTENER;
 import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -70,8 +66,7 @@ public class EventConsumer {
 
     private void handleIdempotently(AbstractEventHandler<?> handler, ConsumingEvent consumingEvent) {
         if (handler.isIdempotent() || this.consumingEventDao.markEventAsConsumedByHandler(consumingEvent, handler)) {
-            Actor actor = createPlatformActor(EVENT_LISTENER, consumingEvent.getEvent().getClass().getSimpleName());
-            ActorMdcSupport.runWithMdc(actor, () -> ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent()));
+            ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent());
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
                     consumingEvent.getEventId(), consumingEvent.getType(), handler.getName());
