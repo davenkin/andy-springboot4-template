@@ -71,7 +71,7 @@ public class EventConsumer {
     private void handleIdempotently(AbstractEventHandler<?> handler, ConsumingEvent consumingEvent) {
         if (handler.isIdempotent() || this.consumingEventDao.markEventAsConsumedByHandler(consumingEvent, handler)) {
             Operator operator = createPlatformOperator(EVENT_LISTENER, consumingEvent.getEvent().getClass().getSimpleName());
-            ActorMdcSupport.of(operator).run(() -> ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent()));
+            ActorMdcSupport.runWithMdc(operator, () -> ((AbstractEventHandler<Object>) handler).handle(consumingEvent.getEvent()));
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
                     consumingEvent.getEventId(), consumingEvent.getType(), handler.getName());

@@ -1,5 +1,8 @@
 package com.company.andy.feature.maintenance.job;
 
+import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
+import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
+
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.model.operator.Operator;
 import com.company.andy.common.tracing.ActorMdcSupport;
@@ -10,22 +13,18 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import static com.company.andy.common.model.operator.Operator.createPlatformOperator;
-import static com.company.andy.common.model.operator.OperatorSource.BACKGROUND_JOB;
-
 @Slf4j
 @DisableForIT
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class MaintenanceRecordJobScheduler {
-    private final RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
+  private final RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
 
-    @Scheduled(cron = "0 0 2 1 * ?")
-    @SchedulerLock(name = "removeOldMaintenanceRecordsJob")
-    public void removeOldMaintenanceRecordsJob() {
-        LockAssert.assertLocked();
-        Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob");
-        ActorMdcSupport.of(operator)
-                .run(this.removeOldMaintenanceRecordsJob::run);
-    }
+  @Scheduled(cron = "0 0 2 1 * ?")
+  @SchedulerLock(name = "removeOldMaintenanceRecordsJob")
+  public void removeOldMaintenanceRecordsJob() {
+    LockAssert.assertLocked();
+    Operator operator = createPlatformOperator(BACKGROUND_JOB, "Job:removeOldMaintenanceRecordsJob");
+    ActorMdcSupport.runWithMdc(operator, this.removeOldMaintenanceRecordsJob::run);
+  }
 }

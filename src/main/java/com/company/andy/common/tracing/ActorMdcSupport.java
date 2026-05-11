@@ -15,17 +15,6 @@ public class ActorMdcSupport {
             "actorSource"
     );
 
-    private final Operator operator;
-
-    private ActorMdcSupport(Operator operator) {
-        requireNonNull(operator, "operator must not be null");
-        this.operator = operator;
-    }
-
-    public static ActorMdcSupport of(Operator operator) {
-        return new ActorMdcSupport(operator);
-    }
-
     public static void addMdc(Operator operator) {
         MDC.put("actorInitiator", operator.initiator());
         MDC.put("actorSource", operator.source().name());
@@ -39,12 +28,12 @@ public class ActorMdcSupport {
         ACTOR_MDC_KEYS.forEach(MDC::remove);
     }
 
-    public void run(Runnable runnable) {
-        addMdc(this.operator);
-        try {
-            runnable.run();
-        } finally {
-            clearMdc();
-        }
+  public static void runWithMdc(Operator operator,Runnable runnable) {
+    addMdc(operator);
+    try {
+      runnable.run();
+    } finally {
+      clearMdc();
     }
+  }
 }
