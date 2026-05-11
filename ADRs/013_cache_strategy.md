@@ -34,15 +34,11 @@ The cache architecture (take `CachedMongoEquipmentRepository` as an example):
 
 In order to implement a cache object, go through the following steps:
 
-1. Decide if exising objects should be cached or a new class should be created.
-2. For new cache classes, it's often created with Java's Record, for example:
+1. Decide if exising class should be cached or a new class should be created.
+2. If new class is needed, it's often created with Java's Record, for example:
 
 ```java
-@Builder
-public record EquipmentSummary(String id,
-                               String orgId,
-                               String name,
-                               EquipmentStatus status) {
+public record CachedOrgEquipmentSummaries(List<EquipmentSummary> summaries) {
 }
 ```
 

@@ -12,28 +12,28 @@ public record Actor(String id,
                     String name,
                     Set<Role> roles,
                     String orgId,
-                    ActorType source,
+                    ActorType type,
                     String initiator) {
-    public static final String PLATFORM_ACTOR_ID = "PLATFORM_001";
-    public static final String PLATFORM_ACTOR_NAME = "PLATFORM";
-    public static final String PLATFORM_ORG_ID = "PLATFORM_001";
+    public static final String PLATFORM_ACTOR_ID = "PLATFORM_ACTOR_001";
+    public static final String PLATFORM_ACTOR_NAME = "PLATFORM_001";
+    public static final String PLATFORM_ORG_ID = "PLATFORM_ORG_001";
 
-    public static Actor createOrgActor(String id, String name, Set<Role> roles, String orgId, ActorType source, String initiator) {
+    public static Actor createOrgActor(String id, String name, Set<Role> roles, String orgId, ActorType type, String initiator) {
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(name, "name must not be blank.");
         requireNonNull(roles, "roles must not be null.");
         requireNonBlank(orgId, "orgId must not be blank.");
-        requireNonNull(source, "source must not be null.");
+        requireNonNull(type, "type must not be null.");
         requireNonBlank(initiator, "initiator must not be blank.");
 
-        return new Actor(id, name, Set.copyOf(roles), orgId, source, initiator);
+        return new Actor(id, name, Set.copyOf(roles), orgId, type, initiator);
     }
 
-    public static Actor createPlatformActor(ActorType source, String initiator) {
-        requireNonNull(source, "source must not be null.");
+    public static Actor createPlatformActor(ActorType type, String initiator) {
+        requireNonNull(type, "type must not be null.");
         requireNonBlank(initiator, "initiator must not be blank.");
 
-        return new Actor(PLATFORM_ACTOR_ID, PLATFORM_ACTOR_NAME, Set.of(PLATFORM), PLATFORM_ORG_ID, source, initiator);
+        return new Actor(PLATFORM_ACTOR_ID, PLATFORM_ACTOR_NAME, Set.of(PLATFORM), PLATFORM_ORG_ID, type, initiator);
     }
 
     public boolean isOrgActor() {

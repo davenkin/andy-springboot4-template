@@ -19,7 +19,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 class PackageDependencyArchTest {
 
     @ArchTest
-    static final ArchRule businessClassesShouldAllUnderSpecificPackages = classes()
+    static final ArchRule business_classes_should_all_under_specific_packages = classes()
             .that()
             .resideInAnyPackage("..com.company.andy.feature..")
             .should()
@@ -35,7 +35,7 @@ class PackageDependencyArchTest {
             .because("We use the following packages to house all business classes: command, controller, domain, eventhandler, infrastructure, job, query.");
 
     @ArchTest
-    static final ArchRule domainClassesShouldNotDependOnOuterPackages = noClasses()
+    static final ArchRule domain_classes_should_not_depend_on_outer_packages = noClasses()
             .that()
             .resideInAnyPackage("..com.company.andy.feature..domain..")
             .should()
@@ -49,19 +49,19 @@ class PackageDependencyArchTest {
             .because("Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and should not depend on other outer packages.");
 
     @ArchTest
-    static final ArchRule mapStructShouldNotBeUsed = noClasses()
+    static final ArchRule map_struct_should_not_be_used = noClasses()
             .should()
             .dependOnClassesThat().resideInAPackage("org.mapstruct..")
-            .because("We don't MapStruct as we think manual mapper implementations are more straightforward and easier to debug, and also manual mappers do not take much effort.");
+            .because("We don't use MapStruct as we think manual mapper implementations are more straightforward and easier to debug, and also manual mappers do not take much effort.");
 
     @ArchTest
-    static final ArchRule springDataRepositoriesShouldNotBeUsed = noClasses()
+    static final ArchRule spring_data_repositories_should_not_be_used = noClasses()
             .should()
             .dependOnClassesThat().belongToAnyOf(MongoRepository.class, ListCrudRepository.class, ListPagingAndSortingRepository.class)
             .because("We don't use Spring Data's repository interfaces directly as it's too rigid for method names, instead we use AbstractMongoRepository as the base repository class and define our own repository interfaces for better flexibility and readability.");
 
     @ArchTest
-    static final ArchRule usageOfJacksonAnnotationsShouldBeMinimized = noClasses()
+    static final ArchRule usage_of_jackson_annotations_should_be_minimized = noClasses()
             .should()
             .dependOnClassesThat(
                     resideInAPackage("com.fasterxml.jackson.annotation..")

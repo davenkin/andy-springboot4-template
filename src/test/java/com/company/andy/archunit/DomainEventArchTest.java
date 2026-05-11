@@ -15,7 +15,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 class DomainEventArchTest {
 
     @ArchTest
-    static final ArchRule domainEventShouldResideInDomainEventPackage = classes()
+    static final ArchRule domain_event_should_reside_in_domain_event_package = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .should()
@@ -23,7 +23,7 @@ class DomainEventArchTest {
             .because("Domain events are domain models and should have a specific package under domain.event package.");
 
     @ArchTest
-    static final ArchRule concreteDomainEventShouldBeAnnotatedWithTypeAlias = classes()
+    static final ArchRule concrete_domain_event_should_be_annotated_with_type_alias = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .and(areConcreteClasses())
@@ -32,22 +32,22 @@ class DomainEventArchTest {
             .because("Concrete domain events should be annotated with @TypeAlias, otherwise the class FQCN will be used as type information and stored in database, which does not survive repackaging.");
 
     @ArchTest
-    static final ArchRule concreateDomainEventShouldHavePrivateNoArgConstructor = classes()
+    static final ArchRule concreate_domain_event_should_have_private_no_arg_constructor = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .and(areConcreteClasses())
             .should(havePrivateNoArgConstructor())
-            .because("Private no-arg constructors of domain events are only used for deserialization, it should not be used for manual domain event creation because otherwise we might end up with invalid domain events. You may use @NoArgsConstructor(access = PRIVATE) for private constructors.");
+            .because("No-arg constructors of domain events are needed for deserialization. Also, it should be private as it prevents from manual call which might result in invalid events. You may use @NoArgsConstructor(access = PRIVATE) for private constructors.");
 
     @ArchTest
-    static final ArchRule domainEventShouldHaveNonPublicNoArgConstructor = classes()
+    static final ArchRule domain_event_should_have_non_public_no_arg_constructor = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .should(haveNonPublicNoArgConstructor())
             .because("Non-public no-arg constructors of domain events are only used for deserialization, it should not be used for manual domain event creation because otherwise we might end up with invalid domain events.You may use @NoArgsConstructor(access = PRIVATE) or @NoArgsConstructor(access = PROTECTED) for constructors.");
 
     @ArchTest
-    static final ArchRule domainEventHandlerShouldResideInEventHandlerPackage = classes()
+    static final ArchRule domain_event_handler_should_reside_in_event_handler_package = classes()
             .that()
             .areAssignableTo(AbstractEventHandler.class)
             .should()
@@ -55,14 +55,14 @@ class DomainEventArchTest {
             .because("We should gather event handlers together under eventhandler package.");
 
     @ArchTest
-    static final ArchRule domainEventShouldNotHaveBuilder = classes()
+    static final ArchRule domain_event_should_not_have_builder = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .should(notHaveBuilderMethod())
             .because("Domain events should be created using explict constructors but not builders, otherwise we might end up with invalid domain events.");
 
     @ArchTest
-    static final ArchRule domainEventShouldNotHaveSetters = classes()
+    static final ArchRule domain_event_should_not_have_setters = classes()
             .that()
             .areAssignableTo(DomainEvent.class)
             .should(notHaveSetterMethods())

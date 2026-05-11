@@ -39,8 +39,12 @@ No need to write tests for:
 
 ## Implementation
 
+All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
+doing, e.g. `should_create_equipment()`.
+
 ### Integration Tests
 
+- All integration tests class name should end with "IntegrationTest", e.g. `EquipmentCommandServiceIntegrationTest`.
 - All integration tests should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java):
 
 ```java
@@ -239,6 +243,7 @@ void should_create_equipment() {
 
 ### Unit Tests
 
+- All unit tests class name should end with "Test", e.g. `EquipmentTest`.
 - For unit tests without mocks, it's quite straight forward.
 
 ```java

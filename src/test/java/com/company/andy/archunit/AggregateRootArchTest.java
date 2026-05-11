@@ -14,7 +14,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 class AggregateRootArchTest {
 
     @ArchTest
-    static final ArchRule aggregateRootShouldResideInDomainPackage = classes()
+    static final ArchRule aggregate_root_should_reside_in_domain_package = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .should()
@@ -22,7 +22,7 @@ class AggregateRootArchTest {
             .because("Aggregate root should located directly under domain package.");
 
     @ArchTest
-    static final ArchRule concreteAggregateRootShouldBeAnnotatedWithTypeAlias = classes()
+    static final ArchRule concrete_aggregate_root_should_be_annotated_with_type_alias = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .and(areConcreteClasses())
@@ -31,7 +31,7 @@ class AggregateRootArchTest {
             .because("Concrete aggregate roots should be annotated with @TypeAlias as otherwise the class FQCN will be used as type information and stored in database, which does not survive repackaging.");
 
     @ArchTest
-    static final ArchRule concreteAggregateRootShouldHavePrivateNoArgConstructor = classes()
+    static final ArchRule concrete_aggregate_root_should_have_private_no_arg_constructor = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .and(areConcreteClasses())
@@ -39,14 +39,14 @@ class AggregateRootArchTest {
             .because("Private no-arg constructors of aggregate roots are only used for deserialization, it should not be used for manual aggregate root creation because otherwise we might end up with invalid aggregate roots. You may use @NoArgsConstructor(access = PRIVATE) for private constructors.");
 
     @ArchTest
-    static final ArchRule aggregateRootShouldHaveNonPublicNoArgConstructor = classes()
+    static final ArchRule aggregate_root_should_have_non_public_no_arg_constructor = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .should(haveNonPublicNoArgConstructor())
             .because("Non-public no-arg constructors of aggregate roots are only used for deserialization, it should not be used for manual aggregate root creation because otherwise we might end up with invalid aggregate roots. You may use @NoArgsConstructor(access = PRIVATE) or @NoArgsConstructor(access = PROTECTED) for constructors.");
 
     @ArchTest
-    static final ArchRule aggregateRootShouldNotHaveBuilder = classes()
+    static final ArchRule aggregate_root_should_not_have_builder = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .should(notHaveBuilderMethod())

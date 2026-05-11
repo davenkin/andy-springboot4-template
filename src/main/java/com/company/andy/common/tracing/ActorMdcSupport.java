@@ -19,7 +19,7 @@ public class ActorMdcSupport {
             MDC.put("actorOrgId", actor.orgId());
         }
         MDC.put("actorInitiator", actor.initiator());
-        MDC.put("actorType", actor.source().name());
+        MDC.put("actorType", actor.type().name());
     }
 
     public static void clearMdc() {
