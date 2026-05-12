@@ -3,11 +3,11 @@
 ## Context
 
 Backend developers usually write both unit tests and integration tests. According
-to [Testing Pyramid](https://martinfowler.com/bliki/TestPyramid.html), unit tests
-constitute the base of the pyramid while integration tests are at a level higher. The goal is to have a large number of
-unit tests and a smaller number of integration tests. But in our case, we find that unit tests can be too fragile and
-require frequent updates when the code changes, and it gives us less confidence than integration tests, more detail can
-be found [here](https://web.dev/articles/ta-strategies).
+to [Testing Pyramid](https://martinfowler.com/bliki/TestPyramid.html), unit tests constitute the base of the pyramid
+while integration tests are at a level higher. The goal is to have a large number of unit tests and a smaller number of
+integration tests. But in our case, we find that unit tests can be too fragile and require frequent updates when the
+code changes, and it gives us less confidence than integration tests, more detail can be
+found [here](https://web.dev/articles/ta-strategies).
 
 ## Decision
 
@@ -29,8 +29,6 @@ We write unit tests for:
 - Aggregate Roots, e.g. [EquipmentTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentTest.java)
 - Other domain models under `domain` package,
   e.g. [EquipmentDomainServiceTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentDomainServiceTest.java)
-- Actually these objects are already covered in integration tests, but integration tests can be quite heavy, so the plan
-  is to let integration tests cover the main flow and unit tests cover other corner cases
 
 No need to write tests for:
 
@@ -75,45 +73,40 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
 ```
 
 You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
-assist you testing.
+assist your testing.
 
 When prepare testing data, try use CommandService's methods to insert data into database as it mimics the real use case,
 do not use Repository directly to insert data into database.
 
-Since integration tests write data into database, in order avoid errors like database primary key duplication, you
-should use random IDs for your entities and domain events for every test method, do not reused IDs across test methods.
-You can use `RandomTestUtils` for getting various random test fixtures and also you can add more to it.
+Since integration tests write data into database, in order to avoid errors like database primary key duplication, you
+should use random IDs for your entities and domain events for every test method, do not reuse IDs across test methods.
+You can use `RandomTestUtils` for getting various random test fixtures.
 
 In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
-context repeatedly,
-please use as less mocks(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests.
+context repeatedly, please use as less mocks(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests.
 
 #### Testing profiles
 
 There are two profiles for integration test: [application-it.yaml](../src/test/resources/application-it.yaml)
 and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
-choose to enable one
-of them, but not both.
+choose to enable one of them, but not both.
 
 The main difference between `application-it.yaml` and `application-it-local.yaml` is that the former uses embedded
-MongoDB and Redis while
-the latter uses real ones from your local machine.
+MongoDB and Redis while the latter uses real ones from your local machine.
 
-- `application-it.yaml`: This is the default profile and should be enabled for Jenkins CI. This profile enables
-  developers to run
-  integration tests without setting up any middlewares locally like MongoDB, Redis or Kafka. You can just pull the code
-  and run the tests.
-  It has the following configurations:
+- `application-it.yaml`: This is the default profile which you use most of the time. This profile should be enabled for
+  CI pipelines. This profile enables developers to run integration tests without setting up any middlewares locally like
+  MongoDB, Redis or Kafka. You can just pull the code and run the tests. It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
+    - MongoDB Transaction disabled as flapdoodle reports error for concurrent transactions
     - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
-    - Transaction disabled as flapdoodle reports error for concurrent transactions
     - Mongock disabled
     - Kafka disabled for both sending and consuming events
     - Job schedulers are disabled
-- `application-it-local.yaml`: This is only for your local testing and should not be enabled for Jenkins CI, it has the
-  following
-  configurations:
+- `application-it-local.yaml`: This is only for real local MongoDB/Redis servers and should not be enabled for CI
+  pipelines, it has the following configurations:
     - Use your local MongoDB server
+    - MongoDB Transaction enabled
     - Use your local Redis server
     - Mongock disabled (same as `application-it.yaml`)
     - Kafka disabled for both sending and consuming events (same as `application-it.yaml`)

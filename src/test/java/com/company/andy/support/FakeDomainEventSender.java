@@ -1,4 +1,4 @@
-package com.company.andy.common.event.publish.infrastructure;
+package com.company.andy.support;
 
 import com.company.andy.common.configuration.profile.EnableForIT;
 import com.company.andy.common.event.publish.DomainEventSender;
