@@ -23,7 +23,14 @@ public class ConvertJwtToActorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
         // todo: get jwt and convert it into actor
-        Actor actor = Actor.createOrgActor("sampleUserId", "sampleUserName", Set.of(ORG_ADMIN), "sampleOrgId", HUMAN_USER, request.getRequestURI());
+        Actor actor = Actor.createOrgActor(
+                "sampleUserId",
+                "sampleUserName",
+                Set.of(ORG_ADMIN),
+                "sampleOrgId",
+                HUMAN_USER,
+                "%s[%s]".formatted(request.getMethod(), request.getRequestURI())
+        );
 
         try {
             SecurityContextHolder.getContext().setAuthentication(new ActorAuthenticationToken(actor));

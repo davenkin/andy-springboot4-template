@@ -2,7 +2,6 @@ package com.company.andy.common.event.publish;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.core.LockAssert;
 import net.javacrumbs.shedlock.core.LockConfiguration;
 import net.javacrumbs.shedlock.core.LockingTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofMinutes;
 import static java.time.Instant.now;
+import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -52,7 +52,7 @@ public class DomainEventPublishJob {
     }
 
     private List<String> doPublishStagedDomainEvents(int batchSize) throws ExecutionException, InterruptedException {
-        LockAssert.assertLocked();
+        assertLocked();
 
         int counter = 0;
         String startEventId = MIN_START_EVENT_ID;

@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
         String traceId = tracingService.currentTraceId();
         Error error = new Error(exception, path, traceId);
         QErrorResponse representation = error.toErrorResponse();
-        return new ResponseEntity<>(representation, new HttpHeaders(), valueOf(representation.getError().getStatus()));
+        return new ResponseEntity<>(representation, new HttpHeaders(), valueOf(representation.error().status()));
     }
 
 }

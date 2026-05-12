@@ -53,7 +53,7 @@ public class RestErrorController extends AbstractErrorController {
         String path = (String) errorAttributes.get("path");
         String traceId = tracingService.currentTraceId();
         log.error("Error happened when access[{}]:{}", path, message);
-        Error errorDetail = new Error(errorCode, status.value(), message, path, traceId, null);
+        Error errorDetail = new Error(errorCode, message, path, traceId, null);
         return new ResponseEntity<>(errorDetail.toErrorResponse(), new HttpHeaders(), status);
     }
 

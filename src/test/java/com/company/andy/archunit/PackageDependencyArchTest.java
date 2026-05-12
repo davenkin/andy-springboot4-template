@@ -8,10 +8,9 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
-import static com.tngtech.archunit.base.DescribedPredicate.not;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.equivalentTo;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
@@ -63,16 +62,18 @@ class PackageDependencyArchTest {
     @ArchTest
     static final ArchRule usage_of_jackson_annotations_should_be_minimized = noClasses()
             .should()
-            .dependOnClassesThat(
-                    resideInAPackage("com.fasterxml.jackson.annotation..")
-                            .and(not(equivalentTo(JsonSubTypes.class)))
-                            .and(not(equivalentTo(JsonTypeInfo.class)))
-                            .and(not(equivalentTo(JsonSubTypes.Type.class)))
-                            .and(not(equivalentTo(JsonTypeInfo.As.class)))
-                            .and(not(equivalentTo(JsonTypeInfo.Id.class)))
-                            .and(not(equivalentTo(OptBoolean.class)))
-                            .and(not(equivalentTo(JsonAutoDetect.Visibility.class)))
-                            .and(not(equivalentTo(PropertyAccessor.class)))
+            .dependOnClassesThat()
+            .belongToAnyOf(
+                    JsonProperty.class,
+                    JsonAlias.class,
+                    JsonIgnore.class,
+                    JsonIgnoreProperties.class,
+                    JsonAnyGetter.class,
+                    JsonAnySetter.class,
+                    JsonSerialize.class,
+                    JsonDeserialize.class,
+                    JsonFormat.class,
+                    JsonView.class
             )
             .because("Jackson annotations make the code deeply coupled with the Jackson library, and also it might be bad for code navigability.");
 }

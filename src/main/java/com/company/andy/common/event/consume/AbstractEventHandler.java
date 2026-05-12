@@ -36,7 +36,7 @@ public abstract class AbstractEventHandler<T> {
     }
 
     public final void handle(T event) {
-        Actor actor = createPlatformActor(EVENT_LISTENER, event.getClass().getSimpleName());
+        Actor actor = createPlatformActor(EVENT_LISTENER, event.getClass().getName());
         ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
     }
 

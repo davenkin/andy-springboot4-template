@@ -30,7 +30,7 @@ public class JsonAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(403);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(UTF_8);
-        Error error = new Error(ACCESS_DENIED, 403, "Access denied.", request.getRequestURI(), tracingService.currentTraceId(), null);
+        Error error = new Error(ACCESS_DENIED, "Access denied.", request.getRequestURI(), tracingService.currentTraceId(), null);
         PrintWriter writer = response.getWriter();
         writer.print(objectMapper.writeValueAsString(error.toErrorResponse()));
         writer.flush();

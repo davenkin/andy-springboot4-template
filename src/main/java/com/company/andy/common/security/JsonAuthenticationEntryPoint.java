@@ -30,7 +30,7 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(401);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(UTF_8);
-        Error error = new Error(AUTHENTICATION_FAILED, 401, "Authentication failed.", request.getRequestURI(), tracingService.currentTraceId(), null);
+        Error error = new Error(AUTHENTICATION_FAILED, "Authentication failed.", request.getRequestURI(), tracingService.currentTraceId(), null);
         PrintWriter writer = response.getWriter();
         writer.print(objectMapper.writeValueAsString(error.toErrorResponse()));
         writer.flush();

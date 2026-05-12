@@ -13,12 +13,15 @@ For the same type of objects, we follow the same implementation patterns.
 ## Implementation
 
 - [Aggregate Root](#aggregate-root)
+- todo: mutable entities under Aggregate Root (EquipmentEngine)
+- todo: Value objects(use record with optional builder, can use multiple constructors if needed)
+- todo: Objects with hierarchy(like domain event)
 - [Repository](#repository)
 - [Controller](#controller)
 - [CommandService](#commandservice)
 - [Command](#command)
 - [DomainService](#domainservice)
-- [Domain Event](#domain-event)
+- [DomainEvent](#domain-event)
 - [EventHandler](#eventhandler')
 - [Factory](#factory)
 - [Task](#task)
@@ -31,8 +34,7 @@ For the same type of objects, we follow the same implementation patterns.
 - Aggregate Roots are the most important types of objects in your software, they contain your core domain logic, they
   are the sole reason your software exists
 - All Aggregate Roots should extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java)
-  base
-  class
+  base class
 - All changes to the internal state of Aggregate Roots should go via the public methods of Aggregate Roots
 - Aggregate Root should use meaningful constructors to create itself
 - For code consistency, always use Factory to create Aggregate Root, no matter how simple it is
@@ -49,8 +51,8 @@ For the same type of objects, we follow the same implementation patterns.
     - `@TypeAlias(EQUIPMENT_COLLECTION)`: use a explict type alias, otherwise the FQCN will be used by Spring Data
       MongoDB which does not survive refactorings of changing package locations
     - `@Document(EQUIPMENT_COLLECTION)`: for MongoDB collection
-    - `@NoArgsConstructor(access = PRIVATE)`: for Jackson deserialization, should be `PRIVATE` it's not supposed to be
-      called manually
+    - `@NoArgsConstructor(access = PRIVATE)`: for Jackson deserialization as well as built from MongoDB, should be
+      `PRIVATE` it's not supposed to be called manually
 - Aggregate Root should not be annotated with `@Setter`, `@Builder` or `@Data`
 - Besides Aggregate Root, there can be other types of domain objects in the domain model, such as `EquipmentStatus`
 
@@ -159,9 +161,9 @@ public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equi
   data
 - Controller classes should be annotated with `@Validated` to enable request validation
 - Request objects in method parameters should be annotated with `@Valid` to enable request validation
-- Controller ensures an [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is
-  injected using `@AuthenticationPrincipal`, this `Actor` is then passed down the whole processing flow
-  from the reqeust and passed to CommandService or QueryService
+- Controller ensures an [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is injected using
+  `@AuthenticationPrincipal`, this `Actor` is then passed down the whole processing flow from the reqeust and passed to
+  CommandService or QueryService
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
 Example [EquipmentController](../src/main/java/com/company/andy/feature/equipment/controller/EquipmentController.java):
@@ -239,8 +241,8 @@ public record CreateMaintenanceRecordCommand(
 - DomainService is totally different from CommandService(or QueryService) in that DomainService is part of the domain
   model, but CommandService is the gate to domain model
 - DomainService holds domain logic
-- Normally we don't want DomainService, as domain logic should best be reside in Aggregate Roots. DomainService is
-  our last resort if the business logic is not suitable to be put inside Aggregate Roots.
+- Normally we don't want DomainService, as domain logic should best be reside in Aggregate Roots. DomainService is our
+  last resort if the business logic is not suitable to be put inside Aggregate Roots.
 
 Example [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
@@ -308,9 +310,7 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 
 - For every domain event class, you need to register it
   inside [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java) using `@JsonTypeInfo`. This is
-  for Jackson to work
-  properly even without
-  the type information(`__TypeId__`) in Kafka message headers.
+  for Jackson to work properly even without the type information(`__TypeId__`) in Kafka message headers.
 
 ```java
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -364,9 +364,8 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
     - `isIdempotent()`: returns `true` if the handler can be run repeatedly without any problem, default value is
       `false`
     - `isTransactional()`: returns `true` if the handler should be atomic, normally it should return `true`, which is
-      also
-      the default value. It should return `false` for cases where the handlers does not involve database operations, or
-      it handles large amount of database records that exceeds the MongoDB transaction limits.
+      also the default value. It should return `false` for cases where the handlers does not involve database
+      operations, or it handles large amount of database records that exceeds the MongoDB transaction limits.
     - `priority()`: used for multiple handlers with the same event, return the priority of the handler, smaller value
       means higher priority
 - EventHandler serves a similar purpose as CommandService in that they both result in data state changes in the
@@ -454,7 +453,7 @@ Example [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/featu
 ```java
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RemoveOldMaintenanceRecordsJob {
     private static final int KEEP_DAYS = 180;
     private final MongoTemplate mongoTemplate;
@@ -477,8 +476,7 @@ public class RemoveOldMaintenanceRecordsJob {
   CommandService relies on
 - QueryService can have its own data model just for querying data, for
   example [QPagedEquipment](../src/main/java/com/company/andy/feature/equipment/query/QPagedEquipment.java) represents
-  an
-  Equipment item in the list
+  an Equipment item in the list
 
 Example [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
 

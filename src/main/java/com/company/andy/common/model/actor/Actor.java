@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import static com.company.andy.common.model.Role.PLATFORM;
+import static com.company.andy.common.model.actor.ActorType.BACKGROUND_JOB;
 import static com.company.andy.common.util.CommonUtils.requireNonBlank;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
@@ -37,6 +38,11 @@ public record Actor(String id,
         requireNonBlank(initiator, "initiator must not be blank.");
 
         return new Actor(PLATFORM_ACTOR_ID, PLATFORM_ACTOR_NAME, Set.of(PLATFORM), PLATFORM_ORG_ID, type, initiator, now());
+    }
+
+    public static Actor createJobActor(String jobName) {
+        requireNonBlank(jobName, "jobName must not be blank.");
+        return createPlatformActor(BACKGROUND_JOB, "Job:[%s]".formatted(jobName));
     }
 
     public boolean isOrgActor() {

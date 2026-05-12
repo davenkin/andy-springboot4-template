@@ -1,12 +1,12 @@
 package com.company.andy.feature.equipment.job;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MaintenanceReminderJob {
 
     public void run() {

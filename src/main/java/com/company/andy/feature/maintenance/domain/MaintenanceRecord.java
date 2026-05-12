@@ -5,6 +5,7 @@ import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -21,7 +22,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldNameConstants
 @TypeAlias(MAINTENANCE_RECORD_COLLECTION)
 @Document(MAINTENANCE_RECORD_COLLECTION)
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class MaintenanceRecord extends AggregateRoot {
     public final static String MAINTENANCE_RECORD_COLLECTION = "maintenance-record";
 

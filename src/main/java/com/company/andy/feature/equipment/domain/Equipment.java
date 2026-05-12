@@ -6,6 +6,7 @@ import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentStatusUpdatedEvent;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -24,17 +25,19 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldNameConstants
 @TypeAlias(EQUIPMENT_COLLECTION)
 @Document(EQUIPMENT_COLLECTION)
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class Equipment extends AggregateRoot {
     public final static String EQUIPMENT_COLLECTION = "equipment";
     private String name;
     private EquipmentStatus status;
     private String holder;
     private long maintenanceRecordCount;
+    private EquipmentEngine engine;
 
     public Equipment(String name, Actor actor) {
         super(newEquipmentId(), actor);
         this.name = name;
+        this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
         raiseEvent(new EquipmentCreatedEvent(this, actor));
     }
 
@@ -60,7 +63,10 @@ public class Equipment extends AggregateRoot {
         }
         this.status = status;
         raiseEvent(new EquipmentStatusUpdatedEvent(this.status, this, actor));
+    }
 
+    public void startEngine(Actor actor) {
+        this.engine.start();
     }
 
     public void onDelete(Actor actor) {

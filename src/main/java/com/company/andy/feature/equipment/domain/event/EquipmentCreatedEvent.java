@@ -3,6 +3,7 @@ package com.company.andy.feature.equipment.domain.event;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
@@ -12,7 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @TypeAlias("EQUIPMENT_CREATED_EVENT")
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentCreatedEvent extends DomainEvent {
     private String equipmentId;
 
