@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.query;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
@@ -24,7 +23,7 @@ class EquipmentQueryServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_page_equipments() {
         //Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         IntStream.range(0, 20).forEach(i -> {
             equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         });

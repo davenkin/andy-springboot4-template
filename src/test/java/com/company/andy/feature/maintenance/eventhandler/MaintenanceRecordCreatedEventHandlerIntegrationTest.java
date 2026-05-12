@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
@@ -34,7 +33,7 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
 
     @Test
     void should_count_maintenance_records_for_equipment() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
@@ -51,7 +50,7 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
 
     @Test
     void should_update_status_for_equipment_using_maintenance_record_status() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);

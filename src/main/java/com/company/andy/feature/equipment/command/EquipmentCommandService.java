@@ -29,7 +29,7 @@ public class EquipmentCommandService {
     @Transactional
     public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
         Equipment equipment = equipmentRepository.byId(id, actor.orgId());
-        equipmentDomainService.updateEquipmentName(equipment, command.name());
+        equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
     }
@@ -45,6 +45,7 @@ public class EquipmentCommandService {
     @Transactional
     public void deleteEquipment(String equipmentId, Actor actor) {
         Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+        equipment.onDelete(actor);
         equipmentRepository.delete(equipment);
         log.info("Deleted Equipment[{}].", equipmentId);
     }

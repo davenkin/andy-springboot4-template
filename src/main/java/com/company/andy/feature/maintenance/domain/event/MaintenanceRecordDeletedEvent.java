@@ -1,6 +1,7 @@
 package com.company.andy.feature.maintenance.domain.event;
 
 import com.company.andy.common.event.DomainEvent;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,8 @@ public class MaintenanceRecordDeletedEvent extends DomainEvent {
     private String maintenanceRecordId;
     private String equipmentId;
 
-    public MaintenanceRecordDeletedEvent(MaintenanceRecord record) {
-        super(MAINTENANCE_RECORD_DELETED_EVENT, record);
+    public MaintenanceRecordDeletedEvent(MaintenanceRecord record, Actor actor) {
+        super(MAINTENANCE_RECORD_DELETED_EVENT, record, actor);
         this.maintenanceRecordId = record.getId();
         this.equipmentId = record.getEquipmentId();
     }

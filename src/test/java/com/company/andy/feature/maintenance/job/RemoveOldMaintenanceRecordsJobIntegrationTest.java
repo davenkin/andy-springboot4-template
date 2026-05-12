@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.job;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
@@ -42,7 +41,7 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 

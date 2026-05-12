@@ -138,7 +138,7 @@ For both profiles:
 @Test
 void should_create_equipment() {
         //Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         //Execute 
@@ -167,7 +167,7 @@ void should_create_equipment() {
     @Test
     void should_page_equipments() {
         //Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         IntStream.range(0, 20).forEach(i -> {
             equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         });
@@ -193,7 +193,7 @@ void should_create_equipment() {
     @Test
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
@@ -220,7 +220,7 @@ void should_create_equipment() {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
@@ -250,7 +250,7 @@ void should_create_equipment() {
 class EquipmentTest {
   @Test
   void should_create_equipment() {
-    Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+    Actor actor = randomOrgUserActor();
     Equipment equipment = new Equipment("name", actor);
     assertEquals("name", equipment.getName());
     assertEquals(1, equipment.getEvents().size());
@@ -276,7 +276,7 @@ class EquipmentDomainServiceTest {
   @Test
   void should_update_name() {
     Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-    Equipment equipment = new Equipment("name", CommonRandomTestFixture.randomOrgUserActor());
+    Equipment equipment = new Equipment("name", randomOrgUserActor());
 
     equipmentDomainService.updateEquipmentName(equipment, "newName");
 

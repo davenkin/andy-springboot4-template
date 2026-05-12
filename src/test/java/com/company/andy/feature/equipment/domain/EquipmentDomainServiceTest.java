@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.domain;
 
-import com.company.andy.CommonRandomTestFixture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,9 +22,9 @@ class EquipmentDomainServiceTest {
     @Test
     void should_update_name() {
         Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-        Equipment equipment = new Equipment("name", CommonRandomTestFixture.randomOrgUserActor());
+        Equipment equipment = new Equipment("name", randomOrgUserActor());
 
-        equipmentDomainService.updateEquipmentName(equipment, "newName");
+        equipmentDomainService.updateEquipmentName(equipment, "newName", randomOrgUserActor());
 
         assertEquals("newName", equipment.getName());
     }

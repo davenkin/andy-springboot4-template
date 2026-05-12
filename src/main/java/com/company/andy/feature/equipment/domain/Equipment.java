@@ -35,36 +35,35 @@ public class Equipment extends AggregateRoot {
     public Equipment(String name, Actor actor) {
         super(newEquipmentId(), actor);
         this.name = name;
-        raiseEvent(new EquipmentCreatedEvent(this));
+        raiseEvent(new EquipmentCreatedEvent(this, actor));
     }
 
     public static String newEquipmentId() {
         return "EQP" + newSnowflakeId(); // Generate ID in the code
     }
 
-    public void updateName(String newName) {
+    public void updateName(String newName, Actor actor) {
         if (Objects.equals(newName, this.name)) {
             return;
         }
         this.name = newName;
-        raiseEvent(new EquipmentNameUpdatedEvent(name, this));
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 
     public void updateHolder(String newHolder) {
         this.holder = newHolder;
     }
 
-    public void updateStatus(EquipmentStatus status) {
+    public void updateStatus(EquipmentStatus status, Actor actor) {
         if (this.status == status) {
             return;
         }
         this.status = status;
-        raiseEvent(new EquipmentStatusUpdatedEvent(this.status, this));
+        raiseEvent(new EquipmentStatusUpdatedEvent(this.status, this, actor));
 
     }
 
-    @Override
-    public void onDelete() {
-        raiseEvent(new EquipmentDeletedEvent(this));
+    public void onDelete(Actor actor) {
+        raiseEvent(new EquipmentDeletedEvent(this, actor));
     }
 }

@@ -1,6 +1,7 @@
 package com.company.andy.feature.equipment.domain.event;
 
 import com.company.andy.common.event.DomainEvent;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,8 @@ import static lombok.AccessLevel.PRIVATE;
 public class EquipmentDeletedEvent extends DomainEvent {
     private String equipmentId;
 
-    public EquipmentDeletedEvent(Equipment equipment) {
-        super(EQUIPMENT_DELETED_EVENT, equipment);
+    public EquipmentDeletedEvent(Equipment equipment, Actor actor) {
+        super(EQUIPMENT_DELETED_EVENT, equipment, actor);
         this.equipmentId = equipment.getId();
     }
 }

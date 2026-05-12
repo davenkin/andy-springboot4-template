@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.query;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
@@ -29,7 +28,7 @@ class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_page_maintenance_records() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         IntStream.range(0, 20).forEach(i -> {

@@ -99,7 +99,9 @@ when writing your own code.
 | MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
 
 ## Todo:
+
 - integrate with spring security oauth 2 resource server, decide where to put ConvertJwtToActorFilter
 - domain event add actor field
 - remove currentOperatorId() from AbstractMongoRepository
 - AR.onDelete() to be called inside command service and passed in actor
+- refer MrySystemInitializer for event index, cache clearing

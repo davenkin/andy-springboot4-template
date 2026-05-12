@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.command;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
@@ -29,7 +28,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_create_equipment() {
         //Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
 
         //Execute
@@ -49,7 +48,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_update_equipment_name() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
 
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
@@ -67,7 +66,7 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
         //Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         String cacheKey = "Cache:ORG_EQUIPMENTS::" + actor.orgId();
         assertFalse(stringRedisTemplate.hasKey(cacheKey));
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(EquipmentTextFixture.randomEquipmentName());

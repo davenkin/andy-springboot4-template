@@ -1,15 +1,16 @@
 package com.company.andy.feature.maintenance;
 
-import com.company.andy.CommonRandomTestFixture;
-import com.company.andy.feature.equipment.EquipmentTextFixture;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
+
+import static com.company.andy.CommonRandomTestFixture.randomDescription;
+import static com.company.andy.feature.equipment.EquipmentTextFixture.randomEquipmentStatus;
 
 public class MaintenanceRecordTestFixture {
     public static CreateMaintenanceRecordCommand randomCreateMaintenanceRecordCommand(String equipmentId) {
         return CreateMaintenanceRecordCommand.builder()
                 .equipmentId(equipmentId)
-                .description(CommonRandomTestFixture.randomDescription())
-                .status(EquipmentTextFixture.randomEquipmentStatus())
+                .description(randomDescription())
+                .status(randomEquipmentStatus())
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.domain;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ class MaintenanceRecordTest {
 
     @Test
     void should_create_maintenance_record() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord("equipment",
                 "name",

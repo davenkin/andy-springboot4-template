@@ -1,11 +1,12 @@
 package com.company.andy.feature.equipment;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import org.apache.commons.lang3.RandomStringUtils;
+
+import static com.company.andy.CommonRandomTestFixture.randomEnum;
 
 public class EquipmentTextFixture {
     public static String randomEquipmentName() {
@@ -29,6 +30,6 @@ public class EquipmentTextFixture {
     }
 
     public static EquipmentStatus randomEquipmentStatus() {
-        return CommonRandomTestFixture.randomEnum(EquipmentStatus.class);
+        return randomEnum(EquipmentStatus.class);
     }
 }

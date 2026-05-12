@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.command;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
@@ -28,7 +27,7 @@ class MaintenanceRecordCommandServiceIntegrationTest extends IntegrationTest {
 
     @Test
     void should_create_maintenance_record() {
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 

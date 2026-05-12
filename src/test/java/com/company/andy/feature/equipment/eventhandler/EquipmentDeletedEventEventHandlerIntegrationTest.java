@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.eventhandler;
 
-import com.company.andy.CommonRandomTestFixture;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.EquipmentTextFixture;
@@ -35,7 +34,7 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     @Test
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
-        Actor actor = CommonRandomTestFixture.randomOrgUserActor();
+        Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);

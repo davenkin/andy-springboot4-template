@@ -2,6 +2,7 @@ package com.company.andy.feature.equipment.domain.event;
 
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.DomainEventType;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,8 @@ import static lombok.AccessLevel.PROTECTED;
 public abstract class EquipmentUpdatedEvent extends DomainEvent {
     private String equipmentId;
 
-    public EquipmentUpdatedEvent(DomainEventType type, Equipment equipment) {
-        super(type, equipment);
+    public EquipmentUpdatedEvent(DomainEventType type, Equipment equipment, Actor actor) {
+        super(type, equipment, actor);
         this.equipmentId = equipment.getId();
     }
 }

@@ -35,6 +35,7 @@ public class MaintenanceRecordCommandService {
     @Transactional
     public void deleteMaintenanceRecord(String maintenanceRecordId, Actor actor) {
         MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, actor.orgId());
+        maintenanceRecord.onDelete(actor);
         maintenanceRecordRepository.delete(maintenanceRecord);
         log.info("Deleted MaintenanceRecord[{}].", maintenanceRecordId);
     }

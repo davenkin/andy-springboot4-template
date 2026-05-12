@@ -2,6 +2,7 @@ package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.AggregateRoot;
+import com.company.andy.common.model.actor.Actor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import static com.company.andy.common.util.NullableMapUtils.mapOf;
 public class EquipmentDomainService {
     private final EquipmentRepository equipmentRepository;
 
-    public void updateEquipmentName(Equipment equipment, String newName) {
+    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -23,6 +24,6 @@ public class EquipmentDomainService {
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName);
+        equipment.updateName(newName, actor);
     }
 }

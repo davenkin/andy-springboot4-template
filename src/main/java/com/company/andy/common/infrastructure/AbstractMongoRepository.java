@@ -79,7 +79,6 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         requireNonNull(ar, arType() + " must not be null.");
         requireNonBlank(ar.getId(), arType() + " ID must not be blank.");
 
-        ar.onDelete();
         mongoTemplate.remove(ar);
         stageEvents(ar.getEvents());
         ar.clearEvents();
@@ -94,7 +93,6 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         List<DomainEvent> events = new ArrayList<>();
         Set<String> ids = new HashSet<>();
         ars.forEach(ar -> {
-            ar.onDelete();
             if (isNotEmpty(ar.getEvents())) {
                 events.addAll(ar.getEvents());
             }
@@ -167,7 +165,6 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
     private void stageEvents(List<DomainEvent> events) {
         if (isNotEmpty(events)) {
             List<DomainEvent> orderedEvents = events.stream().sorted(comparing(DomainEvent::getRaisedAt)).toList();
-            orderedEvents.forEach(event -> event.raisedBy(this.currentOperatorId()));
             publishingDomainEventDao.stage(orderedEvents);
         }
     }
@@ -180,8 +177,4 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         }
     }
 
-    // Here currentOperatorId() is only used for audit purpose, and should not be used as business data
-    private String currentOperatorId() {
-        return null;// todo: remove me and pass operator into event
-    }
 }

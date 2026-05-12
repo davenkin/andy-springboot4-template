@@ -40,15 +40,14 @@ public class MaintenanceRecord extends AggregateRoot {
         this.equipmentName = equipmentName;
         this.status = status;
         this.description = description;
-        raiseEvent(new MaintenanceRecordCreatedEvent(this));
+        raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
     }
 
     public static String newMaintenanceRecordId() {
         return "MTR" + newSnowflakeId();
     }
 
-    @Override
-    public void onDelete() {
-        raiseEvent(new MaintenanceRecordDeletedEvent(this));
+    public void onDelete(Actor actor) {
+        raiseEvent(new MaintenanceRecordDeletedEvent(this, actor));
     }
 }
