@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofMinutes;
 import static java.time.Instant.now;
+import static java.util.stream.Collectors.toList;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -82,13 +82,13 @@ public class DomainEventPublishJob {
                 break;
             }
 
-            startEventId = publishingDomainEvents.get(publishingDomainEvents.size() - 1).getId(); // Start event ID for next batch
+            startEventId = publishingDomainEvents.getLast().getId(); // Start event ID for next batch
         }
 
         CompletableFuture<List<String>> allResults = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                .thenApply(v -> futures.stream()
+                .thenApply(_ -> futures.stream()
                         .map(CompletableFuture::join)
-                        .collect(Collectors.toList())
+                        .collect(toList())
                 );
         allResults.join();
         return allResults.get();
