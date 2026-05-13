@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.*;
-import static com.company.andy.common.event.publish.PublishingDomainEvent.Fields.*;
 import static com.company.andy.common.util.CommonUtils.requireNonBlank;
 import static com.company.andy.common.util.Constants.MONGO_ID;
 import static java.util.Objects.requireNonNull;
@@ -40,10 +39,10 @@ public class PublishingDomainEventDao {
     public List<PublishingDomainEvent> stagedEvents(String startId, int limit) {
         requireNonBlank(startId, "Start ID must not be blank.");
 
-        Query query = query(where(status).in(CREATED, PUBLISH_FAILED)
+        Query query = query(where(PublishingDomainEvent.Fields.status).in(CREATED, PUBLISH_FAILED)
                 .and(MONGO_ID).gt(startId)
-                .and(publishedCount).lt(MAX_PUBLISH_COUNT))
-                .with(by(ASC, raisedAt))
+                .and(PublishingDomainEvent.Fields.publishedCount).lt(MAX_PUBLISH_COUNT))
+                .with(by(ASC, PublishingDomainEvent.Fields.raisedAt))
                 .limit(limit);
         return mongoTemplate.find(query, PublishingDomainEvent.class);
     }
@@ -52,7 +51,7 @@ public class PublishingDomainEventDao {
         requireNonBlank(eventId, "Domain event ID must not be blank.");
         Query query = Query.query(where(MONGO_ID).is(eventId));
         Update update = new Update();
-        update.set(status, PUBLISH_SUCCEED.name()).inc(publishedCount);
+        update.set(PublishingDomainEvent.Fields.status, PUBLISH_SUCCEED.name()).inc(PublishingDomainEvent.Fields.publishedCount);
         mongoTemplate.updateFirst(query, update, PublishingDomainEvent.class);
     }
 
@@ -60,7 +59,7 @@ public class PublishingDomainEventDao {
         requireNonBlank(eventId, "Domain event ID must not be blank.");
         Query query = Query.query(where(MONGO_ID).is(eventId));
         Update update = new Update();
-        update.set(status, PUBLISH_FAILED.name()).inc(publishedCount);
+        update.set(PublishingDomainEvent.Fields.status, PUBLISH_FAILED.name()).inc(PublishingDomainEvent.Fields.publishedCount);
         mongoTemplate.updateFirst(query, update, PublishingDomainEvent.class);
     }
 

@@ -5,6 +5,7 @@ public class Constants {
     public static final String ID = "id";
     public static final String ORG_ID = "orgId";
     public static final String TRACE_PARENT = "traceparent";
+    public final static String CHINA_TIME_ZONE = "Asia/Shanghai";
 
     //Event
     public static final String KAFKA_DOMAIN_EVENT_TOPIC = "domain-event-topic";

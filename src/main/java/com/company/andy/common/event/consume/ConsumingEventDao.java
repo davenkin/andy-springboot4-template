@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import static com.company.andy.common.event.consume.ConsumingEvent.Fields.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -21,12 +20,13 @@ public class ConsumingEventDao {
 
     // return "true" means this event has never been consumed before
     public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, AbstractEventHandler<?> handler) {
-        Query query = query(where(eventId).is(consumingEvent.getEventId()).and(ConsumingEvent.Fields.handler).is(handler.getName()));
+        Query query = query(where(ConsumingEvent.Fields.eventId).is(consumingEvent.getEventId())
+                .and(ConsumingEvent.Fields.handler).is(handler.getName()));
 
         Update update = new Update()
-                .setOnInsert(type, consumingEvent.getType())
-                .setOnInsert(event, consumingEvent.getEvent())
-                .setOnInsert(consumedAt, consumingEvent.getConsumedAt());
+                .setOnInsert(ConsumingEvent.Fields.type, consumingEvent.getType())
+                .setOnInsert(ConsumingEvent.Fields.event, consumingEvent.getEvent())
+                .setOnInsert(ConsumingEvent.Fields.consumedAt, consumingEvent.getConsumedAt());
 
         UpdateResult result = this.mongoTemplate.update(ConsumingEvent.class)
                 .matching(query)

@@ -5,6 +5,7 @@ import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.springframework.data.mongodb.core.index.*;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
@@ -76,4 +77,19 @@ class PackageDependencyArchTest {
                     JsonView.class
             )
             .because("Jackson annotations make the code deeply coupled with the Jackson library, and also it might be bad for code navigability.");
+
+    @ArchTest
+    static final ArchRule mongodb_indexes_should_be_created_explicitly = noClasses()
+            .should()
+            .dependOnClassesThat()
+            .belongToAnyOf(
+                    Indexed.class,
+                    CompoundIndex.class,
+                    CompoundIndexes.class,
+                    WildcardIndexed.class,
+                    TextIndexed.class,
+                    HashIndexed.class
+            )
+            .because("No index annotations are allowed as we want to centrally manage database indexes explicitly in StartupInitializer.");
+
 }
