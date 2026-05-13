@@ -101,4 +101,4 @@ when writing your own code.
 ## Todo:
 
 - integrate with spring security oauth 2 resource server, decide where to put ConvertJwtToActorFilter
-- refer MrySystemInitializer for event index, cache clearing
+- refer MrySystemInitializer for event index, cache clearing etc
