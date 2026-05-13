@@ -223,8 +223,8 @@
                             <artifactId>lombok</artifactId>
                         </path>
                     </annotationProcessorPaths>
-                    <source>19</source>
-                    <target>19</target>
+                    <release>25</release>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
 

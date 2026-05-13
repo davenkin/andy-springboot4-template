@@ -12,9 +12,9 @@ public final class ActorAuthenticationToken extends AbstractAuthenticationToken 
     private final Actor actor;
 
     public ActorAuthenticationToken(Actor actor) {
+        super(actor.roles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
         requireNonNull(actor, "User must not be null.");
 
-        super(actor.roles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
         this.actor = actor;
         setAuthenticated(true);
     }
