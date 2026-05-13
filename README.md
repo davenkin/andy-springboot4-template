@@ -10,8 +10,7 @@ This is a template Spring Boot 4 project with the following features:
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
 - Distributed lock for scheduled jobs using [Shedlock](https://github.com/lukas-krecan/ShedLock)
 - Standardized [folder structure](./ADRs/005_project_structure.md) with business first approach
-- Standardized pagination implementation
-  with [PageQuery](src/main/java/com/company/andy/common/util/PageQuery.java)
+- Standardized pagination implementation with [PageQuery](src/main/java/com/company/andy/common/util/PageQuery.java)
   and [PagedResponse](src/main/java/com/company/andy/common/util/PagedResponse.java)
 - Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/util/SnowflakeIdGenerator.java)
 - Domain event modeling based on [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java)
@@ -41,13 +40,12 @@ This is a template Spring Boot 4 project with the following features:
     - `Keycloak`: [http://localhost:7125](http://localhost:7125)
     - `Redis`: localhost:6125
 - Run the application in one of the following ways:
-    - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already
-      up running.
+    - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
+      running.
     - `./clear-and-run-local.sh`: this starts the application with debug port on 5005, it also automatically starts
       docker-compose by first removing existing containers and their data if any.
     - Run `main` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
-- Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs
-  successfully.
+- Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
 - If you need integrate with Keycloak, open [http://localhost:7125](http://localhost:7125) for Keycloak management.
@@ -72,8 +70,7 @@ decisions. ADRs are stored in the `ADRs` directory and follow a [specific format
 ## Sample implementation code
 
 The `src/main/java/com/company/andy/feature/equipment` and `src/main/java/com/company/andy/feature/maintenance` folder
-contain various common coding practices that should be followed
-when writing your own code.
+contain various common coding practices that should be followed when writing your own code.
 
 - There are 2 main business entities:
     - `Equipment`: Represents an equipment that needs to be managed, such as a computer.
@@ -86,8 +83,8 @@ when writing your own code.
     - Update the `holder` of an `Equipment`.
     - Delete an `Equipment`. This should also delete all `MaintenanceRecord`s for this `Equipment`, this is achieved
       using domain event.
-    - Create a `MaintenanceRecord`. Its `status` will be used to update the `status` of the `Equipment`, this
-      is achieved using domain event.
+    - Create a `MaintenanceRecord`. Its `status` will be used to update the `status` of the `Equipment`, this is
+      achieved using domain event.
 - It is recommended that you keep these sample code as references until you have implemented at least two real business
   entities.
 
@@ -97,8 +94,3 @@ when writing your own code.
 |-------------------|--------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | Equipment         | 装备           |              | Sample top level business entity that serves as a reference for consistent coding practice. An Equipment has many MaintenanceRecords. |
 | MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
-
-## Todo:
-
-- integrate with spring security oauth 2 resource server, decide where to put ConvertJwtToActorFilter
-- refer MrySystemInitializer for event index, cache clearing etc

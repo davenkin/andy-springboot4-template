@@ -16,12 +16,15 @@ public class AboutController {
     private static final Instant DEPLOYED_TIME = Instant.now();
 
     @GetMapping(value = "/about")
-    public String about() {
-        return "Running! Started at " + DEPLOYED_TIME;
+    public AboutInfo about() {
+        return new AboutInfo("Running! Started at " + DEPLOYED_TIME, Instant.now().toString());
     }
 
     @GetMapping("/favicon.ico")
     public void dummyFavicon() {
         //nop
+    }
+
+    public record AboutInfo(String status, String fetchTime) {
     }
 }

@@ -18,4 +18,8 @@ spring:
       timeout: 10000
   mongodb:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://this-is-a-placeholder.com

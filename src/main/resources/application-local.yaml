@@ -15,6 +15,11 @@ spring:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
   kafka:
     bootstrap-servers: localhost:9125
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:7125/realms/test-realm
 
 springdoc:
   api-docs:
