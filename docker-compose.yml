@@ -61,7 +61,8 @@ services:
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
     volumes:
       - andy-springboot4-template-keycloak-volume:/opt/keycloak/data
-    command: start-dev
+      - ./local-keycloak-import.json:/opt/keycloak/data/import/imported.json
+    command: start-dev --import-realm
     networks:
       - andy-springboot4-template-network
     restart: always

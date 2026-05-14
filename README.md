@@ -37,7 +37,15 @@ This is a template Spring Boot 4 project with the following features:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125)
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default users:
+        - Admin user:
+            - Username: `admin`
+            - Password:`admin`
+        - Normal user:
+            - Realm: `test-realm`
+            - Client: `test-client`
+            - Username: `test-user`
+            - Password: `11111111`
     - `Redis`: localhost:6125
 - Run the application in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
@@ -48,7 +56,6 @@ This is a template Spring Boot 4 project with the following features:
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
-- If you need integrate with Keycloak, open [http://localhost:7125](http://localhost:7125) for Keycloak management.
 
 ## How to build
 
@@ -95,8 +102,8 @@ contain various common coding practices that should be followed when writing you
 | Equipment         | 装备           |              | Sample top level business entity that serves as a reference for consistent coding practice. An Equipment has many MaintenanceRecords. |
 | MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
 
-
 ## Todo
+
 - testing strategy change, convert to use controller but not command service, also change doc
-- restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with 
+- restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
 - archunit: feature packages should not use Jwt，org.springframework.security, 还有其他
