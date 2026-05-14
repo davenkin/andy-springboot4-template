@@ -7,6 +7,7 @@ import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
@@ -18,7 +19,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 // Mongock migration class
 // Class name should follow format: "Migration[3 digits index]_[SimpleDescriptionOfYourMigration]"
 @Slf4j
-@ChangeUnit(id = "Migration002_BaseSetup", order = "002", author = "andy")
+@ChangeUnit(id = "Migration002_BaseSetup", order = "002", author = "andy", transactional = false)
 public class Migration002_BaseSetup {
 
     @Execution
@@ -62,6 +63,10 @@ public class Migration002_BaseSetup {
         indexOperations.createIndex(new Index().on(MaintenanceRecord.Fields.equipmentName, DESC).named("idx_equipmentName"));
         indexOperations.createIndex(new Index().on(MaintenanceRecord.Fields.status, DESC).named("idx_status"));
         indexOperations.createIndex(new Index().on(AggregateRoot.Fields.orgId, DESC).named("idx_orgId"));
+    }
+
+    @RollbackExecution
+    public void rollback(MongoTemplate mongoTemplate) {
     }
 
 }
