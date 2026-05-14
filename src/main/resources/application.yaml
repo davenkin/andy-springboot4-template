@@ -4,16 +4,13 @@ common:
 server:
   port: 8080
   shutdown: graceful
-  tomcat:
-    accept-count: 100
-    max-swallow-size: 50
-    max-keep-alive-requests: 200
-    threads:
-      max: 500
 
 spring:
   application:
     name: andy-springboot4-template
+  data:
+    mongodb:
+      auto-index-creation: false # disable auto index creation explicitly as we choose to manage indexes using Mongock
   profiles:
     active: local # use "local" profile by default for local run
   cache:

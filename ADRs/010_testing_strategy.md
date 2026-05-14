@@ -1,3 +1,4 @@
+todo: re write as we choose calling api for integration tests but not command service anymore
 # Testing strategy
 
 ## Context

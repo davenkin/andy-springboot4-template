@@ -94,3 +94,7 @@ contain various common coding practices that should be followed when writing you
 |-------------------|--------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | Equipment         | 装备           |              | Sample top level business entity that serves as a reference for consistent coding practice. An Equipment has many MaintenanceRecords. |
 | MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
+
+
+## Todo
+- use mongock for index, change reason for archunit
