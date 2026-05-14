@@ -37,7 +37,7 @@ public class RedisRateLimiter implements RateLimiter {
     }
 
     private void doApply(String key, int limit) {
-        if (!commonProperties.isLimitRate()) {
+        if (!commonProperties.limitRate()) {
             return;
         }
 
