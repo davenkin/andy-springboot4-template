@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableForIT
 @RequiredArgsConstructor
-public class FakeDomainEventSender implements DomainEventSender {
+public class TestingDomainEventSender implements DomainEventSender {
   private final Map<String, PublishingDomainEvent> events = new ConcurrentHashMap<>();
   private final Set<String> errorEventIds = new HashSet<>();
 

@@ -1,7 +1,7 @@
 package com.company.andy.common.event.publish;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.support.FakeDomainEventSender;
+import com.company.andy.support.TestingDomainEventSender;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
@@ -28,7 +28,7 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
     private PublishingDomainEventDao publishingDomainEventDao;
 
     @Autowired
-    private FakeDomainEventSender domainEventSender;
+    private TestingDomainEventSender domainEventSender;
 
     @Test
     void should_publish_domain_events() {

@@ -1,5 +1,6 @@
 package com.company.andy.common.event.publish;
 
+import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.tracing.TracingService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 // Before publishing to messaging middleware, events are staged(saved) into database in the same transaction that handles business logic
 @Slf4j
 @Component
+@DisableForIT
 @RequiredArgsConstructor
 public class PublishingDomainEventDao {
     private static final int MAX_PUBLISH_COUNT = 3;
