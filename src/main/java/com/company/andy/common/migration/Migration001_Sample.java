@@ -20,7 +20,8 @@ public class Migration001_Sample {
 
     @RollbackExecution
     public void rollback(MongoTemplate mongoTemplate) {
-        // roll back
+        // If the migration is only for DB and transaction is enabled, there is no need to rollback as it's already covered by transactions, but you still need this method as Mongock requires at least one method annotated with @RollbackExecution, so just leave the method body empty
+        // But if your migration contains non-DB operations, such as calling remote APIs, or it's only DB operations but the transaction is not enabled, you need to rollback the operations explicitly
         log.debug("Sample change log rolled back.");
     }
 }
