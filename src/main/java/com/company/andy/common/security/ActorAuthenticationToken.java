@@ -14,10 +14,10 @@ public final class ActorAuthenticationToken extends AbstractAuthenticationToken 
   private final Jwt jwt;
 
   public ActorAuthenticationToken(Actor actor, Jwt jwt) {
-    super(actor.roles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
     requireNonNull(actor, "actor must not be null.");
     requireNonNull(jwt, "jwt must not be null.");
 
+    super(actor.roles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
     this.actor = actor;
     this.jwt = jwt;
     setAuthenticated(true);
