@@ -3,7 +3,7 @@ package com.company.andy.feature.equipment.domain;
 import com.company.andy.common.model.actor.Actor;
 import org.junit.jupiter.api.Test;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

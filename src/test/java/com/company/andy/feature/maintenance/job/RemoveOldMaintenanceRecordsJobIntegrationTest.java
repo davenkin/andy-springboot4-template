@@ -3,7 +3,7 @@ package com.company.andy.feature.maintenance.job;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTextFixture;
+import com.company.andy.feature.equipment.EquipmentTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.maintenance.MaintenanceRecordTestFixture;
@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import java.time.Instant;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.util.Constants.MONGO_ID;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,7 +42,7 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
     void should_remove_old_maintenance_records() {
         // Prepare data
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);

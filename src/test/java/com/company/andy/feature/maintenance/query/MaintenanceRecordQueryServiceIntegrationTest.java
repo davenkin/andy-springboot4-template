@@ -3,7 +3,7 @@ package com.company.andy.feature.maintenance.query;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
-import com.company.andy.feature.equipment.EquipmentTextFixture;
+import com.company.andy.feature.equipment.EquipmentTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.maintenance.MaintenanceRecordTestFixture;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomOrgUserActor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
@@ -29,7 +29,7 @@ class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_page_maintenance_records() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         IntStream.range(0, 20).forEach(i -> {
             maintenanceRecordCommandService.createMaintenanceRecord(MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId), actor);

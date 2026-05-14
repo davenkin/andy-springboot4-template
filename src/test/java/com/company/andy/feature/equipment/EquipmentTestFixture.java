@@ -6,9 +6,9 @@ import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import static com.company.andy.CommonRandomTestFixture.randomEnum;
+import static com.company.andy.TestFixture.randomEnum;
 
-public class EquipmentTextFixture {
+public class EquipmentTestFixture {
     public static String randomEquipmentName() {
         return "EQUIPMENT_NAME_" + RandomStringUtils.secure().nextAlphanumeric(10);
     }

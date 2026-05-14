@@ -1,11 +1,11 @@
 package com.company.andy.feature.maintenance.domain;
 
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTextFixture;
+import com.company.andy.feature.equipment.EquipmentTestFixture;
 import org.junit.jupiter.api.Test;
 
-import static com.company.andy.CommonRandomTestFixture.randomDescription;
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomDescription;
+import static com.company.andy.TestFixture.randomOrgUserActor;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MaintenanceRecordTest {
@@ -16,7 +16,7 @@ class MaintenanceRecordTest {
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord("equipment",
                 "name",
-                EquipmentTextFixture.randomEquipmentStatus(),
+                EquipmentTestFixture.randomEquipmentStatus(),
                 randomDescription(),
                 actor);
 

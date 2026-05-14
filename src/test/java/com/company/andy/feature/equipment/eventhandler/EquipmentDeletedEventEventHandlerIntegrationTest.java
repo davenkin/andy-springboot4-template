@@ -2,7 +2,7 @@ package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTextFixture;
+import com.company.andy.feature.equipment.EquipmentTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
@@ -13,7 +13,7 @@ import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +35,7 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTextFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);

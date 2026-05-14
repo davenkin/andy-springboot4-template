@@ -7,7 +7,7 @@ public class Constants {
     public static final String TRACE_PARENT = "traceparent";
     public final static String CHINA_TIME_ZONE = "Asia/Shanghai";
 
-    //Event
+    // Event
     public static final String KAFKA_DOMAIN_EVENT_TOPIC = "domain-event-topic";
     public static final String PUBLISHING_EVENT_COLLECTION = "publishing-event";
     public static final String CONSUMING_EVENT_COLLECTION = "consuming-event";
@@ -16,6 +16,12 @@ public class Constants {
     public static final String CACHE_PREFIX = "Cache:";
     public static final String ORG_EQUIPMENTS_CACHE = "ORG_EQUIPMENTS";
 
-    //Database
+    // Jwt
+    public static final String JWT_ORG_ID = "orgId";
+    public static final String JWT_PREFERRED_USERNAME = "preferred_username";
+    public static final String JWT_REALM_ACCESS = "realm_access";
+    public static final String JWT_REALM_ACCESS_ROLES = "roles";
+
+    // Database
 
 }

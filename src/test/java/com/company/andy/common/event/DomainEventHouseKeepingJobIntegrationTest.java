@@ -14,8 +14,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
-import static com.company.andy.CommonRandomTestFixture.randomOrgUserActor;
-import static com.company.andy.feature.equipment.EquipmentTextFixture.randomEquipmentName;
+import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentName;
 import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
