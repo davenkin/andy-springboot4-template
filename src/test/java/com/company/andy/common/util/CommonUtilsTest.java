@@ -7,6 +7,7 @@ import java.util.List;
 
 import static com.company.andy.common.exception.ErrorCode.SYSTEM_ERROR;
 import static com.company.andy.common.util.CommonUtils.mongoConcatFields;
+import static com.company.andy.common.util.CommonUtils.singleParameterizedArgumentClassOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommonUtilsTest {
@@ -33,17 +34,23 @@ class CommonUtilsTest {
     }
 
     @Test
-    void should_get_single_parameterized_argument_class() {
-        TestClassImpl theObject = new TestClassImpl();
-        Class<?> theParameterClass = CommonUtils.singleParameterizedArgumentClassOf(theObject.getClass());
+    void should_get_single_parameterized_argument_class_for_first_level_concrete_subclass() {
+        FirstLevelSubClass theObject = new FirstLevelSubClass();
+        Class<?> theParameterClass = singleParameterizedArgumentClassOf(theObject.getClass());
         assertEquals(String.class, theParameterClass);
     }
 
     @Test
+    void should_get_single_parameterized_argument_class_for_second_level_concrete_subclass() {
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new SecondLevelSubClass().getClass()));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new ThirdLevelSubClass().getClass()));
+    }
+
+    @Test
     void should_throw_exception_for_two_parameterized_arguments() {
-        TestClassWithTwoParameterizeArgumentsImpl theObject = new TestClassWithTwoParameterizeArgumentsImpl();
+        MultiArgumentsSubClass theObject = new MultiArgumentsSubClass();
         ServiceException exception = assertThrows(ServiceException.class, () -> {
-            CommonUtils.singleParameterizedArgumentClassOf(theObject.getClass());
+            singleParameterizedArgumentClassOf(theObject.getClass());
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
         assertTrue(exception.getMessage().contains("Expecting exactly one parameterized type argument"));
@@ -51,21 +58,66 @@ class CommonUtilsTest {
 
     @Test
     void should_throw_exception_for_non_class_parameterized_arguments() {
-        TestNonClassImpl theObject = new TestNonClassImpl();
+        NonClassArgumentSubClass theObject = new NonClassArgumentSubClass();
         ServiceException exception = assertThrows(ServiceException.class, () -> {
-            CommonUtils.singleParameterizedArgumentClassOf(theObject.getClass());
+            singleParameterizedArgumentClassOf(theObject.getClass());
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
         assertTrue(exception.getMessage().contains("The argument type"));
+        assertTrue(exception.getMessage().contains("is not of Class type"));
     }
 
     @Test
     void should_throw_exception_for_non_parameterized_super_class() {
         ServiceException exception = assertThrows(ServiceException.class, () -> {
-            CommonUtils.singleParameterizedArgumentClassOf(String.class);
+            singleParameterizedArgumentClassOf(String.class);
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
         assertTrue(exception.getMessage().contains("The super class of"));
+        assertTrue(exception.getMessage().contains("is not of parameterized type."));
+    }
+
+    @Test
+    void should_resolve_parameterized_argument_class_through_type_variable_forwarding() {
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new ForwardedSubClass().getClass()));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new ForwardedMidSubClass().getClass()));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new LastForwardedSubClass().getClass()));
+    }
+
+    abstract class AbstractBaseClass<T> {
+    }
+
+    class FirstLevelSubClass extends AbstractBaseClass<String> {
+    }
+
+    class SecondLevelSubClass extends FirstLevelSubClass {
+    }
+
+    class ThirdLevelSubClass extends FirstLevelSubClass {
+    }
+
+    class NonClassArgumentSubClass extends AbstractBaseClass<List<String>> {
+    }
+
+    abstract class AbstractMultiArgumentsBaseClass<T1, T2> {
+    }
+
+    class MultiArgumentsSubClass extends AbstractMultiArgumentsBaseClass<String, String> {
+    }
+
+    abstract class AbstractSubClass<T> extends AbstractBaseClass<T> {
+    }
+
+    class ForwardedSubClass extends AbstractSubClass<String> {
+    }
+
+    abstract class AbstractMidSubClass<T> extends AbstractSubClass<T> {
+    }
+
+    class ForwardedMidSubClass extends AbstractMidSubClass<String> {
+    }
+
+    class LastForwardedSubClass extends ForwardedSubClass {
     }
 
     @Test
@@ -100,19 +152,4 @@ class CommonUtilsTest {
             mongoConcatFields("a", "  ");
         });
     }
-}
-
-abstract class TestClass<T> {
-}
-
-class TestClassImpl extends TestClass<String> {
-}
-
-class TestNonClassImpl extends TestClass<List<String>> {
-}
-
-abstract class TestClassWithTwoParameterizeArguments<T1, T2> {
-}
-
-class TestClassWithTwoParameterizeArgumentsImpl extends TestClassWithTwoParameterizeArguments<String, String> {
 }
