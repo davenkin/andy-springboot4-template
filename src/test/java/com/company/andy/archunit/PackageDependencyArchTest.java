@@ -92,4 +92,19 @@ class PackageDependencyArchTest {
             )
             .because("No index annotations are allowed as we want to centrally manage database indexes explicitly in StartupInitializer.");
 
+
+    @ArchTest
+    static final ArchRule feature_classes_should_not_rely_on_spring_security = noClasses()
+            .that()
+            .resideInAnyPackage(
+                    "..com.company.andy.feature..command..",
+                    "..com.company.andy.feature..domain..",
+                    "..com.company.andy.feature..eventhandler..",
+                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..query.."
+            ).should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("org.springframework.security..")
+            .because("Feature packages should not rely on spring security class, as we already uses Actor to represent the authenticated principal. You may reference spring security in the controller and infrastructure packages.");
+
 }
