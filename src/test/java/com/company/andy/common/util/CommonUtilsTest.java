@@ -34,14 +34,8 @@ class CommonUtilsTest {
     }
 
     @Test
-    void should_get_single_parameterized_argument_class_for_first_level_concrete_subclass() {
-        FirstLevelSubClass theObject = new FirstLevelSubClass();
-        Class<?> theParameterClass = singleParameterizedArgumentClassOf(theObject.getClass());
-        assertEquals(String.class, theParameterClass);
-    }
-
-    @Test
-    void should_get_single_parameterized_argument_class_for_second_level_concrete_subclass() {
+    void should_get_single_parameterized_argument_class_for_all_level_subclass() {
+        assertEquals(String.class, singleParameterizedArgumentClassOf(new FirstLevelSubClass().getClass()));
         assertEquals(String.class, singleParameterizedArgumentClassOf(new SecondLevelSubClass().getClass()));
         assertEquals(String.class, singleParameterizedArgumentClassOf(new ThirdLevelSubClass().getClass()));
     }
@@ -87,13 +81,19 @@ class CommonUtilsTest {
     abstract class AbstractBaseClass<T> {
     }
 
-    class FirstLevelSubClass extends AbstractBaseClass<String> {
+    interface SomeInterface {
+    }
+
+    class FirstLevelSubClass extends AbstractBaseClass<String> implements SomeInterface {
     }
 
     class SecondLevelSubClass extends FirstLevelSubClass {
     }
 
-    class ThirdLevelSubClass extends FirstLevelSubClass {
+    interface SomeOtherInterface {
+    }
+
+    class ThirdLevelSubClass extends FirstLevelSubClass implements SomeOtherInterface {
     }
 
     class NonClassArgumentSubClass extends AbstractBaseClass<List<String>> {
