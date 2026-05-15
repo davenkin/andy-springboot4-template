@@ -5,5 +5,5 @@ public enum ActorType {
     SERVICE_ACCOUNT,
     BACKGROUND_JOB,
     EVENT_LISTENER,
-    WEBHOOK_CALLER
+    WEBHOOK_RECEIVER
 }
