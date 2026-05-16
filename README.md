@@ -112,6 +112,7 @@ contain various common coding practices that should be followed when writing you
   - event hanlder
 - restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
 - cache 文档要改
-  - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor
+- todo: 添加cache统一使用@Cachable，删除cache统一使用CachEvictor
+    - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor
     - 测试中如果需要操作cache，则可以直接使用CacheManager，但是不要使用RedisTemplate或者StringRedisTemplate等底层api来操作cache
 - repository的结构要改，文档也要改

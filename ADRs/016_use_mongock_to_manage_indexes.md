@@ -1,1 +1,2 @@
 - when to use transaction, when not
+- 记得给index加上名字：named("idx_status")

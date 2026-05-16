@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.domain.task;
+package com.company.andy.feature.maintenance.domain.task;
 
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;

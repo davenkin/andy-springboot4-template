@@ -4,7 +4,7 @@ import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
-import com.company.andy.feature.equipment.domain.task.SyncEquipmentNameToMaintenanceRecordsTask;
+import com.company.andy.feature.maintenance.domain.task.SyncEquipmentNameToMaintenanceRecordsTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
