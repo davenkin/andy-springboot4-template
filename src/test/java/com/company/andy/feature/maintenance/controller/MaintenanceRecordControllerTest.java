@@ -75,6 +75,6 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
                 }).returnResult().getResponseBody();
 
         // Verify
-        assertEquals(12, records.getContent().size());
+        assertEquals(12, records.content().size());
     }
 }

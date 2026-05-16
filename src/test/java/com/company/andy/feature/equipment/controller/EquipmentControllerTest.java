@@ -140,6 +140,6 @@ class EquipmentControllerTest extends IntegrationTest {
                 }).returnResult().getResponseBody();
 
         // Verify
-        assertEquals(12, equipments.getContent().size());
+        assertEquals(12, equipments.content().size());
     }
 }

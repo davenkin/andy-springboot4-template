@@ -11,35 +11,35 @@ class PagedResponseTest {
     @Test
     void should_create_paged_response() {
         PagedResponse<String> response = new PagedResponse<>(List.of("abc"), of(0, 25), 100);
-        assertEquals(1, response.getContent().size());
-        assertEquals(100, response.getTotalElements());
-        assertEquals(4, response.getTotalPages());
-        assertEquals(0, response.getPageNumber());
-        assertEquals(25, response.getPageSize());
-        assertTrue(response.isHasNext());
+        assertEquals(1, response.content().size());
+        assertEquals(100, response.totalElements());
+        assertEquals(4, response.totalPages());
+        assertEquals(0, response.pageNumber());
+        assertEquals(25, response.pageSize());
+        assertTrue(response.hasNext());
 
         PagedResponse<String> middlePage = new PagedResponse<>(List.of("abc"), of(0, 25), 99);
-        assertEquals(4, middlePage.getTotalPages());
-        assertEquals(0, middlePage.getPageNumber());
-        assertEquals(25, middlePage.getPageSize());
-        assertTrue(middlePage.isHasNext());
+        assertEquals(4, middlePage.totalPages());
+        assertEquals(0, middlePage.pageNumber());
+        assertEquals(25, middlePage.pageSize());
+        assertTrue(middlePage.hasNext());
 
         PagedResponse<String> lastPage = new PagedResponse<>(List.of("abc"), of(3, 25), 100);
-        assertEquals(4, lastPage.getTotalPages());
-        assertEquals(3, lastPage.getPageNumber());
-        assertEquals(25, lastPage.getPageSize());
-        assertFalse(lastPage.isHasNext());
+        assertEquals(4, lastPage.totalPages());
+        assertEquals(3, lastPage.pageNumber());
+        assertEquals(25, lastPage.pageSize());
+        assertFalse(lastPage.hasNext());
     }
 
     @Test
     void should_create_empty_paged_response() {
         PagedResponse<String> response = PagedResponse.empty(of(0, 25));
-        assertEquals(0, response.getContent().size());
-        assertEquals(0, response.getTotalElements());
-        assertEquals(0, response.getTotalPages());
-        assertEquals(0, response.getPageNumber());
-        assertEquals(25, response.getPageSize());
-        assertFalse(response.isHasNext());
+        assertEquals(0, response.content().size());
+        assertEquals(0, response.totalElements());
+        assertEquals(0, response.totalPages());
+        assertEquals(0, response.pageNumber());
+        assertEquals(25, response.pageSize());
+        assertFalse(response.hasNext());
     }
 
 }
