@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.job;
 
-import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import static com.company.andy.common.model.actor.Actor.createJobActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
-@DisableForIT
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class MaintenanceRecordJobScheduler {
