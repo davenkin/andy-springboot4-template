@@ -111,6 +111,7 @@ contain various common coding practices that should be followed when writing you
   - job
   - event hanlder
 - restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
-- archunit: feature packages should not use Jwt，org.springframework.security, 还有其他
 - cache 文档要改
+  - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor
+    - 测试中如果需要操作cache，则可以直接使用CacheManager，但是不要使用RedisTemplate或者StringRedisTemplate等底层api来操作cache
 - repository的结构要改，文档也要改

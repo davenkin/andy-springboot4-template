@@ -170,7 +170,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void should_run_again_for_idempotent_handler() {
+    void should_run_for_duplicated_event_if_idempotent_handler() {
         Actor actor = randomOrgUserActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
@@ -183,7 +183,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void should_not_handle_again_for_non_idempotent_handler() {
+    void should_not_run_for_duplicated_event_if_non_idempotent_handler() {
         Actor actor = randomOrgUserActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
