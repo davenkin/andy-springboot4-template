@@ -5,6 +5,7 @@ import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -34,6 +35,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class EquipmentControllerTest extends IntegrationTest {
     @Autowired
     private EquipmentRepository equipmentRepository;
+
+    @Autowired
+    private EquipmentCommandService equipmentCommandService;
 
     @Test
     void should_create_equipment() {
@@ -68,11 +72,7 @@ class EquipmentControllerTest extends IntegrationTest {
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = restTestClient.post()
-                .uri("/equipments").headers(authHeader)
-                .body(createEquipmentCommand)
-                .exchange().expectStatus().isCreated()
-                .expectBody(ResponseId.class).returnResult().getResponseBody().id();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -99,11 +99,7 @@ class EquipmentControllerTest extends IntegrationTest {
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.orgId()));
 
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
-        restTestClient.post()
-                .uri("/equipments").headers(authHeader)
-                .body(createEquipmentCommand)
-                .exchange().expectStatus().isCreated()
-                .expectBody(ResponseId.class).returnResult().getResponseBody().id();
+        equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.orgId()));
         List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.orgId()).summaries();
@@ -132,13 +128,7 @@ class EquipmentControllerTest extends IntegrationTest {
         Actor actor = randomOrgUserActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
-        IntStream.range(0, 20).forEach(i -> {
-            restTestClient.post()
-                    .uri("/equipments").headers(authHeader)
-                    .body(randomCreateEquipmentCommand())
-                    .exchange().expectStatus().isCreated()
-                    .expectBody(ResponseId.class).returnResult().getResponseBody().id();
-        });
+        IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor));
 
         // Execute
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();

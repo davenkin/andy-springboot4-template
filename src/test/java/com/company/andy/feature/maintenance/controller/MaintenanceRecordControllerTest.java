@@ -5,7 +5,9 @@ import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
+import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
 import com.company.andy.feature.maintenance.query.PageMaintenanceRecordsQuery;
@@ -27,16 +29,18 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Autowired
     private MaintenanceRecordRepository maintenanceRecordRepository;
 
+    @Autowired
+    private EquipmentCommandService equipmentCommandService;
+
+    @Autowired
+    private MaintenanceRecordCommandService maintenanceRecordCommandService;
+
     @Test
     void should_create_maintenance_record() {
         // Prepare
         Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = restTestClient.post()
-                .uri("/equipments").headers(authHeaderOf(actor))
-                .body(createEquipmentCommand)
-                .exchange().expectStatus().isCreated()
-                .expectBody(ResponseId.class).returnResult().getResponseBody().id();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         // Execute
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
@@ -58,18 +62,8 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
         Actor actor = randomOrgUserActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = restTestClient.post()
-                .uri("/equipments").headers(authHeader)
-                .body(createEquipmentCommand)
-                .exchange().expectStatus().isCreated()
-                .expectBody(ResponseId.class).returnResult().getResponseBody().id();
-        IntStream.range(0, 20).forEach(i -> {
-            restTestClient.post()
-                    .uri("/maintenance-records").headers(authHeader)
-                    .body(randomCreateMaintenanceRecordCommand(equipmentId))
-                    .exchange().expectStatus().isCreated()
-                    .expectBody(ResponseId.class).returnResult().getResponseBody().id();
-        });
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        IntStream.range(0, 20).forEach(_ -> maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor));
 
         // Execute
         PageMaintenanceRecordsQuery query = PageMaintenanceRecordsQuery.builder().pageSize(12).build();
