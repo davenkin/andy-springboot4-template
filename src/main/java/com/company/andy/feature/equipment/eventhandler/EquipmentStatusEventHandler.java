@@ -14,6 +14,6 @@ public class EquipmentStatusEventHandler extends AbstractEventHandler<EquipmentS
 
     @Override
     protected void handle(EquipmentStatusUpdatedEvent event, Actor actor) {
-        // impl
+        log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }

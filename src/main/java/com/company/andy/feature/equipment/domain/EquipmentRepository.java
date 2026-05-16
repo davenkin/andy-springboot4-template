@@ -1,31 +1,71 @@
 package com.company.andy.feature.equipment.domain;
 
+import com.company.andy.common.cache.CacheEvictor;
+import com.company.andy.common.infrastructure.AbstractMongoRepository;
+import com.company.andy.common.model.AggregateRoot;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface EquipmentRepository {
-    void save(Equipment equipment);
+import static com.company.andy.common.model.AggregateRoot.Fields.createdAt;
+import static com.company.andy.common.util.CommonUtils.requireNonBlank;
+import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
+import static com.company.andy.feature.equipment.domain.Equipment.EQUIPMENT_COLLECTION;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.by;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
-    void save(List<Equipment> equipments);
+@Repository
+@RequiredArgsConstructor
+public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
+    private final CacheEvictor cacheEvictor;
 
-    void delete(Equipment equipment);
+    @Override
+    public void save(Equipment equipment) {
+        super.save(equipment);
+        evictCachedEquipmentSummaries(equipment.getOrgId());
+    }
 
-    void delete(List<Equipment> equipments);
+    @Override
+    public void save(List<Equipment> equipment) {
+        super.save(equipment);
+        equipment.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
+    }
 
-    Equipment byId(String id);
+    @Override
+    public void delete(Equipment equipment) {
+        super.delete(equipment);
+        evictCachedEquipmentSummaries(equipment.getOrgId());
+    }
 
-    Equipment byId(String id, String orgId);
+    @Override
+    public void delete(List<Equipment> equipment) {
+        super.delete(equipment);
+        equipment.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
+    }
 
-    Optional<Equipment> byIdOptional(String id);
+    public boolean existsByName(String name, String orgId) {
+        requireNonBlank(name, "name must not be blank.");
+        requireNonBlank(orgId, "orgId must not be blank.");
 
-    Optional<Equipment> byIdOptional(String id, String orgId);
+        Query query = query(where(Equipment.Fields.name).is(name).and(AggregateRoot.Fields.orgId).is(orgId));
+        return mongoTemplate.exists(query, Equipment.class);
+    }
 
-    boolean exists(String id, String orgId);
+    @Cacheable(value = ORG_EQUIPMENTS_CACHE, key = "#orgId")
+    public CachedOrgEquipmentSummaries cachedEquipmentSummaries(String orgId) {
+        requireNonBlank(orgId, "orgId must not be blank.");
 
-    List<EquipmentSummary> cachedEquipmentSummaries(String orgId);
+        Query query = query(where(AggregateRoot.Fields.orgId).is(orgId)).with(by(ASC, createdAt));
+        query.fields().include(AggregateRoot.Fields.orgId, Equipment.Fields.name, Equipment.Fields.status);
+        return new CachedOrgEquipmentSummaries(mongoTemplate.find(query, EquipmentSummary.class, EQUIPMENT_COLLECTION));
+    }
 
-    void evictCachedEquipmentSummaries(String orgId);
-
-    boolean existsByName(String name, String orgId);
+    public void evictCachedEquipmentSummaries(String orgId) {
+        this.cacheEvictor.evict(ORG_EQUIPMENTS_CACHE, orgId);
+    }
 }
-

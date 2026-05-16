@@ -53,9 +53,9 @@ class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
     CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(EquipmentTestFixture.randomEquipmentName());
     equipmentCommandService.createEquipment(createEquipmentCommand, actor);
     assertFalse(stringRedisTemplate.hasKey(cacheKey));
-    List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.orgId());
+    List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.orgId()).summaries();
     assertNotNull(equipmentSummaries);
-    List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.orgId());
+    List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.orgId()).summaries();
     assertNotNull(cachedEquipmentSummaries);
     assertTrue(stringRedisTemplate.hasKey(cacheKey));
 

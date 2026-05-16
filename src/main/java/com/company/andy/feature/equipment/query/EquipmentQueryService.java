@@ -66,6 +66,6 @@ public class EquipmentQueryService {
     }
 
     public List<EquipmentSummary> getAllEquipmentSummaries(Actor actor) {
-        return equipmentRepository.cachedEquipmentSummaries(actor.orgId());
+        return equipmentRepository.cachedEquipmentSummaries(actor.orgId()).summaries();
     }
 }

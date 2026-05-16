@@ -1,6 +1,4 @@
-package com.company.andy.feature.equipment.infrastructure;
-
-import com.company.andy.feature.equipment.domain.EquipmentSummary;
+package com.company.andy.feature.equipment.domain;
 
 import java.util.List;
 

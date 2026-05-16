@@ -2,21 +2,23 @@ package com.company.andy.common.init;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
-
-import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CacheClearingInitializer {
+    private final CacheManager cacheManager;
 
-    @Caching(evict = {
-            @CacheEvict(value = ORG_EQUIPMENTS_CACHE, allEntries = true),
-    })
     public void clearCaches() {
+        this.cacheManager.getCacheNames().forEach(cacheName -> {
+            Cache cache = cacheManager.getCache(cacheName);
+            if (cache != null) {
+                cache.clear();
+            }
+        });
         log.info("Cleared caches.");
     }
 }
