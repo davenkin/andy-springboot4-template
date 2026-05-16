@@ -92,7 +92,7 @@ class EquipmentControllerTest extends IntegrationTest {
     }
 
     @Test
-    void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
+    void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
         Actor actor = randomOrgUserActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);

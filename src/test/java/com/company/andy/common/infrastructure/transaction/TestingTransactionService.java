@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class TransactionTestingService {
+public class TestingTransactionService {
     private final EquipmentCommandService equipmentCommandService;
 
     @Transactional

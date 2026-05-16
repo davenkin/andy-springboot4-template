@@ -3,7 +3,6 @@ package com.company.andy.common.infrastructure.transaction;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
@@ -30,7 +29,7 @@ class TransactionIntegrationTest extends IntegrationTest {
     private EquipmentCommandService equipmentCommandService;
 
     @Autowired
-    protected TransactionTestingService transactionTestingService;
+    protected TestingTransactionService testingTransactionService;
 
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
@@ -56,7 +55,7 @@ class TransactionIntegrationTest extends IntegrationTest {
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionWithTransaction(equipmentId,
+        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionWithTransaction(equipmentId,
                 updateEquipmentNameCommand,
                 updateEquipmentHolderCommand, actor));
 
@@ -74,7 +73,7 @@ class TransactionIntegrationTest extends IntegrationTest {
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionAtTheEndWithoutTransaction(equipmentId,
+        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionAtTheEndWithoutTransaction(equipmentId,
                 updateEquipmentNameCommand,
                 updateEquipmentHolderCommand, actor));
 
@@ -92,7 +91,7 @@ class TransactionIntegrationTest extends IntegrationTest {
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
+        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
                 updateEquipmentNameCommand,
                 updateEquipmentHolderCommand, actor));
 
