@@ -1,30 +1,35 @@
 package com.company.andy.common.util;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Getter
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class PagedResponse<T> {
     @Schema(description = "Paged elements")
-    private final List<T> content;
+    private List<T> content;
 
     @Schema(description = "Total number of elements")
-    private final long totalElements;
+    private long totalElements;
 
     @Schema(description = "Total number of pages")
-    private final long totalPages;
+    private long totalPages;
 
     @Schema(description = "Page number")
-    private final int pageNumber;
+    private int pageNumber;
 
     @Schema(description = "Page size")
-    private final int pageSize;
+    private int pageSize;
 
     @Schema(description = "Whether next page exists")
-    private final boolean hasNext;
+    private boolean hasNext;
 
     public PagedResponse(List<T> content, Pageable pageable, long totalElements) {
         this.content = content;

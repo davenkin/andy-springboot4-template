@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.stream.IntStream;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
@@ -29,10 +31,10 @@ class MaintenanceRecordQueryServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_page_maintenance_records() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         IntStream.range(0, 20).forEach(i -> {
-            maintenanceRecordCommandService.createMaintenanceRecord(MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId), actor);
+            maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor);
         });
 
         PageMaintenanceRecordsQuery query = PageMaintenanceRecordsQuery.builder().pageSize(12).build();

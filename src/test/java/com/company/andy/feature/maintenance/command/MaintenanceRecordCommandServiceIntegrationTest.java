@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordCommandServiceIntegrationTest extends IntegrationTest {
@@ -28,10 +30,10 @@ class MaintenanceRecordCommandServiceIntegrationTest extends IntegrationTest {
     @Test
     void should_create_maintenance_record() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
 
         MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId);

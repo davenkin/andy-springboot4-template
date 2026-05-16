@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_CREATED_EVENT;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTest {
@@ -34,9 +36,9 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
     @Test
     void should_count_maintenance_records_for_equipment() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         String maintenanceRecordId2 = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         MaintenanceRecordCreatedEvent createdEvent = latestEventFor(maintenanceRecordId, MAINTENANCE_RECORD_CREATED_EVENT, MaintenanceRecordCreatedEvent.class);
@@ -51,9 +53,9 @@ class MaintenanceRecordCreatedEventHandlerIntegrationTest extends IntegrationTes
     @Test
     void should_update_status_for_equipment_using_maintenance_record_status() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
 
         MaintenanceRecordCreatedEvent createdEvent = latestEventFor(maintenanceRecordId, MAINTENANCE_RECORD_CREATED_EVENT, MaintenanceRecordCreatedEvent.class);

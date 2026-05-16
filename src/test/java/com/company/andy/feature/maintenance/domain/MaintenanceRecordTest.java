@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.company.andy.TestFixture.randomDescription;
 import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentStatus;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MaintenanceRecordTest {
@@ -16,7 +17,7 @@ class MaintenanceRecordTest {
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord("equipment",
                 "name",
-                EquipmentTestFixture.randomEquipmentStatus(),
+                randomEquipmentStatus(),
                 randomDescription(),
                 actor);
 

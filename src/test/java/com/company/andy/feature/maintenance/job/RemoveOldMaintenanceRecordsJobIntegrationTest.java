@@ -20,6 +20,8 @@ import java.time.Instant;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.util.Constants.MONGO_ID;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,10 +44,10 @@ class RemoveOldMaintenanceRecordsJobIntegrationTest extends IntegrationTest {
     void should_remove_old_maintenance_records() {
         // Prepare data
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
 

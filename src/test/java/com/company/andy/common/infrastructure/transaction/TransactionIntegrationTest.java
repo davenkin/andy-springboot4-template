@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.DisabledIf;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisabledIf(value = "#{environment.acceptsProfiles('it')}", loadContext = true)
@@ -34,8 +35,8 @@ class TransactionIntegrationTest extends IntegrationTest {
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
-        CreateEquipmentCommand createAnotherEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         equipmentCommandService.createEquipment(createAnotherEquipmentCommand, actor);
 
@@ -50,10 +51,10 @@ class TransactionIntegrationTest extends IntegrationTest {
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = EquipmentTestFixture.randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = EquipmentTestFixture.randomUpdateEquipmentHolderCommand();
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
         assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionWithTransaction(equipmentId,
                 updateEquipmentNameCommand,
@@ -68,10 +69,10 @@ class TransactionIntegrationTest extends IntegrationTest {
     @Test
     void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = EquipmentTestFixture.randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = EquipmentTestFixture.randomUpdateEquipmentHolderCommand();
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
         assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionAtTheEndWithoutTransaction(equipmentId,
                 updateEquipmentNameCommand,
@@ -86,10 +87,10 @@ class TransactionIntegrationTest extends IntegrationTest {
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = EquipmentTestFixture.randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = EquipmentTestFixture.randomUpdateEquipmentHolderCommand();
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
         assertThrows(RuntimeException.class, () -> transactionTestingService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
                 updateEquipmentNameCommand,

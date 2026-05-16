@@ -104,7 +104,7 @@ contain various common coding practices that should be followed when writing you
 
 ## Todo
 
-- testing strategy change, convert to use controller but not command service, also change doc
+- testing strategy change, convert to use controller but not command service, also change doc,集成测试没有了commandservice和queryservice的测试
 - restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
 - archunit: feature packages should not use Jwt，org.springframework.security, 还有其他
 - cache 文档要改

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,9 +37,9 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     void delete_equipment_should_also_delete_all_its_maintenance_records() {
         // Prepare data
         Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = EquipmentTestFixture.randomCreateEquipmentCommand();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand(equipmentId);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
 
