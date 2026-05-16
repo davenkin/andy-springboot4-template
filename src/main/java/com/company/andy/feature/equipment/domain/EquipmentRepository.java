@@ -31,9 +31,9 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
     }
 
     @Override
-    public void save(List<Equipment> equipment) {
-        super.save(equipment);
-        equipment.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
+    public void save(List<Equipment> equipments) {
+        super.save(equipments);
+        equipments.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
     }
 
     @Override
@@ -43,9 +43,9 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
     }
 
     @Override
-    public void delete(List<Equipment> equipment) {
-        super.delete(equipment);
-        equipment.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
+    public void delete(List<Equipment> equipments) {
+        super.delete(equipments);
+        equipments.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
     }
 
     public boolean existsByName(String name, String orgId) {

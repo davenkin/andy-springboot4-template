@@ -42,8 +42,8 @@ class EquipmentControllerTest extends IntegrationTest {
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
-        ResponseId responseId = this.restTestClient.post()
-                .uri("/equipments").headers(bearerTokenHeaderFor(actor))
+        ResponseId responseId = restTestClient.post()
+                .uri("/equipments").headers(authHeaderOf(actor))
                 .body(createEquipmentCommand)
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody();
@@ -65,10 +65,10 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_update_equipment_name() {
         // Prepare
         Actor actor = randomOrgUserActor();
-        Consumer<HttpHeaders> authHeader = bearerTokenHeaderFor(actor);
+        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = this.restTestClient.post()
+        String equipmentId = restTestClient.post()
                 .uri("/equipments").headers(authHeader)
                 .body(createEquipmentCommand)
                 .exchange().expectStatus().isCreated()
@@ -76,7 +76,7 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
-        this.restTestClient.put()
+        restTestClient.put()
                 .uri("/equipments/{id}/name", equipmentId).headers(authHeader)
                 .body(updateEquipmentNameCommand)
                 .exchange().expectStatus().isOk();
@@ -95,11 +95,11 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() throws InterruptedException {
         // Prepare
         Actor actor = randomOrgUserActor();
-        Consumer<HttpHeaders> authHeader = bearerTokenHeaderFor(actor);
+        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.orgId()));
 
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
-        String equipmentId = this.restTestClient.post()
+        restTestClient.post()
                 .uri("/equipments").headers(authHeader)
                 .body(createEquipmentCommand)
                 .exchange().expectStatus().isCreated()
@@ -114,7 +114,7 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Execute
         // Create another equipment to evict the cache
-        this.restTestClient.post()
+        restTestClient.post()
                 .uri("/equipments").headers(authHeader)
                 .body(new CreateEquipmentCommand(randomEquipmentName()))
                 .exchange().expectStatus().isCreated()
@@ -130,10 +130,10 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_page_equipments() {
         // Prepare
         Actor actor = randomOrgUserActor();
-        Consumer<HttpHeaders> authHeader = bearerTokenHeaderFor(actor);
+        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
         IntStream.range(0, 20).forEach(i -> {
-            this.restTestClient.post()
+            restTestClient.post()
                     .uri("/equipments").headers(authHeader)
                     .body(randomCreateEquipmentCommand())
                     .exchange().expectStatus().isCreated()
@@ -142,7 +142,7 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Execute
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
-        PagedResponse<QPagedEquipment> equipments = this.restTestClient.post()
+        PagedResponse<QPagedEquipment> equipments = restTestClient.post()
                 .uri("/equipments/paged").headers(authHeader)
                 .body(query)
                 .exchange().expectStatus().isOk()

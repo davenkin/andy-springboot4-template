@@ -71,7 +71,7 @@ public abstract class IntegrationTest {
         return domainEvent == null ? null : (T) domainEvent.getEvent();
     }
 
-    protected Consumer<HttpHeaders> bearerTokenHeaderFor(Actor actor) {
+    protected Consumer<HttpHeaders> authHeaderOf(Actor actor) {
         return headers -> headers.setBearerAuth(getEncoder().encodeToString(objectMapper.writeValueAsString(actor).getBytes()));
     }
 }
