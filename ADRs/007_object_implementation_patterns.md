@@ -12,10 +12,9 @@ For the same type of objects, we follow the same implementation patterns.
 
 ## Implementation
 
-- [Aggregate Root](#aggregate-root)
-- todo: mutable entities under Aggregate Root (EquipmentEngine)
-- todo: Value objects(use record with optional builder, can use multiple constructors if needed)
-- todo: Objects with hierarchy(like domain event)
+- [AggregateRoot](#aggregateroot)
+- [Entity under aggregate root](#entity-under-aggregate-root)
+- [Value object](#value-object)
 - [Repository](#repository)
 - [Controller](#controller)
 - [CommandService](#commandservice)
@@ -29,21 +28,25 @@ For the same type of objects, we follow the same implementation patterns.
 - [QueryService](#queryservice)
 - [Query](#query)
 
-### Aggregate Root
+### AggregateRoot
 
-- Aggregate Roots are the most important types of objects in your software, they contain your core domain logic, they
+- Aggregate root are the most important types of objects in your software, they contain your core domain logic, they
   are the sole reason your software exists
-- All Aggregate Roots should extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java)
+- All aggregate roots should extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java)
   base class
-- All changes to the internal state of Aggregate Roots should go via the public methods of Aggregate Roots
+- All changes to the internal state of aggregate roots should go via the public methods of aggregate roots
 - Aggregate Root should use meaningful constructors to create itself
-- For code consistency, always use Factory to create Aggregate Root, no matter how simple it is
-- Aggregate Root should not have builder method because builder method can easily results in invalid object
-- Aggregate Root should have a globally unique ID and this ID should be generate by the code but not by database
-- Aggregate Root should have meaningful business methods for changing its own state. Every business method should ensure
+- Builders(such as lombok `@Builder`) should not be used for creating aggregate roots, because they can easily result in
+  invalid objects, also builders does not convey any business meaning
+- All arguments constructor(such as lombok `@AllArgsConstructor`) should not be used for creating aggregate roots,
+  because they can easily result in invalid objects, also builders does not convey any business meaning
+- For code consistency, always use Factory to create aggregate Root, no matter how simple it is
+- Aggregate root should not have builder method because builder method can easily results in invalid object
+- Aggregate root should have a globally unique ID and this ID should be generate by the code but not by database
+- Aggregate root should have meaningful business methods for changing its own state. Every business method should ensure
   the object is always in valid state by applying business rules. Business methods might raise Domain Events after state
   is changed.
-- Aggregate Root has the following class level annotations:
+- Aggregate root has the following class level annotations:
     - `@Slf4j`: for log
     - `@Getter`: for retrieving data (actually getters are quite bad as it violates information hiding principle, but
       for convenience let's keep them)
@@ -51,20 +54,19 @@ For the same type of objects, we follow the same implementation patterns.
     - `@TypeAlias(EQUIPMENT_COLLECTION)`: use a explict type alias, otherwise the FQCN will be used by Spring Data
       MongoDB which does not survive refactorings of changing package locations
     - `@Document(EQUIPMENT_COLLECTION)`: for MongoDB collection
-    - `@NoArgsConstructor(access = PRIVATE)`: for Jackson deserialization as well as built from MongoDB, should be
-      `PRIVATE` it's not supposed to be called manually
-- Aggregate Root should not be annotated with `@Setter`, `@Builder` or `@Data`
-- Besides Aggregate Root, there can be other types of domain objects in the domain model, such as `EquipmentStatus`
+    - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
+      built from MongoDB, should be
+      `PRIVATE` as it's not supposed to be called manually
+- Aggregate root should not be annotated with `@Setter`, `@Builder` or `@Data`
 
-Example [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
+Example aggregate root [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
-@Slf4j
-@Getter
+
 @FieldNameConstants // For access field names
 @TypeAlias(EQUIPMENT_COLLECTION) // Use a explict type alias
 @Document(EQUIPMENT_COLLECTION) // Configure MongoDB collection name
-@NoArgsConstructor(access = PRIVATE) // For Jackson deserialization
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator) // For Jackson and MongoDB deserialization
 public class Equipment extends AggregateRoot {
     public final static String EQUIPMENT_COLLECTION = "equipment";
     private String name;
@@ -72,10 +74,11 @@ public class Equipment extends AggregateRoot {
     private String holder;
     private long maintenanceRecordCount;
 
-    public Equipment(String name, Actor actor) { // Explict contructors
+    public Equipment(String name, Actor actor) { // Explict business contructors
         super(newEquipmentId(), actor);
         this.name = name;
-        raiseEvent(new EquipmentCreatedEvent(this)); // Raise Domain Event
+        this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
+        raiseEvent(new EquipmentCreatedEvent(this, actor)); // Raise Domain Event
     }
 
     public static String newEquipmentId() {
@@ -92,65 +95,82 @@ public class Equipment extends AggregateRoot {
 }
 ```
 
+### Entity under aggregate root
+
+Sometime aggregate roots have child entities, these entities are mutable objects and they don't have their own
+repository. They are only accessed via their parent aggregate root, and they don't have globally unique ID.
+
+- `@Getter` for retrieving data
+- `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as built
+  from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
+
+Example entity [EquipmentEngine](src/main/java/com/company/andy/feature/equipment/domain/EquipmentEngine.java):
+
+```java
+@Getter
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
+public class EquipmentEngine {
+    private String model;
+    private int temperature;
+    private boolean started;
+
+    public EquipmentEngine(String model) {
+        this.model = model;
+        this.temperature = 0;
+        this.started = false;
+    }
+    // ...
+}
+```
+
+### Value object
+
+Value objects are immutable objects that represents a value, they don't have their own identity, and they are usually
+used as fields in aggregate roots or Entities.
+
+- Value objects should mainly be implemented as Java Records, and they can have multiple constructors if needed
+- Value objects can optionally use builders(such as lombok `@Builder`) for creation, but this is not recommended as it
+  can easily result in invalid objects
+
+Example value objects [Actor](src/main/java/com/company/andy/common/model/actor/Actor.java):
+
+```java
+public record Actor(String id,
+                    String name,
+                    Set<Role> roles,
+                    String orgId,
+                    ActorType type,
+                    String initiator,
+                    Instant createdAt) {
+}
+```
+
 ### Repository
 
-- Repository abstracts database interactions for accessing Aggregate Roots
-- Every Aggregate Root class has its own Repository class
-- Repositories should firstly have an interface class and then a concrete implementation class
+- Repository abstracts database interactions for accessing aggregate roots
+- Every aggregate root class has its own Repository class
+- All Repository implementation should
+  extend [AbstractMongoRepository](../src/main/java/com/company/andy/common/infrastructure/AbstractMongoRepository.java)
 
 Example for Repository
 interface [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
 
 ```java
-public interface EquipmentRepository {
-    void save(Equipment equipment);
-
-    void save(List<Equipment> equipments);
-
-    void delete(Equipment equipment);
-    
-    // more code omitted
-}
-```
-
-Example for Repository
-implementation [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java):
-
-```java
 @Repository
 @RequiredArgsConstructor
-public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment> implements EquipmentRepository {
-    private final CachedMongoEquipmentRepository cachedMongoEquipmentRepository;
+public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
+    private final CacheEvictor cacheEvictor;
 
     @Override
-    public List<EquipmentSummary> cachedEquipmentSummaries(String orgId) {
-        return cachedMongoEquipmentRepository.cachedEquipmentSummaries(orgId).summaries();
+    public void save(Equipment equipment) {
+        super.save(equipment);
+        evictCachedEquipmentSummaries(equipment.getOrgId());
     }
-    // more code ommited
-}
-```
 
-- All Repository implementation should
-  extend [AbstractMongoRepository](../src/main/java/com/company/andy/common/infrastructure/AbstractMongoRepository.java)
-- For cache, the Repository implementation can reference a cache Repository, the cache Repository also extends
-  `AbstractMongoRepository`
-
-Example of cache
-Repository [CachedMongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/CachedMongoEquipmentRepository.java):
-
-```java
-@Slf4j
-@Repository
-@RequiredArgsConstructor
-public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equipment> {
-
-    @Cacheable(value = ORG_EQUIPMENTS_CACHE, key = "#orgId")
-    public CachedOrgEquipmentSummaries cachedEquipmentSummaries(String orgId) {
-        requireNonBlank(orgId, "orgId must not be blank.");
-
-        Query query = query(where(AggregateRoot.Fields.orgId).is(orgId)).with(by(ASC, createdAt));
-        query.fields().include(AggregateRoot.Fields.orgId, Equipment.Fields.name, Equipment.Fields.status);
-        return new CachedOrgEquipmentSummaries(mongoTemplate.find(query, EquipmentSummary.class, EQUIPMENT_COLLECTION));
+    @Override
+    public void save(List<Equipment> equipments) {
+        super.save(equipments);
+        equipments.stream().findFirst().ifPresent(it -> evictCachedEquipmentSummaries(it.getOrgId()));
     }
 }
 ```
@@ -193,8 +213,8 @@ public class EquipmentController {
   writes to database
 - Methods in CommandService usually accepts a Command object as parameter, as well as an `Actor` object
 - CommandService should not contain business logic
-- CommandService returns the Aggregate Root's ID for creating objects, and return `void` for updating or deleting
-  Aggregate Roots
+- CommandService returns the aggregate root's ID for creating objects, and return `void` for updating or deleting
+  aggregate roots
 
 Example [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
@@ -241,8 +261,8 @@ public record CreateMaintenanceRecordCommand(
 - DomainService is totally different from CommandService(or QueryService) in that DomainService is part of the domain
   model, but CommandService is the gate to domain model
 - DomainService holds domain logic
-- Normally we don't want DomainService, as domain logic should best be reside in Aggregate Roots. DomainService is our
-  last resort if the business logic is not suitable to be put inside Aggregate Roots.
+- Normally we don't want DomainService, as domain logic should best be reside in aggregate roots. DomainService is our
+  last resort if the business logic is not suitable to be put inside aggregate roots.
 
 Example [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
@@ -252,7 +272,7 @@ Example [EquipmentDomainService](../src/main/java/com/company/andy/feature/equip
 public class EquipmentDomainService {
     private final EquipmentRepository equipmentRepository;
 
-    public void updateEquipmentName(Equipment equipment, String newName) {
+    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -260,7 +280,7 @@ public class EquipmentDomainService {
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName);
+        equipment.updateName(newName, actor);
     }
 }
 ```
@@ -278,7 +298,7 @@ itself, hence `EquipmentDomainService` is used instead.
 - Domain Event should hold enough context data about what happened, but not the whole Aggregate Root or non-relevant
   data
 - Domain Event should not be annotated with `@Setter`, `@Builder` or  `@Data`
-- Domain Events are only raised from Aggregate Roots by using `AggregateRoot.raiseEvent()` method
+- Domain Events are only raised from aggregate roots by using `AggregateRoot.raiseEvent()` method
 - Domain Event has the following class level annotations:
     - `@Getter`: for retrieving data (actually getters are quite bad as it violates information hiding principle, but
       for convenience let's keep them)
@@ -286,21 +306,22 @@ itself, hence `EquipmentDomainService` is used instead.
       Spring Data MongoDB which does not survive refactoring of changing package locations. The value should be the same
       as the event's
       `DomainEventType` such as `MAINTENANCE_RECORD_CREATED_EVENT`
-    - `@NoArgsConstructor(access = PRIVATE)`: for Jackson deserialization
+    - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
+      built from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
 
 Example [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
 
 ```java
 @Getter
 @TypeAlias("MAINTENANCE_RECORD_CREATED_EVENT")
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class MaintenanceRecordCreatedEvent extends DomainEvent {
     private String maintenanceRecordId;
     private String equipmentId;
     private String equipmentName;
 
-    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord) {
-        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord);
+    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord, Actor actor) {
+        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord, actor);
         this.maintenanceRecordId = maintenanceRecord.getId();
         this.equipmentId = maintenanceRecord.getEquipmentId();
         this.equipmentName = maintenanceRecord.getEquipmentName();
@@ -330,7 +351,7 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 ```java
 @Getter
 @TypeAlias("EQUIPMENT_NAME_UPDATED_EVENT")
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentNameUpdatedEvent extends EquipmentUpdatedEvent {
     private String updatedName;
 
@@ -392,11 +413,11 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
 
 ### Factory
 
-- Factory is used to create Aggregate Roots
-- In Factories, before calling Aggregate Roots's constructors, there usually exists some business validations
-- If no business validation is required, the Factory can be as simple as just call Aggregate Roots's constructors, but
-  for consistency, let's always use Factory to create Aggregate Roots no matter how simple the Factory is
-- Use Factory to create Aggregate Roots makes our code more explict as the creation of Aggregate Roots is an important
+- Factory is used to create aggregate roots
+- In Factories, before calling aggregate roots's constructors, there usually exists some business validations
+- If no business validation is required, the Factory can be as simple as just call aggregate roots's constructors, but
+  for consistency, let's always use Factory to create aggregate roots no matter how simple the Factory is
+- Use Factory to create aggregate roots makes our code more explict as the creation of aggregate roots is an important
   moment in software
 
 Example [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecordFactory.java):
@@ -420,7 +441,10 @@ public class MaintenanceRecordFactory {
 - Tasks represents a standalone operation that usually involves multiple database rows(documents)
 - Tasks is like DomainService, but for convenience it can access database directly using `MongoTemplate`
 - Tasks are usually called by EventHandlers but not always
-- Task should be put under the package where the task operates on, but not where the task is called, for example, `SyncEquipmentNameToMaintenanceRecordsTask` should be put under `maintenance.domain.task` package instead of `equipment.domain.task` package, even though the task is called by an EventHandler in `equipment.eventhandler` package.
+- Task should be put under the package where the task operates on, but not where the task is called, for example,
+  `SyncEquipmentNameToMaintenanceRecordsTask` should be put under `maintenance.domain.task` package instead of
+  `equipment.domain.task` package, even though the task is called by an EventHandler in `equipment.eventhandler`
+  package.
 
 Example [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 
@@ -507,14 +531,19 @@ public class EquipmentQueryService {
   extend [PageQuery](../src/main/java/com/company/andy/common/util/PageQuery.java)
 - Query objects should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 - For API documentation, `@Schema` should be used to on query fields
+- Query object has the following class level annotations:
+    - `@Getter`: for retrieving data
+    - `@SuperBuilder`: builder, we don't use `@Builder` but `@SuperBuilder` because the query extends `PageQuery` which
+      has its own fields, and `@SuperBuilder` can handle builder for parent class's fields
+    - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization, should be
+      `PRIVATE` as it's not supposed to be called manually
 
 Example [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class PageEquipmentsQuery extends PageQuery {
     @Schema(description = "Search text")
     @Max(50)
