@@ -60,7 +60,7 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Verify domain events
         // Only need to check the existence of domain event in database,
-        // For event handling please add another test
+        // For event handling please add another test specifically for event handler
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
