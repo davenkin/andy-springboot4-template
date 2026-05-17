@@ -22,6 +22,7 @@ This is a template Spring Boot 4 project with the following features:
 - Domain modeling using [Domain Driven Design (DDD)](./ADRs/003_use_ddd.md)
 - Standardized [request process flow](./ADRs/006_request_process_flow.md)
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
+- Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/) and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
 
 ## Tech stack
 

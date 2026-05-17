@@ -37,10 +37,12 @@ This is an ADR but not a lecture on DDD, so here we only list some common DDD pr
 Example Aggregate Root [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
+@Slf4j
+@Getter
 @FieldNameConstants
 @TypeAlias(EQUIPMENT_COLLECTION)
 @Document(EQUIPMENT_COLLECTION)
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class Equipment extends AggregateRoot {
     public final static String EQUIPMENT_COLLECTION = "equipment";
     private String name;
@@ -63,7 +65,7 @@ DomainService [EquipmentDomainService](../src/main/java/com/company/andy/feature
 public class EquipmentDomainService {
     private final EquipmentRepository equipmentRepository;
 
-    public void updateEquipmentName(Equipment equipment, String newName) {
+    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -71,7 +73,7 @@ public class EquipmentDomainService {
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName);
+        equipment.updateName(newName, actor);
     }
 }
 ```
@@ -86,6 +88,7 @@ Example
 CommandService: [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
 ```java
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class EquipmentCommandService {
@@ -135,18 +138,7 @@ Repository [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/
 ```java
 @Repository
 @RequiredArgsConstructor
-public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment> implements EquipmentRepository {
-    private final CachedMongoEquipmentRepository cachedMongoEquipmentRepository;
-
-    @Override
-    public List<EquipmentSummary> cachedEquipmentSummaries(String orgId) {
-        return cachedMongoEquipmentRepository.cachedEquipmentSummaries(orgId).summaries();
-    }
-
-    @Override
-    public void evictCachedEquipmentSummaries(String orgId) {
-        cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(orgId);
-    }
+public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
     
     // code omitted
 }

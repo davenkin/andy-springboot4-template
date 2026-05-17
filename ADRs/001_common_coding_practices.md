@@ -12,7 +12,7 @@
 public Equipment(String name, Actor actor) {
   super(newEquipmentId(), actor);
   this.name = name;
-  raiseEvent(new EquipmentCreatedEvent(this));
+  raiseEvent(new EquipmentCreatedEvent(this, actor));
 }
 
 public static String newEquipmentId() {
@@ -68,8 +68,7 @@ class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/
 ```java
 @Getter
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class PageEquipmentsQuery extends PageQuery {
   @Schema(description = "Search text")
   @Max(50)
@@ -135,7 +134,7 @@ private someMethod() {
 ```java
 @Repository
 @RequiredArgsConstructor
-public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment> implements EquipmentRepository {}
+public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 ```
 
 - Use a single instance of `ObjectMapper` across the whole application as much as possible. Reason: A single
@@ -145,16 +144,16 @@ public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment>
   `JsonMapperBuilderCustomizer` is created for building an `ObjectMapper`:
 
 ```java
-@Bean
-public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
-  return builder -> builder
-      .changeDefaultVisibility(checker ->
-          checker.withVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY)
-      )
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-      .configure(DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-}
+    @Bean
+    public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
+        return builder -> builder
+                .changeDefaultVisibility(it -> it.withVisibility(ALL, ANY))
+                .changeDefaultPropertyInclusion(it -> it.withValueInclusion(ALWAYS))
+                .enable(REQUIRE_SETTERS_FOR_GETTERS)
+                .disable(FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(WRITE_DATES_AS_TIMESTAMPS)
+                .disable(WRITE_DURATIONS_AS_TIMESTAMPS);
+    }
 ```
 
 Here, `changeDefaultVisibility()` is used to enable direct field access(
@@ -176,7 +175,7 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
 
 - If distributed lock is required, used
   Shedlock's [LockingTaskExecutor](../src/main/java/com/company/andy/common/configuration/DistributedLockConfiguration.java).
-- Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code.
+- Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code for configuration items that seldom change.
 - Do not create interface classes for services until really needed. Reason: the public methods on service classes
   already serve
   as interfaces.

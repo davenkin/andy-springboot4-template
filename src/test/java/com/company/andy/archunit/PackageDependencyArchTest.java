@@ -90,7 +90,7 @@ class PackageDependencyArchTest {
                     TextIndexed.class,
                     HashIndexed.class
             )
-            .because("No index annotations are allowed as we want to centrally manage database indexes explicitly in StartupInitializer.");
+            .because("No index annotations are allowed as we want to centrally manage database indexes explicitly using Mongock.");
 
     @ArchTest
     static final ArchRule feature_classes_should_not_rely_on_spring_security = noClasses()
