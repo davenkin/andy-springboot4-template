@@ -34,30 +34,30 @@ technical layers, use the following structure:
 The `1` in `(class:1)` indicates there can be only one class, `(class:N)` for multiple.
 
 - `Aggregate Root`(folder:1)
-    - `command`(folder:1)
-        - `XxxCommandService`(class:1)
-        - `XxxCommand`(class:N)
+    - `command`(folder:1):
+        - `XxxCommandService`(class:1): Command service
+        - `XxxCommand`(class:N): Command object classes
     - `controller`(folder:1)
-        - `XxxController`(class:1)
+        - `XxxController`(class:1): Spring MVC controller
     - `domain`(folder:1)
-        - `Xxx`(class:N)
-        - `XxxRepository`(class:1)
-        - `XxxFactory`(class:1)
-        - `XxxDomainService`(class:N)
-        - `event`(folder:1)
-        - `task`(folder:1)
-            - `XxxTask`
-    - `eventhandler`(folder:1)
-        - `XxxEventHandler`(class:N)
-    - `infrastructure`(folder:1)
-        - `MongoXxxRepository`(class:N)
-    - `job`(folder:1)
-        - `XxxScheduler`(class:N)
-        - `XxxJob`(class:N)
-    - `query`(folder:1)
-        - `XxxQueryService`(class:N)
-        - `XxxQuery`(class:N)
-        - `QXxx`(class:N)
+        - `Xxx`(class:N): Domain objects such as aggregate roots, entities and value objects, they hold business logic.
+        - `XxxRepository`(class:1): Repository for the aggregate root
+        - `XxxFactory`(class:1): Factory for creating the aggregate root
+        - `XxxDomainService`(class:N): Domain service for holding business logic that is not suitable for residing in domain objects, but still belongs to the
+          domain layer.
+        - `event`(folder:1): Contains domain objects
+        - `task`(folder:1): Contains various tasks.
+            - `XxxTask`: A single task
+    - `eventhandler`(folder:1): Contains all the event handler classes
+        - `XxxEventHandler`(class:N): Event handler
+    - `infrastructure`(folder:1): Contains infrastructure classes
+    - `job`(folder:1): Contains background jobs that are related to the aggregate root
+        - `XxxScheduler`(class:N): Scheduling configuration for the jobs
+        - `XxxJob`(class:N): A single background job
+    - `query`(folder:1): Contains query related classes
+        - `XxxQueryService`(class:N): Query services
+        - `XxxQuery`(class:N): Query request classes
+        - `QXxx`(class:N): Query response classes
 
 More detailed explanation:
 
@@ -115,8 +115,6 @@ More detailed explanation:
         - `XxxEventHandler`(class:N): Event handler class, should end with "EventHandler". Example:
           [EquipmentCreatedEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedEventHandler.java).
     - `infrastructure`(folder:1): Contains the infrastructure code that is related to the Aggregate Root.
-        - `MongoXxxRepository`(class:N): The repository implementations, should end with "Repository".
-          Example: [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java).
     - `job`(folder:1):Contains background jobs that are related to the Aggregate Root.
         - `XxxJobScheduler`(class:N): Scheduling configuration, should end with "Scheduler".
           Example: [EquipmentJobScheduler](../src/main/java/com/company/andy/feature/equipment/job/EquipmentJobScheduler.java).
