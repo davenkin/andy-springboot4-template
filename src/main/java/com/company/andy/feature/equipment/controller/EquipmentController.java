@@ -49,9 +49,9 @@ public class EquipmentController {
     public void updateEquipmentName(@PathVariable("equipmentId") @NotBlank
                                     @Parameter(description = "Id of the equipment")
                                     String equipmentId,
-                                    @RequestBody @Valid UpdateEquipmentNameCommand updateEquipmentNameCommand,
+                                    @RequestBody @Valid UpdateEquipmentNameCommand command,
                                     @AuthenticationPrincipal Actor actor) {
-        this.equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor);
+        this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
     }
 
     @Operation(summary = "Update an equipment's holder")
