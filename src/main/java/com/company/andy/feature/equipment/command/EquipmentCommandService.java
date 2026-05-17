@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+// Command services handles command objects and orchestrates the processing flow
+// Command services should not contain business logic but delegate to aggregate roots or domain services
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

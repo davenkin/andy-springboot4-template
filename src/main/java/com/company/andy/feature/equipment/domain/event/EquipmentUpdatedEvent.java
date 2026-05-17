@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PROTECTED;
 
-// Parent class for all update events
+// Parent class for all equipment update events
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

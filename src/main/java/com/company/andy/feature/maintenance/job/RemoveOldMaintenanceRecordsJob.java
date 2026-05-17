@@ -14,7 +14,6 @@ import java.time.Instant;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-// Remove MaintenanceRecords that are more than KEEP_DAYS days old
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ public class RemoveOldMaintenanceRecordsJob {
     private static final int KEEP_DAYS = 180;
     private final MongoTemplate mongoTemplate;
 
+    // Remove MaintenanceRecords that are more than KEEP_DAYS days old
     public void run() {
         log.info("Start removing maintenance records that are more than {} days old.", KEEP_DAYS);
         Query query = Query.query(where(AggregateRoot.Fields.createdAt).lt(Instant.now().minus(KEEP_DAYS, DAYS)));
