@@ -3,10 +3,12 @@ package com.company.andy.feature.equipment.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @Getter
+@FieldNameConstants // For access field names
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentEngine {
     private String model;

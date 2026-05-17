@@ -13,14 +13,14 @@ For the same type of objects, we follow the same implementation patterns.
 ## Implementation
 
 - [AggregateRoot](#aggregateroot)
-- [Entity under aggregate root](#entity-under-aggregate-root)
+- [Entity under AggregateRoot](#entity-under-aggregateroot)
 - [Value object](#value-object)
 - [Repository](#repository)
 - [Controller](#controller)
 - [CommandService](#commandservice)
 - [Command](#command)
 - [DomainService](#domainservice)
-- [DomainEvent](#domain-event)
+- [DomainEvent](#domainevent)
 - [EventHandler](#eventhandler')
 - [Factory](#factory)
 - [Task](#task)
@@ -30,34 +30,33 @@ For the same type of objects, we follow the same implementation patterns.
 
 ### AggregateRoot
 
-- Aggregate root are the most important types of objects in your software, they contain your core domain logic, they
+- Aggregate roots are the most important types of objects in your software, they contain your core domain logic, they
   are the sole reason your software exists
 - All aggregate roots should extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java)
-  base class
 - All changes to the internal state of aggregate roots should go via the public methods of aggregate roots
 - Aggregate Root should use meaningful constructors to create itself
 - Builders(such as lombok `@Builder`) should not be used for creating aggregate roots, because they can easily result in
   invalid objects, also builders does not convey any business meaning
 - All arguments constructor(such as lombok `@AllArgsConstructor`) should not be used for creating aggregate roots,
-  because they can easily result in invalid objects, also builders does not convey any business meaning
-- For code consistency, always use Factory to create aggregate Root, no matter how simple it is
-- Aggregate root should not have builder method because builder method can easily results in invalid object
-- Aggregate root should have a globally unique ID and this ID should be generate by the code but not by database
-- Aggregate root should have meaningful business methods for changing its own state. Every business method should ensure
-  the object is always in valid state by applying business rules. Business methods might raise Domain Events after state
-  is changed.
-- Aggregate root has the following class level annotations:
-    - `@Slf4j`: for log
+  because they can easily result in invalid objects, also they does not convey any business meaning
+- For code consistency, always use [Factory](#factory) to create aggregate roots, no matter how simple it is
+- Aggregate roots should have a globally unique ID and this ID should be generate by the code but not by database
+- Aggregate roots should have meaningful business methods for changing its own state. Every business method should
+  ensure the object is always in valid state by applying business rules. Business methods might raise domain events
+  after state is changed.
+- Aggregate roots have the following class level annotations:
+    - `@Slf4j`: for logging
     - `@Getter`: for retrieving data (actually getters are quite bad as it violates information hiding principle, but
       for convenience let's keep them)
     - `@FieldNameConstants`: for access filed names in situations like accessing MongoDB
-    - `@TypeAlias(EQUIPMENT_COLLECTION)`: use a explict type alias, otherwise the FQCN will be used by Spring Data
+    - `@TypeAlias(EQUIPMENT_COLLECTION)`: use an explict type alias, otherwise the FQCN will be used by Spring Data
       MongoDB which does not survive refactorings of changing package locations
     - `@Document(EQUIPMENT_COLLECTION)`: for MongoDB collection
     - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
       built from MongoDB, should be
       `PRIVATE` as it's not supposed to be called manually
-- Aggregate root should not be annotated with `@Setter`, `@Builder` or `@Data`
+- Aggregate roots should not be annotated with lombok's `@Setter`, `@Builder`, `@Data`, `@Value` or
+  `@AllArgsConstructor`
 
 Example aggregate root [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
@@ -95,19 +94,22 @@ public class Equipment extends AggregateRoot {
 }
 ```
 
-### Entity under aggregate root
+### Entity under AggregateRoot
 
-Sometime aggregate roots have child entities, these entities are mutable objects and they don't have their own
-repository. They are only accessed via their parent aggregate root, and they don't have globally unique ID.
-
-- `@Getter` for retrieving data
-- `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as built
-  from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
+- Sometimes aggregate roots have child entities, these entities are mutable objects and they don't have their own
+  repository.
+- They are only accessed via their parent aggregate root, and they don't have globally unique ID.
+- Entities have the following class level annotations:
+    - `@Getter` for retrieving data
+    - `@FieldNameConstants`: for access filed names in situations like accessing MongoDB
+    - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
+      built from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
 
 Example entity [EquipmentEngine](src/main/java/com/company/andy/feature/equipment/domain/EquipmentEngine.java):
 
 ```java
 @Getter
+@FieldNameConstants // For access field names
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentEngine {
     private String model;
@@ -125,9 +127,8 @@ public class EquipmentEngine {
 
 ### Value object
 
-Value objects are immutable objects that represents a value, they don't have their own identity, and they are usually
-used as fields in aggregate roots or Entities.
-
+- Value objects are immutable objects that represents a value, they don't have their own identity, and they are usually
+  used as fields in aggregate roots or entities.
 - Value objects should mainly be implemented as Java Records, and they can have multiple constructors if needed
 - Value objects can optionally use builders(such as lombok `@Builder`) for creation, but this is not recommended as it
   can easily result in invalid objects
@@ -149,11 +150,10 @@ public record Actor(String id,
 
 - Repository abstracts database interactions for accessing aggregate roots
 - Every aggregate root class has its own Repository class
-- All Repository implementation should
+- All repository implementations should
   extend [AbstractMongoRepository](../src/main/java/com/company/andy/common/infrastructure/AbstractMongoRepository.java)
 
-Example for Repository
-interface [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
+Example repository [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
 
 ```java
 @Repository
@@ -186,7 +186,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
   CommandService or QueryService
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
-Example [EquipmentController](../src/main/java/com/company/andy/feature/equipment/controller/EquipmentController.java):
+Example controller [EquipmentController](../src/main/java/com/company/andy/feature/equipment/controller/EquipmentController.java):
 
 ```java
 @Validated // To enable request validation
@@ -208,15 +208,16 @@ public class EquipmentController {
 
 ### CommandService
 
-- CommandService serves as the facade for the domain model
-- Every public method in CommandService should represent a use case, and should be annotated with `@Transactional` if it
+- Command services serves as the facade for the domain model
+- Every public method in command services should represent a use case, and should be annotated with `@Transactional` if it
   writes to database
-- Methods in CommandService usually accepts a Command object as parameter, as well as an `Actor` object
-- CommandService should not contain business logic
-- CommandService returns the aggregate root's ID for creating objects, and return `void` for updating or deleting
+- Methods in command services usually accept a [Command](#command) object as parameter, as well as an `Actor` object
+- Command services should not contain business logic but only orchestrate the work of domain model, repositories and other components, the business logic should be in
+  aggregate roots or domain services
+- Command ServiceS return the aggregate root's ID for creating objects, and return `void` for updating or deleting
   aggregate roots
 
-Example [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
+Example command service [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
 ```java
 @Slf4j
@@ -239,12 +240,12 @@ public class EquipmentCommandService {
 
 ### Command
 
-- Command objects are request objects that instructs the software to change its data state
-- Command should be modeled as Java Record
-- Command can be annotated with `@Builder` for testing purpose
-- Command object should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
+- Command objects are request objects that instruct the software to change its internal state
+- Command objects should be modeled as Java Record
+- Command objects can be annotated with `@Builder` for testing purpose
+- Command objects object should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 
-Example [CreateMaintenanceRecordCommand](../src/main/java/com/company/andy/feature/maintenance/command/CreateMaintenanceRecordCommand.java):
+Example command object [CreateMaintenanceRecordCommand](../src/main/java/com/company/andy/feature/maintenance/command/CreateMaintenanceRecordCommand.java):
 
 ```java
 @Builder
@@ -258,13 +259,13 @@ public record CreateMaintenanceRecordCommand(
 
 ### DomainService
 
-- DomainService is totally different from CommandService(or QueryService) in that DomainService is part of the domain
-  model, but CommandService is the gate to domain model
-- DomainService holds domain logic
-- Normally we don't want DomainService, as domain logic should best be reside in aggregate roots. DomainService is our
+- Domain services are totally different from command service(or query services) in that domain services are part of the domain
+  model, but command services(or query services) are external to domain model
+- Domain services hold domain logic
+- Use of domain services should be minimized, as domain logic should best be residing in aggregate roots. Domain services are our
   last resort if the business logic is not suitable to be put inside aggregate roots.
 
-Example [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
+Example domain service [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
 ```java
 @Component
@@ -289,17 +290,18 @@ In the above example, the business logic of "checking duplicated equipment name"
 `Equipment`
 itself, hence `EquipmentDomainService` is used instead.
 
-### Domain Event
+### DomainEvent
 
-- All Domain Events should extend [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java)
-- Domain Events should be immutable as it represent something already happened which cannot not be changed
-- Every Domain Event should register its own type
+- All domain events should extend [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java)
+- Domain events should be immutable as it represent something already happened which cannot not be changed
+- Every domain event should register its own type
   inside [DomainEventType](../src/main/java/com/company/andy/common/event/DomainEventType.java)
-- Domain Event should hold enough context data about what happened, but not the whole Aggregate Root or non-relevant
+- Domain events should hold enough context data about what has happened, but not the whole aggregate root or non-relevant
   data
-- Domain Event should not be annotated with `@Setter`, `@Builder` or  `@Data`
-- Domain Events are only raised from aggregate roots by using `AggregateRoot.raiseEvent()` method
-- Domain Event has the following class level annotations:
+- Domain events should not be annotated with lombok's `@Setter`, `@Builder`, `@Data`, `@Value` or
+  `@AllArgsConstructor`
+- Domain events are only raised from aggregate roots by using `AggregateRoot.raiseEvent()` method
+- Domain events have the following class level annotations:
     - `@Getter`: for retrieving data (actually getters are quite bad as it violates information hiding principle, but
       for convenience let's keep them)
     - `@TypeAlias(MAINTENANCE_RECORD_CREATED_EVENT)`: use a explict type alias, otherwise the FQCN will be used by
@@ -309,7 +311,7 @@ itself, hence `EquipmentDomainService` is used instead.
     - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
       built from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
 
-Example [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
+Example domain event [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
 
 ```java
 @Getter
@@ -343,8 +345,8 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
 })
 ```
 
-- Domain event can extends another abstract domain event, this abstract domain event should extend `DomainEvent`. For
-  example, `EquipmentNameUpdatedEvent` extends `EquipmentUpdatedEvent` which further extends `DomainEvent`. Again, you
+- A domain event can extend another abstract domain event, this abstract domain event should extend `DomainEvent`. For
+  example, `EquipmentNameUpdatedEvent` extends `EquipmentUpdatedEvent` which further extends `DomainEvent`.  You
   should register the concrete `EquipmentNameUpdatedEvent` inside `DomainEvent` but not the abstract
   `EquipmentUpdatedEvent`.
 
@@ -377,9 +379,9 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
 
 ### EventHandler
 
-- All EventHandlers should
+- All even handlers should
   extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java)
-- An event can be handled by multiple EventHandlers, and they operate independently to each other
+- An event can be handled by multiple event handlers, and they operate independently to each other
 - You may choose to override `AbstractEventHandler`'s `isIdempotent()`, `isTransactional()` and `priority()` for
   specific purposes, where:
     - `isIdempotent()`: returns `true` if the handler can be run repeatedly without any problem, default value is
@@ -389,13 +391,13 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
       operations, or it handles large amount of database records that exceeds the MongoDB transaction limits.
     - `priority()`: used for multiple handlers with the same event, return the priority of the handler, smaller value
       means higher priority
-- EventHandler serves a similar purpose as CommandService in that they both result in data state changes in the
-  software, and they both are facade which orchestrate other components to work but does not contain business logic by
+- Event handlers serve similar purposes as command services in that they both result in data state changes in the
+  software, and they both are facade which orchestrate other components(mainly the domain model) but does not contain business logic by
   themselves
-- EventHandler can use `ExceptionSwallowRunner` to run multiple independent operations, in which exceptions raised in
+- Event handlers can use `ExceptionSwallowRunner` to run multiple independent operations, in which exceptions raised in
   one operation does not affect other operations
 
-Example [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
+Example event handler [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
 
 ```java
 @Slf4j
@@ -413,14 +415,14 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
 
 ### Factory
 
-- Factory is used to create aggregate roots
-- In Factories, before calling aggregate roots's constructors, there usually exists some business validations
-- If no business validation is required, the Factory can be as simple as just call aggregate roots's constructors, but
-  for consistency, let's always use Factory to create aggregate roots no matter how simple the Factory is
-- Use Factory to create aggregate roots makes our code more explict as the creation of aggregate roots is an important
+- Factories are used to create aggregate roots
+- In factories, before calling aggregate roots's constructors, there usually exists some business validations
+- If no business validation is required, the factory can be as simple as just call aggregate roots's constructors, but
+  for consistency, let's always use factories to create aggregate roots no matter how simple the factory is
+- Use factories to create aggregate roots makes our code more explict as the creation of aggregate roots is an important
   moment in software
 
-Example [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecordFactory.java):
+Example factory [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecordFactory.java):
 
 ```java
 @Component
@@ -438,15 +440,15 @@ public class MaintenanceRecordFactory {
 
 ### Task
 
-- Tasks represents a standalone operation that usually involves multiple database rows(documents)
-- Tasks is like DomainService, but for convenience it can access database directly using `MongoTemplate`
-- Tasks are usually called by EventHandlers but not always
-- Task should be put under the package where the task operates on, but not where the task is called, for example,
+- Tasks represents a standalone operation that usually operate on multiple database rows(documents)
+- Tasks are like domain services, but for convenience it can access database directly using `MongoTemplate`
+- Tasks are usually called by event handlers
+- Tasks should be put under the package where the task operates on, but not where the task is called, for example,
   `SyncEquipmentNameToMaintenanceRecordsTask` should be put under `maintenance.domain.task` package instead of
   `equipment.domain.task` package, even though the task is called by an EventHandler in `equipment.eventhandler`
   package.
 
-Example [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
+Example task [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 
 ```java
 @Slf4j
@@ -469,11 +471,11 @@ public class SyncEquipmentNameToMaintenanceRecordsTask {
 
 ### Job
 
-- Job represents a background operation triggered by a timer
-- Jobs are quite similar to Tasks, the difference is that Job is relatively heavy weight and addresses a systematic
-  problem, yet Tasks handles a single specific problem
+- A job represents a background operation triggered by a timer
+- Jobs are quite similar to tasks, the difference is that a job is relatively heavy weight and addresses a systematic
+  problem, yet a task handle a single specific problem
 
-Example [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
+Example job [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
 
 ```java
 @Slf4j
@@ -494,16 +496,16 @@ public class RemoveOldMaintenanceRecordsJob {
 
 ### QueryService
 
-- QueryService and CommandService both belong to ApplicationService
-- QueryService's only purpose is for querying data
-- QueryService exists to stand apart from CommandService, making the QueryService a separate concern
-- QueryService follows CQRS principle in that it can access database directly, bypassing the Domain Model which
-  CommandService relies on
-- QueryService can have its own data model just for querying data, for
+- Query services and command services both belong to application services
+- Query services' only purpose is for querying data
+- Query services exist to stand apart from command services, making the query service a separate concern
+- Query services follow CQRS principle in that it can access database directly, bypassing the domain model which
+  command services operate on
+- Query services can have its own data model just for querying data, for
   example [QPagedEquipment](../src/main/java/com/company/andy/feature/equipment/query/QPagedEquipment.java) represents
-  an Equipment item in the list
+  an equipment item in the list
 
-Example [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
+Example query service [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
 
 ```java
 @Component
@@ -525,20 +527,20 @@ public class EquipmentQueryService {
 
 ### Query
 
-- Query objects are quite similar to Command objects, the main difference is that Query objects are request objects that
-  instructs the software to read data, yet Command objects are for writing data
+- Query objects are quite similar to command objects, the main difference is that query objects are request objects that
+  instructs the software to read data, yet command objects are for writing data
 - For queries that return paged data, the query object should
   extend [PageQuery](../src/main/java/com/company/andy/common/util/PageQuery.java)
 - Query objects should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 - For API documentation, `@Schema` should be used to on query fields
-- Query object has the following class level annotations:
+- Query objects have the following class level annotations:
     - `@Getter`: for retrieving data
     - `@SuperBuilder`: builder, we don't use `@Builder` but `@SuperBuilder` because the query extends `PageQuery` which
       has its own fields, and `@SuperBuilder` can handle builder for parent class's fields
     - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization, should be
       `PRIVATE` as it's not supposed to be called manually
 
-Example [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
+Example query object [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter
