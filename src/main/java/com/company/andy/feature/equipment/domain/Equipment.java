@@ -2,10 +2,7 @@ package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentStatusUpdatedEvent;
+import com.company.andy.feature.equipment.domain.event.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,8 +50,14 @@ public class Equipment extends AggregateRoot {
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 
-    public void updateHolder(String newHolder) {
+    public void updateHolder(String newHolder, Actor actor) {
+        if (Objects.equals(this.holder, newHolder)) {
+            return;
+        }
+
+        String oldHolder = this.holder;
         this.holder = newHolder;
+        raiseEvent(new EquipmentHolderUpdatedEvent(oldHolder, newHolder, this, actor));
     }
 
     public void updateStatus(EquipmentStatus status, Actor actor) {

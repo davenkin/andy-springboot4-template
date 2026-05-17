@@ -2,7 +2,7 @@
 
 ## Context
 
-We know that Aggregate Root is the most important concepts in domain model. Nearly all operations in the software are
+Aggregate Root is the most important concepts in domain model. Nearly all operations in the software are
 centered around Aggregate Roots. Different types of operations might have their own process flows.
 
 ## Decision
@@ -24,7 +24,7 @@ There are mainly 3 ways to interact with the software:
 For HTTP requests, they can be further split into multiple sub-categories.
 
 Given above, we have the following process flows:
-todo: add flow charts for each of the process flows below
+
 - [HTTP request for creating data](#http-request-for-creating-data)
 - [HTTP request for updating data](#http-request-for-updating-data)
 - [HTTP request for deleting data](#http-request-for-deleting-data)
@@ -60,7 +60,7 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
 }
 ```
 
-3. `EquipmentFactory` is used to create the `Equipment` object. Remember: for code consistency, always use Factory to
+3. `EquipmentFactory` is used to create the `Equipment` object. Remember, for code consistency, always use Factory to
    create Aggregate Roots:
 
 ```java
@@ -72,14 +72,14 @@ public class EquipmentFactory {
 ```
 
 4. In the `Equipment` constructor, generate the ID for `Equipment` using `newEquipmentId()`, set data fields, and raise
-   `EquipmentCreatedEvent`. After `raiseEvent()` is called, the `EquipmentCreatedEvent` will be sent to Kafka
+   `EquipmentCreatedEvent` using `raiseEvent()`. The `EquipmentCreatedEvent` will be sent to Kafka
    automatically by the event infrastructure and no further actions are required from your side:
 
 ```java
 public Equipment(String name, Actor actor) {
   super(newEquipmentId(), actor);
   this.name = name;
-  raiseEvent(new EquipmentCreatedEvent(this));
+  raiseEvent(new EquipmentCreatedEvent(this, actor));
 }
 
 public static String newEquipmentId() {
@@ -90,7 +90,7 @@ public static String newEquipmentId() {
 5. Call `EquipmentRepository.save()` to save the newly created `Equipment` object:
 
 ```java
-public interface EquipmentRepository {
+public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
   void save(Equipment equipment);
 }
 ```
@@ -100,10 +100,9 @@ public interface EquipmentRepository {
 ### HTTP request for updating data
 
 Updating data has 3 major steps: (1)Load the Aggregate Root; (2)Call Aggregate Root's business method; (3) Save it back
-to
-database. Take "updating `Equipment`'s holder name" as an example.
+to database. Take "updating `Equipment`'s holder name" as an example.
 
-1. The request first arrives at `EquipmentController.updateEquipmentHolder()`:
+1. The request first arrives at controller `EquipmentController.updateEquipmentHolder()`:
 
 ```java
     @Operation(summary = "Update an equipment's holder")
@@ -115,19 +114,19 @@ database. Take "updating `Equipment`'s holder name" as an example.
     }
 ```
 
-2. The controller calls `EquipmentCommandService.updateEquipmentHolder()`:
+2. The controller calls command service `EquipmentCommandService.updateEquipmentHolder()`:
 
 ```java
-@Transactional
-public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Actor actor) {
-  Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
-  equipment.updateHolder(command.name());
-  equipmentRepository.save(equipment);
-  log.info("Updated holder for Equipment[{}].", equipment.getId());
-}
+    @Transactional
+    public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Actor actor) {
+        Equipment equipment = equipmentRepository.byId(id, actor.orgId());
+        equipment.updateHolder(command.name(), actor);
+        equipmentRepository.save(equipment);
+        log.info("Updated holder for Equipment[{}].", equipment.getId());
+    }
 ```
 
-3. `EquipmentCommandService` loads the `Equipment` by its ID:
+3. `EquipmentCommandService` loads the aggregate root `Equipment` by its ID:
 
 ```java
 Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
@@ -136,11 +135,24 @@ Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
 4. Then call `Equipment`'s business method `Equipment.updateHolder()`:
 
 ```java
-equipment.updateHolder(command.name());
+equipment.updateHolder(command.name(), actor);
 ```
 
 5. Inside the business method, Domain Event can be raised according to requirements.
-6. Save the updated `Equipment` back into database:
+
+```java
+    public void updateHolder(String newHolder, Actor actor) {
+        if (Objects.equals(this.holder, newHolder)) {
+            return;
+        }
+        
+        String oldHolder = this.holder;
+        this.holder = newHolder;
+        raiseEvent(new EquipmentHolderUpdatedEvent(oldHolder, newHolder, this, actor));
+    }
+```
+
+6. Save the updated `Equipment` back into database using repository:
 
 ```java
 equipmentRepository.save(equipment);
@@ -151,14 +163,14 @@ equipmentRepository.save(equipment);
 Sometimes, the whole business logic is not suitable to be put inside Aggregate Root like `Equipment.updateHolder()`. For
 such cases, we can use DomainServices. For example, when updating `Equipment`'s name, we need to check if the name is
 already been occupied, which cannot be fulfilled by `Equipment` itself. Instead of calling `Equipment.updateName()`
-directly from `EquipmentCommandService`, `EquipmentDomainService.updateEquipmentName()` is called from
+directly from `EquipmentCommandService`, domain service `EquipmentDomainService.updateEquipmentName()` is called from
 `EquipmentCommandService`:
 
 ```java
 @Transactional
 public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
   Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
-  equipmentDomainService.updateEquipmentName(equipment, command.name());
+  equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
   equipmentRepository.save(equipment);
   log.info("Updated name for Equipment[{}].", equipment.getId());
 }
@@ -168,16 +180,16 @@ Inside `EquipmentDomainService.updateEquipmentName()`, it first checks whether t
 update `Equipment`'s name:
 
 ```java
-public void updateEquipmentName(Equipment equipment, String newName) {
-  if (!Objects.equals(newName, equipment.getName()) &&
-      equipmentRepository.existsByName(newName, equipment.getOrgId())) {
-    throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
-        "Equipment Name Already Exists.",
-        mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
-  }
+    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
+        if (!Objects.equals(newName, equipment.getName()) &&
+            equipmentRepository.existsByName(newName, equipment.getOrgId())) {
+            throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
+                    "Equipment Name Already Exists.",
+                    mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
+        }
 
-  equipment.updateName(newName);
-}
+        equipment.updateName(newName, actor);
+    }
 ```
 
 ### HTTP request for deleting data
@@ -197,12 +209,13 @@ For deleting data, first load the `AggregateRoot` and then delete it. For exampl
 2. `EquipmentController` calls `EquipmentCommandService`:
 
 ```java
-@Transactional
-public void deleteEquipment(String equipmentId, Actor actor) {
-  Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
-  equipmentRepository.delete(equipment);
-  log.info("Deleted Equipment[{}].", equipmentId);
-}
+    @Transactional
+    public void deleteEquipment(String equipmentId, Actor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+        equipment.onDelete(actor);
+        equipmentRepository.delete(equipment);
+        log.info("Deleted Equipment[{}].", equipmentId);
+    }
 ```
 
 3. `EquipmentCommandService` loads the `Equipment`, then call `EquipmentRepository.delete()` to delete it. You might be
@@ -210,14 +223,13 @@ public void deleteEquipment(String equipmentId, Actor actor) {
    directly delete by ID? The reason is that, before deletion, there might be some validations that need to happen, and
    also it might raise Domain Events. So, in order to ensure such possibilities, the whole `Equipment` object is loaded
    into the memory.
-4. When `EquipmentRepository.delete()` is called, it automatically calls `AggregateRoot.onDelete()` which is implemented
-   by `Equipment` to raise `EquipmentDeletedEvent`:
+4. Before deleting the `Equipment` object, `Equipment.onDelete()` is called to do some pre-deletion work such as raising
+   domain events:
 
 ```java
-@Override
-public void onDelete() {
-  raiseEvent(new EquipmentDeletedEvent(this));
-}
+    public void onDelete(Actor actor) {
+        raiseEvent(new EquipmentDeletedEvent(this, actor));
+    }
 ```
 
 ### HTTP request for querying data
@@ -225,11 +237,12 @@ public void onDelete() {
 There are two ways to query data:
 
 1. Load the domain entity from DB using Repository, then convert the domain entity into response object
-2. Use [CQRS](./004_use_lightweight_cqrs.md), namely bypass the domain layer and query the database directly, this is preferred as
-   it does not couple with the domain layer and also fetches just enough data from database which improves performance
+2. Use [CQRS](./004_use_lightweight_cqrs.md), namely bypass the domain layer and query the database directly, this is
+   preferred as it does not couple with the domain layer and also fetches just enough data from database which improves
+   performance
 
-For using [CQRS](./004_use_lightweight_cqrs.md), querying data can bypass the domain models and talk to database directly. For
-example, when querying a list of `Equipment`s:
+For using [CQRS](./004_use_lightweight_cqrs.md), querying data can bypass the domain models and talk to database
+directly. For example, when querying a list of `Equipment`s:
 
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
 
@@ -264,24 +277,33 @@ public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, 
 
 ### Scheduled jobs triggered by timers
 
-First create a scheduler in the `job` package:
+1. First create a scheduler in the `job` package:
 
 ```java
+@Slf4j
+@RequiredArgsConstructor
+@Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {
   private final MaintenanceReminderJob maintenanceReminderJob;
 
-  @Scheduled(cron = "0 10 2 1 * ?")
-  @SchedulerLock(name = "maintenanceReminderJob")
-  public void maintenanceReminderJob() {
-    LockAssert.assertLocked();
-    this.maintenanceReminderJob.run();
-  }
-}
+    @Scheduled(cron = "0 10 2 1 * ?")
+    @SchedulerLock(name = "remindForEquipmentMaintenance")
+    public void remindForEquipmentMaintenance() {
+        assertLocked();
+
+        Actor actor = createJobActor("remindForEquipmentMaintenance");
+        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderJob::run);
+    }
 ```
 
-Then create a job class:
+The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into MDC.
+
+2. Then create a job class:
 
 ```java
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class MaintenanceReminderJob {
 
   public void run() {
@@ -295,31 +317,38 @@ public class MaintenanceReminderJob {
 ```
 
 The job class serves the same purpose as `CommandService`, which orchestrates various other components such as
-`Repository`, `AggreateRoot` and `Factory`. Hence the job itself should not
-contain business logic.
+`Repository`, `AggreateRoot` and `Factory`. Hence the job itself should not contain business logic.
 
 ### Consuming events from Kafka
 
-The Kafka event consuming infrastructure is already set up. You only need to do 2 things for consuming events.
+The Kafka event consuming infrastructure is already set up for you. You only need to do 2 things for consuming events.
 
 1. Make sure the topic is subscribed in `SpringKafkaEventListener` by configuring
    `topics = {KAFKA_DOMAIN_EVENT_TOPIC},`:
 
 ```java
+@Slf4j
+@Component
+@DisableForIT // Disable Kafka Listener for integration tests
+@RequiredArgsConstructor
 public class SpringKafkaEventListener {
-  private final EventConsumer eventConsumer;
+    private final EventConsumer eventConsumer;
 
-  @KafkaListener(id = "domain-event-listener",
-      groupId = "domain-event-listener",
-      topics = {KAFKA_DOMAIN_EVENT_TOPIC},
-      concurrency = "3")
-  public void listenDomainEvent(DomainEvent event) {
-    this.eventConsumer.consumeDomainEvent(event);
-  }
+    // Listen to domain events which are published by ourselves
+    @KafkaListener(id = "domain-event-listener",
+            groupId = "domain-event-listener",
+            topics = {KAFKA_DOMAIN_EVENT_TOPIC},
+            concurrency = "3")
+    public void listenDomainEvent(DomainEvent event) {
+        this.eventConsumer.consumeDomainEvent(event);
+    }
+
+    // You may add more @KafkaListener annotated methods for different topics if needed
+
 }
 ```
 
-You may add more `@KafkaListener` methods if a different category of events are consumed.
+You may add more `@KafkaListener` methods for consuming different topics if needed.
 
 2. Create an EventHandler class that extends `AbstractEventHandler`:
 
@@ -336,5 +365,4 @@ public class EquipmentCreatedEventHandler extends AbstractEventHandler<Equipment
 ```
 
 The `EventHandler` serves the same purpose as `CommandService`, which orchestrates various other components such as
-`Repository`, `AggreateRoot` and `Factory`. Hence, the `EventHandler` itself should not
-contain business logic.
+`Repository`, `AggreateRoot` and `Factory`. Hence, the `EventHandler` itself should not contain business logic.

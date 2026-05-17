@@ -2,10 +2,7 @@ package com.company.andy.common.event;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentStatusUpdatedEvent;
+import com.company.andy.feature.equipment.domain.event.*;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -29,6 +26,7 @@ import static lombok.AccessLevel.PROTECTED;
         @Type(value = EquipmentCreatedEvent.class, name = "EQUIPMENT_CREATED_EVENT"),
         @Type(value = EquipmentDeletedEvent.class, name = "EQUIPMENT_DELETED_EVENT"),
         @Type(value = EquipmentNameUpdatedEvent.class, name = "EQUIPMENT_NAME_UPDATED_EVENT"),
+        @Type(value = EquipmentHolderUpdatedEvent.class, name = "EQUIPMENT_HOLDER_UPDATED_EVENT"),
         @Type(value = EquipmentStatusUpdatedEvent.class, name = "EQUIPMENT_STATUS_UPDATED_EVENT"),
         @Type(value = MaintenanceRecordCreatedEvent.class, name = "MAINTENANCE_RECORD_CREATED_EVENT"),
         @Type(value = MaintenanceRecordDeletedEvent.class, name = "MAINTENANCE_RECORD_DELETED_EVENT"),

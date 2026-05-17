@@ -40,7 +40,7 @@ public class EquipmentCommandService {
     @Transactional
     public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Actor actor) {
         Equipment equipment = equipmentRepository.byId(id, actor.orgId());
-        equipment.updateHolder(command.name());
+        equipment.updateHolder(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated holder for Equipment[{}].", equipment.getId());
     }
