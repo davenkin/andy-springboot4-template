@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-// Upon consuming, record the event in DB to avoid duplicated event consuming
+// Upon consuming, record the event in DB to avoid duplicated event consuming.
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -20,6 +21,9 @@ public class ConsumingEventDao {
 
     // return "true" means this event has never been consumed before
     public boolean markEventAsConsumedByHandler(ConsumingEvent consumingEvent, AbstractEventHandler<?> handler) {
+        // The duplication is checked based on [handler name + eventId],
+        // namely if the same event is consumed by the same handler before,
+        // then it is a duplicated consuming and should be ignored
         Query query = query(where(ConsumingEvent.Fields.eventId).is(consumingEvent.getEventId())
                 .and(ConsumingEvent.Fields.handler).is(handler.getName()));
 

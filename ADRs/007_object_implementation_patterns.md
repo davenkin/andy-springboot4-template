@@ -420,6 +420,7 @@ public class MaintenanceRecordFactory {
 - Tasks represents a standalone operation that usually involves multiple database rows(documents)
 - Tasks is like DomainService, but for convenience it can access database directly using `MongoTemplate`
 - Tasks are usually called by EventHandlers but not always
+- Task should be put under the package where the task operates on, but not where the task is called, for example, `SyncEquipmentNameToMaintenanceRecordsTask` should be put under `maintenance.domain.task` package instead of `equipment.domain.task` package, even though the task is called by an EventHandler in `equipment.eventhandler` package.
 
 Example [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 

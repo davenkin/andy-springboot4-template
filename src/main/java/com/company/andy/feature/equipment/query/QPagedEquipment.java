@@ -2,9 +2,11 @@ package com.company.andy.feature.equipment.query;
 
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.time.Instant;
 
+@Builder
 @Schema(description = "Paged equipment")
 public record QPagedEquipment(
         @Schema(description = "ID of the equipment")

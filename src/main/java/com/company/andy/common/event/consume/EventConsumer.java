@@ -13,7 +13,8 @@ import java.util.Set;
 import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-// This class is the main place where events consuming orchestration happens
+// Single entry point for consuming all types of events
+// Orchestrates event consuming by delegating to event handlers
 @Slf4j
 @Component
 public class EventConsumer {
@@ -29,11 +30,12 @@ public class EventConsumer {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
+    // Entry point for consuming domain events
     public void consumeDomainEvent(DomainEvent event) {
         this.consume(new ConsumingEvent(event.getId(), event));
     }
 
-    // you may add more consumeXxxEvent(XxxEvent event) here, inside the method call consume(ConsumingEvent event)
+    // You may add more consumeXxxEvent(XxxEvent event) here, and inside the method, call consume(ConsumingEvent event)
 
     private void consume(ConsumingEvent event) {
         if (event == null) {

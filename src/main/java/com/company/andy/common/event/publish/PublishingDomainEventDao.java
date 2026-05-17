@@ -21,7 +21,8 @@ import static org.springframework.data.domain.Sort.by;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-// Before publishing to messaging middleware, events are staged(saved) into database in the same transaction that handles business logic
+// DAO for publishing domain events
+
 @Slf4j
 @Component
 @DisableForIT
@@ -31,6 +32,8 @@ public class PublishingDomainEventDao {
     private final MongoTemplate mongoTemplate;
     private final TracingService tracingService;
 
+    // Before publishing to messaging middleware,
+    // events are staged(saved) into database in the same transaction that handles business logic
     public void stage(List<DomainEvent> events) {
         requireNonNull(events, "Domain events must not be null.");
         String currentTraceParent = tracingService.currentTraceParent();

@@ -2,12 +2,10 @@ package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTestFixture;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
-import com.company.andy.feature.equipment.domain.EquipmentRepository;
-import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
-import com.company.andy.feature.maintenance.MaintenanceRecordTestFixture;
+import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
+import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
 import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
@@ -15,16 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.TestFixture.randomOrgUserActor;
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
+import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
-    @Autowired
-    private EquipmentDeletedEventEventHandler equipmentDeletedEventEventHandler;
-
+class EquipmentNameUpdatedEventHandlerIntegrationTest extends IntegrationTest {
     @Autowired
     private EquipmentCommandService equipmentCommandService;
 
@@ -32,24 +26,31 @@ class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
     private MaintenanceRecordCommandService maintenanceRecordCommandService;
 
     @Autowired
+    private EquipmentNameUpdatedEventHandler equipmentNameUpdatedEventHandler;
+
+    @Autowired
     private MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Test
-    void delete_equipment_should_also_delete_all_its_maintenance_records() {
+    void update_equipment_name_should_update_maintenance_records_equipment_name() {
         // Prepare
         Actor actor = randomOrgUserActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
-        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+        assertEquals(createEquipmentCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
+
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = UpdateEquipmentNameCommand.builder().name("updatedName").build();
+        equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor);
+        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
 
         // Execute
-        equipmentCommandService.deleteEquipment(equipmentId, actor);
-        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
-        equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
+        equipmentNameUpdatedEventHandler.handle(equipmentNameUpdatedEvent);
 
         // Verify
-        assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
+        assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
+
 }

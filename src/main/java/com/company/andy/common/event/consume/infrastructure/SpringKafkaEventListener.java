@@ -15,11 +15,12 @@ import static com.company.andy.common.util.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 
 @Slf4j
 @Component
-@DisableForIT // Disable Kafka for integration test
+@DisableForIT // Disable Kafka Listener for integration tests
 @RequiredArgsConstructor
 public class SpringKafkaEventListener {
     private final EventConsumer eventConsumer;
 
+    // Listen to domain events which are published by ourselves
     @KafkaListener(id = "domain-event-listener",
             groupId = "domain-event-listener",
             topics = {KAFKA_DOMAIN_EVENT_TOPIC},
@@ -28,6 +29,6 @@ public class SpringKafkaEventListener {
         this.eventConsumer.consumeDomainEvent(event);
     }
 
-    // add more listeners
+    // You may add more @KafkaListener annotated methods for different topics if needed
 
 }

@@ -27,6 +27,9 @@ import static com.company.andy.common.util.Constants.*;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+// Convert the default Jwt principal into Actor
+// Controllers can use "@AuthenticationPrincipal Actor actor" to obtain the current actor
+
 @Slf4j
 public class ConvertJwtToActorAuthenticationTokenFilter extends OncePerRequestFilter {
     private final static Set<String> ALL_ROLES = Arrays.stream(Role.values())

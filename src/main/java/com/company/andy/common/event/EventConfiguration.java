@@ -35,6 +35,8 @@ import static com.company.andy.common.util.Constants.PUBLISHING_EVENT_COLLECTION
 public class EventConfiguration {
     private static final String dltSuffix = "-dlt";
 
+    // Automatically triggered on domain event insertion in MongoDB,
+    // then publish staged domain events to messaging middleware
     @Bean(destroyMethod = "stop")
     MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(MongoTemplate mongoTemplate,
                                                                            TaskExecutor taskExecutor,

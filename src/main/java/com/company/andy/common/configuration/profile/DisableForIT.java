@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-// Disable for integration tests
+// Disable for integration tests, both "it" and "it-local" profiles are for integration tests
 @Retention(RUNTIME)
 @Profile("!(it | it-local)")
 public @interface DisableForIT {

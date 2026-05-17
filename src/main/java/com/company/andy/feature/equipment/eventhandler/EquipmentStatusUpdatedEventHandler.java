@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentStatusEventHandler extends AbstractEventHandler<EquipmentStatusUpdatedEvent> {
+public class EquipmentStatusUpdatedEventHandler extends AbstractEventHandler<EquipmentStatusUpdatedEvent> {
 
     @Override
     protected void handle(EquipmentStatusUpdatedEvent event, Actor actor) {

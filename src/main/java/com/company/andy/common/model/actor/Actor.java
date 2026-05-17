@@ -11,6 +11,9 @@ import static com.company.andy.common.util.CommonUtils.requireNonBlank;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 
+// Actor representing the current "user" performing an action on the system,
+// it can be a real user or a system component such as a background job or event listener etc.
+
 public record Actor(String id,
                     String name,
                     Set<Role> roles,

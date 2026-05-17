@@ -16,6 +16,8 @@ import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
+// This house keeping job removes old domain events in DB both for publishing and consuming side, freeing more spaces for new events
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

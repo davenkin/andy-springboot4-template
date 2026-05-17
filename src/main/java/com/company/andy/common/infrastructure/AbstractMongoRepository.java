@@ -28,7 +28,8 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 // Base class for all repositories
-// Repository is per AggregateRoot type, namely only AggregateRoot can have Repository
+// Repository is per AggregateRoot type
+// Only subclasses of AggregateRoot can have Repository
 
 @SuppressWarnings("unchecked")
 @Slf4j

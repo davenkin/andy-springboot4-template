@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+// All pagination queries should extends from PageQuery
+
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)

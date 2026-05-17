@@ -7,7 +7,8 @@ import static com.company.andy.common.model.actor.Actor.createPlatformActor;
 import static com.company.andy.common.model.actor.ActorType.EVENT_LISTENER;
 import static com.company.andy.common.util.CommonUtils.singleParameterizedArgumentClassOf;
 
-// All event handlers should extend this class
+// Base class for all event handlers, deals with handlers' priority, idempotency and transactionality
+
 public abstract class AbstractEventHandler<T> {
     private final Class<?> eventClass;
 

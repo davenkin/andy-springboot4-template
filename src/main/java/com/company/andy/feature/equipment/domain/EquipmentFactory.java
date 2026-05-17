@@ -4,6 +4,9 @@ import com.company.andy.common.model.actor.Actor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+// Always use factories to create aggregate root objects,
+// which makes the creation process of aggregate roots more explicit
+
 @Component
 @RequiredArgsConstructor
 public class EquipmentFactory {

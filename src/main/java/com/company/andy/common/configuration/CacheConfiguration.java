@@ -15,6 +15,9 @@ import static java.time.Duration.ofDays;
 import static org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
+// All caches should be register here using withCacheConfiguration(), as the cacheDefaults() might not work for some objects's serialization/deserialization
+// Also the withCacheConfiguration() serves as a documentation for all caches in the system, as you can easily find all cache names and their configurations here
+
 @EnableCaching
 @Configuration(proxyBeanMethods = false)
 public class CacheConfiguration {

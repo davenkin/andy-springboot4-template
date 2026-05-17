@@ -18,6 +18,9 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 // Base class for all aggregate root objects
+// The AggregateRoot object stores raised domain events temporarily in memory,
+// then the events will be persisted into DB by Repository within the same transaction that saves the AggregateRoot object
+
 @Getter
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
