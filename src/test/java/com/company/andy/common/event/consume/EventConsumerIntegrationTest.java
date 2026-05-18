@@ -1,8 +1,8 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.EquipmentTestFixture;
+import com.company.andy.TestFixture;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
@@ -47,7 +46,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_only_handle_events_that_can_be_handled() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -61,7 +60,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_call_handler_for_event_hierarchy() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), actor);
         EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
@@ -76,7 +75,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(0);
@@ -93,7 +92,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority_reversely() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.priority()).thenReturn(1);
@@ -110,7 +109,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_mark_as_consumed_if_non_transactional_handler_throws_exception() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
@@ -125,7 +124,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_mark_as_consumed_if_transactional_handler_throws_exception() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
@@ -139,7 +138,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_mark_as_consumed_for_idempotent_handler() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(true);
@@ -154,7 +153,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_independently() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), actor);
         EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
@@ -171,7 +170,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_run_for_duplicated_event_if_idempotent_handler() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(true);
@@ -184,7 +183,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_run_for_duplicated_event_if_non_idempotent_handler() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         when(createdEventHandler.isIdempotent()).thenReturn(false);

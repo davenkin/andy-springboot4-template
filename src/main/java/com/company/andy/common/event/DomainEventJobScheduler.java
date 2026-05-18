@@ -1,7 +1,7 @@
 package com.company.andy.common.event;
 
 import com.company.andy.common.event.publish.DomainEventPublishJob;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.SystemActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import static com.company.andy.common.model.actor.Actor.createJobActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
@@ -24,7 +23,7 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish domain events.");
-        Actor actor = createJobActor("houseKeepPublishStagedDomainEvents");
+        SystemActor actor = SystemActor.createJobActor("houseKeepPublishStagedDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> domainEventPublishJob.publishStagedDomainEvents(100));
     }
 
@@ -34,7 +33,7 @@ public class DomainEventJobScheduler {
     public void removeOldDomainEvents() {
         assertLocked();
 
-        Actor actor = createJobActor("removeOldDomainEvents");
+        SystemActor actor = SystemActor.createJobActor("removeOldDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> {
             try {
                 domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);

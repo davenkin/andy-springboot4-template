@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.SystemActor;
 import com.company.andy.common.util.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.task.CountMaintenanceRecordsForEquipmentTask;
@@ -20,12 +20,12 @@ public class MaintenanceRecordCreatedEventHandler extends AbstractEventHandler<M
     private final MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Override
-    protected void handle(MaintenanceRecordCreatedEvent event, Actor actor) {
+    protected void handle(MaintenanceRecordCreatedEvent event, SystemActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
         ExceptionSwallowRunner.run(() -> updateEquipmentStatus(event.getEquipmentId(), actor));
     }
 
-    private void updateEquipmentStatus(String equipmentId, Actor actor) {
+    private void updateEquipmentStatus(String equipmentId, SystemActor actor) {
         equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
             maintenanceRecordRepository.latestFor(equipmentId).ifPresent(record -> {
                 equipment.updateStatus(record.getStatus(), actor);

@@ -2,7 +2,7 @@ package com.company.andy.common.infrastructure;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentFactory;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
 import static com.company.andy.common.exception.ErrorCode.AR_NOT_FOUND;
@@ -32,7 +32,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_save_ar() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), actor);
         assertEquals(1, equipment.getEvents().size());
         assertInstanceOf(EquipmentCreatedEvent.class, equipment.getEvents().get(0));
@@ -48,7 +48,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_save_ars() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), actor);
         Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), actor);
 
@@ -64,8 +64,8 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_throw_exception_if_not_the_same_org() {
-        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomOrgUserActor());
-        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomOrgUserActor());
+        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomHumanUserOrgActor());
+        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomHumanUserOrgActor());
 
         ServiceException exception = assertThrows(ServiceException.class, () -> equipmentRepository.save(List.of(equipment1, equipment2)));
         assertEquals(NOT_SAME_ORG, exception.getCode());
@@ -73,7 +73,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_delete_ar() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), actor);
         equipmentRepository.save(equipment);
 
@@ -89,7 +89,7 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_delete_ars() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), actor);
         Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), actor);
         equipmentRepository.save(List.of(equipment1, equipment2));
@@ -113,8 +113,8 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_throw_exception_if_not_the_same_org_for_delete() {
-        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomOrgUserActor());
-        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomOrgUserActor());
+        Equipment equipment1 = equipmentFactory.create(randomEquipmentName(), randomHumanUserOrgActor());
+        Equipment equipment2 = equipmentFactory.create(randomEquipmentName(), randomHumanUserOrgActor());
 
         ServiceException exception = assertThrows(ServiceException.class, () -> equipmentRepository.delete(List.of(equipment1, equipment2)));
         assertEquals(NOT_SAME_ORG, exception.getCode());
@@ -122,17 +122,17 @@ class AbstractMongoRepositoryIntegrationTest extends IntegrationTest {
 
     @Test
     void should_fetch_ar_by_id() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Equipment equipment = equipmentFactory.create(randomEquipmentName(), actor);
-        assertFalse(equipmentRepository.exists(equipment.getId(), actor.orgId()));
+        assertFalse(equipmentRepository.exists(equipment.getId(), actor.getOrgId()));
 
         equipmentRepository.save(equipment);
 
         assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId()).getId());
-        assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId(), actor.orgId()).getId());
-        assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId(), actor.orgId()).get().getId());
+        assertEquals(equipment.getId(), equipmentRepository.byId(equipment.getId(), actor.getOrgId()).getId());
+        assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId(), actor.getOrgId()).get().getId());
         assertEquals(equipment.getId(), equipmentRepository.byIdOptional(equipment.getId()).get().getId());
-        assertTrue(equipmentRepository.exists(equipment.getId(), actor.orgId()));
+        assertTrue(equipmentRepository.exists(equipment.getId(), actor.getOrgId()));
 
         assertEquals(AR_NOT_FOUND, assertThrows(ServiceException.class, () -> equipmentRepository.byId(secure().nextAlphanumeric(5), secure().nextAlphanumeric(5))).getCode());
         assertEquals(AR_NOT_FOUND, assertThrows(ServiceException.class, () -> equipmentRepository.byId(secure().nextAlphanumeric(5))).getCode());

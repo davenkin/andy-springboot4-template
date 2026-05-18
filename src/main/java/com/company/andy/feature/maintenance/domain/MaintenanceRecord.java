@@ -2,6 +2,7 @@ package com.company.andy.feature.maintenance.domain;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
@@ -35,7 +36,7 @@ public class MaintenanceRecord extends AggregateRoot {
                              String equipmentName,
                              EquipmentStatus status,
                              String description,
-                             Actor actor) {
+                             OrgActor actor) {
         super(newMaintenanceRecordId(), actor);
         this.equipmentId = equipmentId;
         this.equipmentName = equipmentName;

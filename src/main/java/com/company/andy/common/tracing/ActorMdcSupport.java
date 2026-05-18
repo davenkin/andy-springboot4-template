@@ -1,6 +1,7 @@
 package com.company.andy.common.tracing;
 
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import org.slf4j.MDC;
 
 import java.util.List;
@@ -10,16 +11,16 @@ public class ActorMdcSupport {
             "actorId",
             "actorOrgId",
             "actorInitiator",
-            "actorType"
+            "actorSource"
     );
 
     public static void addMdc(Actor actor) {
-        if (actor.isOrgActor()) {
-            MDC.put("actorId", actor.id());
-            MDC.put("actorOrgId", actor.orgId());
+        MDC.put("actorId", actor.getId());
+        if (actor instanceof OrgActor orgActor) {
+            MDC.put("actorOrgId", orgActor.getOrgId());
         }
-        MDC.put("actorInitiator", actor.initiator());
-        MDC.put("actorType", actor.type().name());
+        MDC.put("actorInitiator", actor.getInitiator());
+        MDC.put("actorSource", actor.getSource().name());
     }
 
     public static void clearMdc() {

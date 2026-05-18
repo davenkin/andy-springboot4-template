@@ -1,7 +1,8 @@
 package com.company.andy.common.model;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.SystemActor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -39,29 +40,37 @@ public abstract class AggregateRoot {
     @Getter(PRIVATE)
     private Long _version;
 
-    protected AggregateRoot(String id, String orgId, Actor actor) {
+    // For org actor to create objects under the current org
+    protected AggregateRoot(String id, OrgActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
+        this.id = id;
+        this.orgId = actor.getOrgId();
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
+    }
+
+    // For system actor to create objects under the specified org
+    protected AggregateRoot(String id, String orgId, SystemActor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 
-        if (actor.isOrgActor()) {
-            throw new IllegalArgumentException("Org actor is not allowed to specify another orgId separately, but should use AggregateRoot(String id, Actor actor) instead.");
-        }
-
         this.id = id;
         this.orgId = orgId;
         this.createdAt = Instant.now();
-        this.createdBy = actor.id();
+        this.createdBy = actor.getId();
     }
 
-    protected AggregateRoot(String id, Actor actor) {
+    // For system actor to create objects what don't belong to any org but the whole system
+    protected AggregateRoot(String id, SystemActor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 
         this.id = id;
-        this.orgId = actor.orgId();
         this.createdAt = Instant.now();
-        this.createdBy = actor.id();
+        this.createdBy = actor.getId();
     }
 
     // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object

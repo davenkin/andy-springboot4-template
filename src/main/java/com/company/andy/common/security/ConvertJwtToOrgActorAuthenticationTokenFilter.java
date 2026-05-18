@@ -1,8 +1,8 @@
 package com.company.andy.common.security;
 
 import com.company.andy.common.model.Role;
-import com.company.andy.common.model.actor.Actor;
-import com.company.andy.common.model.actor.ActorType;
+import com.company.andy.common.model.actor.ActorSource;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.company.andy.common.model.actor.Actor.PLATFORM_ORG_ID;
-import static com.company.andy.common.model.actor.ActorType.HUMAN_USER;
+import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
 import static com.company.andy.common.util.Constants.*;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -30,8 +29,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 // Convert the default Jwt principal into Actor
 // Controllers can use "@AuthenticationPrincipal Actor actor" to obtain the current actor
 
+// todo: use authentication entry point for failure
+
 @Slf4j
-public class ConvertJwtToActorAuthenticationTokenFilter extends OncePerRequestFilter {
+public class ConvertJwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter {
     private final static Set<String> ALL_ROLES = Arrays.stream(Role.values())
             .map(Role::name)
             .collect(toSet());
@@ -46,16 +47,16 @@ public class ConvertJwtToActorAuthenticationTokenFilter extends OncePerRequestFi
                 if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
                     Jwt jwt = jwtAuthenticationToken.getToken();
                     if (jwt != null) {
-                        Actor actor = Actor.createOrgActor(
+                        OrgActor actor = new OrgActor(
                                 jwt.getSubject(),
                                 getActorName(jwt),
-                                getRoles(jwt),
                                 getOrgId(jwt),
-                                getActorType(jwt),
+                                getRoles(jwt),
+                                getActorSource(jwt),
                                 "%s[%s]".formatted(request.getMethod(), request.getRequestURI())
                         );
 
-                        SecurityContextHolder.getContext().setAuthentication(new ActorAuthenticationToken(actor, jwt));
+                        SecurityContextHolder.getContext().setAuthentication(new OrgActorAuthenticationToken(actor, jwt));
                         ActorMdcSupport.addMdc(actor);
                         mdcPopulated = true;
                     }
@@ -93,13 +94,11 @@ public class ConvertJwtToActorAuthenticationTokenFilter extends OncePerRequestFi
     }
 
     private String getOrgId(Jwt jwt) {
-        String orgId = jwt.getClaimAsString(JWT_ORG_ID);
-        // todo: deal with empty orgId, should not return PLATFORM_ORG_ID
-        return isNotBlank(orgId) ? orgId : PLATFORM_ORG_ID;
+        return jwt.getClaimAsString(JWT_ORG_ID); // todo: deal with null
     }
 
-    private ActorType getActorType(Jwt jwt) {
-        // todo: decide the actual ActorType(HUMAN_USER or SERVICE_ACCOUNT or WEBHOOK_CALLER) based on Jwt content or request URL
+    private ActorSource getActorSource(Jwt jwt) {
+        // todo: decide the actual ActorSource(HUMAN_USER or SERVICE_ACCOUNT or WEBHOOK_CALLER) based on Jwt content or request URL
         return HUMAN_USER;
     }
 }

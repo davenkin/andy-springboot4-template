@@ -2,7 +2,7 @@ package com.company.andy.common.infrastructure.transaction;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 
-import static com.company.andy.TestFixture.randomOrgUserActor;
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +33,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
@@ -49,7 +49,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -67,7 +67,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -85,7 +85,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();

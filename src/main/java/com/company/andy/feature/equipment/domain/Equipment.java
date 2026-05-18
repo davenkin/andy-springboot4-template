@@ -2,6 +2,7 @@ package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.event.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Equipment extends AggregateRoot {
     private long maintenanceRecordCount;
     private EquipmentEngine engine;
 
-    public Equipment(String name, Actor actor) {
+    public Equipment(String name, OrgActor actor) {
         super(newEquipmentId(), actor);
         this.name = name;
         this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");

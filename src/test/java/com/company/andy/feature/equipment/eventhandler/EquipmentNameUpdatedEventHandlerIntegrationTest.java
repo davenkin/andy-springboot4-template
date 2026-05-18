@@ -1,7 +1,8 @@
 package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.TestFixture;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
@@ -12,7 +13,6 @@ import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.TestFixture.randomOrgUserActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
@@ -34,7 +34,7 @@ class EquipmentNameUpdatedEventHandlerIntegrationTest extends IntegrationTest {
     @Test
     void update_equipment_name_should_update_maintenance_records_equipment_name() {
         // Prepare
-        Actor actor = randomOrgUserActor();
+        OrgActor actor = TestFixture.randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 

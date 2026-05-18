@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.domain;
 
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class MaintenanceRecordFactory {
     public MaintenanceRecord create(Equipment equipment,
                                     EquipmentStatus status,
                                     String description,
-                                    Actor actor) {
+                                    OrgActor actor) {
         return new MaintenanceRecord(equipment.getId(), equipment.getName(), status, description, actor);
     }
 }

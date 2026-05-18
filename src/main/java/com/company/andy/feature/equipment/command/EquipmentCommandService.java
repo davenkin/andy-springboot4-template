@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.command;
 
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentDomainService;
 import com.company.andy.feature.equipment.domain.EquipmentFactory;
@@ -22,7 +22,7 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
         Equipment equipment = equipmentFactory.create(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
@@ -30,24 +30,24 @@ public class EquipmentCommandService {
     }
 
     @Transactional
-    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
         equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
     }
 
     @Transactional
-    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
         equipment.updateHolder(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated holder for Equipment[{}].", equipment.getId());
     }
 
     @Transactional
-    public void deleteEquipment(String equipmentId, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+    public void deleteEquipment(String equipmentId, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
         equipment.onDelete(actor);
         equipmentRepository.delete(equipment);
         log.info("Deleted Equipment[{}].", equipmentId);

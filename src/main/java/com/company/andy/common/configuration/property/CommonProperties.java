@@ -5,4 +5,5 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("common")
-public record CommonProperties(boolean limitRate) {}
+public record CommonProperties(boolean limitRate) {
+}

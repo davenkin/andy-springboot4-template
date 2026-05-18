@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.domain;
 
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.OrgActor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EquipmentFactory {
 
-    public Equipment create(String name, Actor actor) {
+    public Equipment create(String name, OrgActor actor) {
         return new Equipment(name, actor);
     }
 }
