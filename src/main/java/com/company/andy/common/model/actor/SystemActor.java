@@ -11,7 +11,6 @@ import static com.company.andy.common.model.Role.ORG_ADMIN;
 import static com.company.andy.common.model.actor.ActorSource.BACKGROUND_JOB;
 import static com.company.andy.common.model.actor.ActorType.SYSTEM_ACTOR;
 import static com.company.andy.common.util.CommonUtils.requireNonBlank;
-import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @Getter
@@ -26,8 +25,6 @@ public class SystemActor extends Actor {
     }
 
     public OrgActor impersonateOrg(String orgId) {
-        requireNonBlank(orgId, "orgId must not be blank.");
-
         return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), getSource(), getInitiator());
     }
 
@@ -38,9 +35,6 @@ public class SystemActor extends Actor {
     }
 
     public static SystemActor createSystemActor(ActorSource source, String initiator) {
-        requireNonNull(source, "source must not be null.");
-        requireNonBlank(initiator, "initiator must not be blank.");
-
         return new SystemActor(source, initiator);
     }
 
