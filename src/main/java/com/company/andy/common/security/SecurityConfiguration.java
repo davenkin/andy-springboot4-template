@@ -3,6 +3,7 @@ package com.company.andy.common.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,6 +13,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static com.company.andy.common.util.Constants.JWT_SYSTEM_USER_ROLE;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -20,10 +22,8 @@ public class SecurityConfiguration {
     private final JsonAuthenticationEntryPoint jsonAuthenticationEntryPoint;
     private final JsonAccessDeniedHandler jsonAccessDeniedHandler;
 
-    // advice: you may add more SecurityFilterChains for system actor API and webhook here
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain featureFilterChain(HttpSecurity http) {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
@@ -37,7 +37,25 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    @Bean
+    @Order(-1)
+    public SecurityFilterChain systemFilterChain(HttpSecurity http) {
+        http.securityMatcher("/system/**")
+                .authorizeHttpRequests((authorize) -> authorize
+                        .anyRequest().hasRole(JWT_SYSTEM_USER_ROLE)
+                )
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults())
+                        .authenticationEntryPoint(jsonAuthenticationEntryPoint)
+                        .accessDeniedHandler(jsonAccessDeniedHandler))
+                .addFilterAfter(new JwtToSystemActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint), BearerTokenAuthenticationFilter.class)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        ;
+        return http.build();
+    }
+
+
     // This is just for testing, should be removed for real projects
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
