@@ -20,6 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @JsonSubTypes(value = {
         @JsonSubTypes.Type(value = OrgActor.class, name = "ORG_ACTOR"),
         @JsonSubTypes.Type(value = SystemActor.class, name = "SYSTEM_ACTOR"),
+        @JsonSubTypes.Type(value = AnonymousActor.class, name = "ANONYMOUS_ACTOR"),
 })
 
 @Getter

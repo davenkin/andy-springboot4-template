@@ -117,3 +117,4 @@ contain various common coding practices that should be followed when writing you
     - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor
     - 测试中如果需要操作cache，则可以直接使用CacheManager，但是不要使用RedisTemplate或者StringRedisTemplate等底层api来操作cache
 - repository的结构要改，文档也要改
+- AnonymousActor需要自定义filter，添加anonymousActor到SecurityContextHolder中，文档也要改
