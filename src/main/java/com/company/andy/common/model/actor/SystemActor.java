@@ -3,12 +3,14 @@ package com.company.andy.common.model.actor;
 import static com.company.andy.common.model.Role.ORG_ADMIN;
 import static com.company.andy.common.model.actor.ActorSource.BACKGROUND_JOB;
 import static com.company.andy.common.model.actor.ActorSource.EVENT_LISTENER;
+import static com.company.andy.common.model.actor.ActorSource.IMPERSONATED;
 import static com.company.andy.common.model.actor.ActorType.SYSTEM_ACTOR;
 import static com.company.andy.common.util.CommonUtils.requireNonBlank;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.util.Set;
 
+import com.company.andy.common.model.Role;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +32,11 @@ public class SystemActor extends Actor {
   }
 
   public OrgActor impersonateOrg(String orgId) {
-    return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), getSource(), getInitiator());
+    return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), IMPERSONATED, getInitiator());
+  }
+
+  public OrgActor impersonateOrgUser(String userId, String name, Set<Role> roles, String orgId) {
+    return new OrgActor(userId, name, orgId, roles, IMPERSONATED, getInitiator());
   }
 
   public static SystemActor createJobSystemActor(String jobName) {
