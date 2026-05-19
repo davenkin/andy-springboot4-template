@@ -16,18 +16,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 // Convert the default Jwt principal into SystemActor
 // Controllers can use "@AuthenticationPrincipal SystemActor actor" to obtain the current actor
 
-// todo: use authentication entry point for failure
-
 @Slf4j
 public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFilter {
+  private final AuthenticationEntryPoint authenticationEntryPoint;
+
+  public JwtToSystemActorAuthenticationTokenFilter(AuthenticationEntryPoint authenticationEntryPoint) {
+    this.authenticationEntryPoint = authenticationEntryPoint;
+  }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -47,6 +52,10 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
         }
       }
       filterChain.doFilter(request, response);
+    } catch (AuthenticationException ex) {
+      log.error("Authentication failed:", ex);
+      SecurityContextHolder.clearContext();
+      authenticationEntryPoint.commence(request, response, ex);
     } finally {
       if (mdcPopulated) {
         ActorMdcSupport.clearMdc();
@@ -55,6 +64,7 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
   }
 
   private SystemActorAuthenticationToken createActorAuthenticationToken(HttpServletRequest request, Jwt jwt) {
+    // advice: you may need to check if the jwt represents a system actor based on the jwt contents
     SystemActor actor = createUserSystemActor(
         jwt.getSubject(),
         getActorName(jwt),
@@ -70,7 +80,7 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
   }
 
   private ActorSource getActorSource(Jwt jwt) {
-    // todo: decide the actual ActorSource(HUMAN_USER or SERVICE_ACCOUNT) based on Jwt content
+    // advice: decide the actual ActorSource(HUMAN_USER or SERVICE_ACCOUNT) based on Jwt content
     return HUMAN_USER;
   }
 }
