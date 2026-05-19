@@ -20,7 +20,7 @@ public class SecurityConfiguration {
     private final JsonAuthenticationEntryPoint jsonAuthenticationEntryPoint;
     private final JsonAccessDeniedHandler jsonAccessDeniedHandler;
 
-    // todo: you may add more SecurityFilterChains for system actor API and webhook here
+    // advice: you may add more SecurityFilterChains for system actor API and webhook here
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
