@@ -62,6 +62,15 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule usage_of_jackson_annotations_should_be_minimized = noClasses()
+            .that()
+            .resideInAnyPackage(
+                    "..com.company.andy.feature..command..",
+                    "..com.company.andy.feature..controller..",
+                    "..com.company.andy.feature..domain..",
+                    "..com.company.andy.feature..eventhandler..",
+                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..query.."
+            )
             .should()
             .dependOnClassesThat()
             .belongToAnyOf(
@@ -76,7 +85,23 @@ class PackageDependencyArchTest {
                     JsonFormat.class,
                     JsonView.class
             )
-            .because("Jackson annotations make the code deeply coupled with the Jackson library, and also it might be bad for code navigability.");
+            .because("We should not rely directly on Jackson annotations as it's bad for code navigability.");
+
+    @ArchTest
+    static final ArchRule usage_of_json_node_objects_should_be_minimized = noClasses()
+            .that()
+            .resideInAnyPackage(
+                    "..com.company.andy.feature..command..",
+                    "..com.company.andy.feature..controller..",
+                    "..com.company.andy.feature..domain..",
+                    "..com.company.andy.feature..eventhandler..",
+                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..query.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .resideInAnyPackage("tools.jackson.databind.node")
+            .because("We should not rely directly on Jackson node objects as it's an infrastructure concern and it's bad for code navigability.");
 
     @ArchTest
     static final ArchRule mongodb_indexes_should_be_created_explicitly = noClasses()
