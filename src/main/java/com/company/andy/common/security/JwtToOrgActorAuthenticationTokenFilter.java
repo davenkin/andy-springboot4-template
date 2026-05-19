@@ -103,6 +103,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
 
     private Set<Role> getRoles(Jwt jwt) {
         return JwtUtils.getRoles(jwt).stream()
+                .map(String::toUpperCase)
                 .filter(ALL_ORG_ROLES::contains)
                 .map(Role::valueOf)
                 .collect(toSet());

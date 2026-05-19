@@ -67,7 +67,7 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
 
     private SystemActorAuthenticationToken createActorAuthenticationToken(HttpServletRequest request, Jwt jwt) {
         List<SimpleGrantedAuthority> authorities = JwtUtils.getRoles(jwt).stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .toList();
 
         SystemActor actor = createUserSystemActor(
