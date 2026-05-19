@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
 import static com.company.andy.common.model.actor.SystemActor.createEventListenerSystemActor;
+import static com.company.andy.common.model.actor.SystemActor.createUserSystemActor;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class TestFixture {
@@ -41,6 +42,10 @@ public class TestFixture {
 
     public static OrgActor randomHumanUserOrgActor(String actorId, String orgId) {
         return new OrgActor(actorId, randomUserName(), orgId, Set.of(randomRole()), HUMAN_USER, "some initiator");
+    }
+
+    public static SystemActor randomHumanUserSystemActor() {
+        return createUserSystemActor(randomUserId(), randomUserName(), HUMAN_USER, "some initiator");
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

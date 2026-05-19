@@ -21,6 +21,7 @@ public class Constants {
     public static final String JWT_PREFERRED_USERNAME = "preferred_username";
     public static final String JWT_REALM_ACCESS = "realm_access";
     public static final String JWT_REALM_ACCESS_ROLES = "roles";
+    public static final String JWT_SYSTEM_USER_ROLE = "system_user";
 
     // Database
 

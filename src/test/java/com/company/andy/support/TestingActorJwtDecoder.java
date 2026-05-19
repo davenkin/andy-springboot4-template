@@ -3,6 +3,7 @@ package com.company.andy.support;
 import com.company.andy.common.configuration.profile.EnableForIT;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.SystemActor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static com.company.andy.common.util.Constants.*;
@@ -41,7 +43,10 @@ public class TestingActorJwtDecoder implements JwtDecoder {
         if (actor instanceof OrgActor orgActor) {
             builder.claim(JWT_ORG_ID, orgActor.getOrgId())
                     .claim(JWT_REALM_ACCESS, Map.of(JWT_REALM_ACCESS_ROLES, orgActor.getRoles().stream().map(Enum::name).toList()));
+        } else if (actor instanceof SystemActor) {
+            builder.claim(JWT_REALM_ACCESS, Map.of(JWT_REALM_ACCESS_ROLES, List.of(JWT_SYSTEM_USER_ROLE)));
         }
+
         return builder.build();
     }
 }
