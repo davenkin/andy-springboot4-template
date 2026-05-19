@@ -2,22 +2,23 @@ package com.company.andy.common.security;
 
 import static java.util.Objects.requireNonNull;
 
-import com.company.andy.common.model.actor.OrgActor;
+import java.util.Set;
+
+import com.company.andy.common.model.actor.SystemActor;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 @Getter
-public final class OrgActorAuthenticationToken extends AbstractAuthenticationToken {
-  private final OrgActor actor;
+public final class SystemActorAuthenticationToken extends AbstractAuthenticationToken {
+  private final SystemActor actor;
   private final Jwt jwt;
 
-  public OrgActorAuthenticationToken(OrgActor actor, Jwt jwt) {
+  public SystemActorAuthenticationToken(SystemActor actor, Jwt jwt) {
     requireNonNull(actor, "actor must not be null.");
     requireNonNull(jwt, "jwt must not be null.");
 
-    super(actor.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
+    super(Set.of());
     this.actor = actor;
     this.jwt = jwt;
     setAuthenticated(true);

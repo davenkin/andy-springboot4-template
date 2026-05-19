@@ -9,6 +9,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import static com.company.andy.common.model.actor.SystemActor.createJobSystemActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish domain events.");
-        SystemActor actor = SystemActor.createJobActor("houseKeepPublishStagedDomainEvents");
+        SystemActor actor = createJobSystemActor("houseKeepPublishStagedDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> domainEventPublishJob.publishStagedDomainEvents(100));
     }
 
@@ -33,7 +34,7 @@ public class DomainEventJobScheduler {
     public void removeOldDomainEvents() {
         assertLocked();
 
-        SystemActor actor = SystemActor.createJobActor("removeOldDomainEvents");
+        SystemActor actor = createJobSystemActor("removeOldDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> {
             try {
                 domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);

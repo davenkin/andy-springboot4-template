@@ -8,6 +8,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import static com.company.andy.common.model.actor.SystemActor.createJobSystemActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
@@ -21,7 +22,7 @@ public class MaintenanceRecordJobScheduler {
     public void removeOldMaintenanceRecords() {
         assertLocked();
 
-        SystemActor actor = SystemActor.createJobActor("removeOldMaintenanceRecords");
+        SystemActor actor = createJobSystemActor("removeOldMaintenanceRecords");
         ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsJob::run);
     }
 }

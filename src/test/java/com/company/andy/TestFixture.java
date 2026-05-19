@@ -1,7 +1,6 @@
 package com.company.andy;
 
 import com.company.andy.common.model.Role;
-import com.company.andy.common.model.actor.ActorSource;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.model.actor.SystemActor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -9,11 +8,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
+import static com.company.andy.common.model.actor.SystemActor.createEventListenerSystemActor;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class TestFixture {
-    public static SystemActor TEST_EVENT_LISTENER_ACTOR = SystemActor.createSystemActor(ActorSource.EVENT_LISTENER, "some event listener");
-    public static SystemActor TEST_JOB_ACTOR = SystemActor.createSystemActor(ActorSource.BACKGROUND_JOB, "some job");
+    public static SystemActor TEST_EVENT_LISTENER_ACTOR = createEventListenerSystemActor("some event listener");
+    public static SystemActor TEST_JOB_ACTOR = createEventListenerSystemActor("some job");
 
     public static String randomDescription() {
         return RandomStringUtils.secure().nextAscii(20);

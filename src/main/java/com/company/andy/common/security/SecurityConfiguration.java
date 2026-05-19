@@ -31,7 +31,7 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults())
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler))
-                .addFilterAfter(new ConvertJwtToOrgActorAuthenticationTokenFilter(), BearerTokenAuthenticationFilter.class)
+                .addFilterAfter(new JwtToOrgActorAuthenticationTokenFilter(), BearerTokenAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         ;
         return http.build();
