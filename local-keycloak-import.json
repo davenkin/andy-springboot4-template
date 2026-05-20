@@ -94,7 +94,7 @@
       "attributes" : { }
     }, {
       "id" : "2367b2d6-96e9-48c2-99df-89bda7ba860b",
-      "name" : "it_admin",
+      "name" : "org_it_admin",
       "description" : "",
       "composite" : false,
       "clientRole" : false,
@@ -403,10 +403,10 @@
   "webAuthnPolicyPasswordlessExtraOrigins" : [ ],
   "users" : [ {
     "id" : "b5c2405d-c3d3-4326-af1f-901b5c223d59",
-    "username" : "test-it-admin",
-    "firstName" : "Itadmin",
+    "username" : "test-org-it-admin",
+    "firstName" : "Orgitadmin",
     "lastName" : "Test",
-    "email" : "testitadmin@somedomain.com",
+    "email" : "testorgitadmin@somedomain.com",
     "emailVerified" : false,
     "createdTimestamp" : 1779281897471,
     "enabled" : true,
@@ -421,7 +421,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-test-realm", "it_admin" ],
+    "realmRoles" : [ "default-roles-test-realm", "org_it_admin" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {

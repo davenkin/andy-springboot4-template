@@ -46,9 +46,9 @@ This is a template Spring Boot 4 project with the following features:
         - Org IT admin:
             - Realm: `test-realm`
             - Client: `test-client`
-            - Username: `test-it-admin`
+            - Username: `test-org-it-admin`
             - Password: `11111111`
-            - Role: `it_admin`
+            - Role: `org_it_admin`
         - Org admin:
             - Realm: `test-realm`
             - Client: `test-client`
