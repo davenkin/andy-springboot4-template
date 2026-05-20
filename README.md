@@ -22,7 +22,8 @@ This is a template Spring Boot 4 project with the following features:
 - Domain modeling using [Domain Driven Design (DDD)](./ADRs/003_use_ddd.md)
 - Standardized [request process flow](./ADRs/006_request_process_flow.md)
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
-- Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/) and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
+- Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
+  and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
 
 ## Tech stack
 
@@ -38,15 +39,29 @@ This is a template Spring Boot 4 project with the following features:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default users:
-        - Admin user:
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default settings:
+        - Keycloak Admin user for managing Keycloak server:
             - Username: `admin`
             - Password:`admin`
-        - Normal user:
+        - Org IT admin:
             - Realm: `test-realm`
             - Client: `test-client`
-            - Username: `test-user`
+            - Username: `test-it-admin`
             - Password: `11111111`
+            - Role: `it_admin`
+        - Org admin:
+            - Realm: `test-realm`
+            - Client: `test-client`
+            - Username: `test-org-admin`
+            - Password: `11111111`
+            - Role: `org_admin`
+        - System admin:
+            - Realm: `test-realm`
+            - Client: `test-client`
+            - Username: `test-system-admin`
+            - Password: `11111111`
+            - Role: `system_admin`
+        - An claim named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
     - `Redis`: localhost:6125
 - Run the application in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
@@ -105,12 +120,13 @@ contain various common coding practices that should be followed when writing you
 
 ## Todo
 
-- testing strategy change, convert to use controller but not command service, also change doc,集成测试没有了commandservice和queryservice的测试
+- testing strategy change, convert to use controller but not command service, also change
+  doc,集成测试没有了commandservice和queryservice的测试
 - 只针对以下几种些测试：
-  - controller
-  - domain objects
-  - job
-  - event hanlder
+    - controller
+    - domain objects
+    - job
+    - event hanlder
 - restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
 - cache 文档要改
 - todo: 添加cache统一使用@Cachable，

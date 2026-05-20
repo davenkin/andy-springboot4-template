@@ -76,6 +76,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
     }
 
     private ActorAuthenticationToken createActorAuthenticationToken(Jwt jwt, HttpServletRequest request) {
+        //todo: for system admin, the orgId should come from header first then jwt
         Set<OrgRole> roles = getRoles(jwt);
         List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList();
         return new ActorAuthenticationToken(
