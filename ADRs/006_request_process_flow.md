@@ -11,6 +11,8 @@ We choose to follow a standard way to implement various **request process flows*
 
 ## Implementation
 
+todo: add test for every flow
+
 ### Overall architecture
 
 ![overall architecture](../ADRs/asset/overall-architecture.png)

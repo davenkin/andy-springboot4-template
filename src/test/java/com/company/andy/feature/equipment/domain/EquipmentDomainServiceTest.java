@@ -1,5 +1,8 @@
 package com.company.andy.feature.equipment.domain;
 
+import com.company.andy.feature.org.equipment.domain.Equipment;
+import com.company.andy.feature.org.equipment.domain.EquipmentDomainService;
+import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -63,7 +63,7 @@ someMethod() {
         - `@NoArgsConstructor(access = PRIVATE)`: for Json deserialization
 
 Example query
-class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
+class [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/org/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter

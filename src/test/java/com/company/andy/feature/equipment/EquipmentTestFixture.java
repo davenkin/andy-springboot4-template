@@ -1,9 +1,9 @@
 package com.company.andy.feature.equipment;
 
-import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
-import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
-import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
-import com.company.andy.feature.equipment.domain.EquipmentStatus;
+import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.org.equipment.command.UpdateEquipmentHolderCommand;
+import com.company.andy.feature.org.equipment.command.UpdateEquipmentNameCommand;
+import com.company.andy.feature.org.equipment.domain.EquipmentStatus;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import static com.company.andy.TestFixture.randomEnum;

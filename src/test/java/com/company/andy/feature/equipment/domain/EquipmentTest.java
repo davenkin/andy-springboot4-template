@@ -2,6 +2,7 @@ package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.TestFixture;
 import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.feature.org.equipment.domain.Equipment;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;

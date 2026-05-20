@@ -2,9 +2,9 @@ package com.company.andy.common.event;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.equipment.domain.event.*;
-import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
-import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
+import com.company.andy.feature.org.equipment.domain.event.*;
+import com.company.andy.feature.org.maintenance.domain.event.MaintenanceRecordCreatedEvent;
+import com.company.andy.feature.org.maintenance.domain.event.MaintenanceRecordDeletedEvent;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

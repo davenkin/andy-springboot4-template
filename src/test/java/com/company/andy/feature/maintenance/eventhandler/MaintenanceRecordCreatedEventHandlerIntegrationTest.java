@@ -2,13 +2,14 @@ package com.company.andy.feature.maintenance.eventhandler;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
-import com.company.andy.feature.equipment.command.EquipmentCommandService;
-import com.company.andy.feature.equipment.domain.Equipment;
-import com.company.andy.feature.equipment.domain.EquipmentRepository;
-import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
-import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
-import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
+import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
+import com.company.andy.feature.org.equipment.domain.Equipment;
+import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
+import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordCommand;
+import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
+import com.company.andy.feature.org.maintenance.domain.event.MaintenanceRecordCreatedEvent;
+import com.company.andy.feature.org.maintenance.eventhandler.MaintenanceRecordCreatedEventHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

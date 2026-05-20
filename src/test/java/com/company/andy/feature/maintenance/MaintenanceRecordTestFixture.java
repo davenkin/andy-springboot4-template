@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance;
 
-import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
+import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordCommand;
 
 import static com.company.andy.TestFixture.randomDescription;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentStatus;

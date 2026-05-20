@@ -1,6 +1,7 @@
 package com.company.andy.feature.maintenance.domain;
 
 import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.TestFixture.randomDescription;

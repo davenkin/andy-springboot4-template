@@ -3,11 +3,11 @@ package com.company.andy.common.infrastructure;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.feature.equipment.domain.Equipment;
-import com.company.andy.feature.equipment.domain.EquipmentFactory;
-import com.company.andy.feature.equipment.domain.EquipmentRepository;
-import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
-import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
+import com.company.andy.feature.org.equipment.domain.Equipment;
+import com.company.andy.feature.org.equipment.domain.EquipmentFactory;
+import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
+import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
+import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

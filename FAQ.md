@@ -36,21 +36,21 @@ public class EventConfiguration {
 ### How to make multiple domain events inherit from the same base class (not the DomainEvent base class)?
 
 - Please refer
-  to [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
+  to [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentUpdatedEvent.java)
   as the example, where:
-    - [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
+    - [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentUpdatedEvent.java)
       is the base class which itself inherits from DomainEvent
-    - [EquipmentStatusUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentStatusUpdatedEvent.java)
-      and [EquipmentNameUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentNameUpdatedEvent.java)
+    - [EquipmentStatusUpdatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentStatusUpdatedEvent.java)
+      and [EquipmentNameUpdatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentNameUpdatedEvent.java)
       are the subclasses
-      of [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
+      of [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentUpdatedEvent.java)
 
 ### How to make multiple event handlers handle the same event independently?
 
 - Just add multiple event handler classes with the same event type and you are ready to go.
 - Example:
-  both [EquipmentCreatedEventHandler](src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedEventHandler.java)
-  and [EquipmentCreatedAnotherEventHandler](src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedAnotherEventHandler.java)
+  both [EquipmentCreatedEventHandler](src/main/java/com/company/andy/feature/org/equipment/eventhandler/EquipmentCreatedEventHandler.java)
+  and [EquipmentCreatedAnotherEventHandler](src/main/java/com/company/andy/feature/org/equipment/eventhandler/EquipmentCreatedAnotherEventHandler.java)
   handle the same
-  event [EquipmentCreatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentCreatedEvent.java)
+  event [EquipmentCreatedEvent](src/main/java/com/company/andy/feature/org/equipment/domain/event/EquipmentCreatedEvent.java)
   independently.
