@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.controller;
+package com.company.andy.feature.org.equipment.controller;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.TestFixture;
@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.*;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NullMarked

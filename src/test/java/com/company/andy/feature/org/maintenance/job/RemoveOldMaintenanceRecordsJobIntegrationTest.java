@@ -1,4 +1,4 @@
-package com.company.andy.feature.maintenance.job;
+package com.company.andy.feature.org.maintenance.job;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.AggregateRoot;
@@ -9,7 +9,6 @@ import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordC
 import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecordRepository;
-import com.company.andy.feature.org.maintenance.job.RemoveOldMaintenanceRecordsJob;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,8 +18,8 @@ import java.time.Instant;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.util.Constants.MONGO_ID;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
-import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

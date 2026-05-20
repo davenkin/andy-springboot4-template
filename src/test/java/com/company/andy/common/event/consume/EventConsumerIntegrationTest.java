@@ -18,8 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

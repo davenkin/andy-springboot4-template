@@ -18,7 +18,7 @@ import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EV
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
 import static com.company.andy.common.exception.ErrorCode.AR_NOT_FOUND;
 import static com.company.andy.common.exception.ErrorCode.NOT_SAME_ORG;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentName;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentName;
 import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.junit.jupiter.api.Assertions.*;
 

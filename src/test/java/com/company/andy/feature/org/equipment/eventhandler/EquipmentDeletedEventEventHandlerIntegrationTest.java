@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.eventhandler;
+package com.company.andy.feature.org.equipment.eventhandler;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.TestFixture;
@@ -6,7 +6,6 @@ import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
-import com.company.andy.feature.org.equipment.eventhandler.EquipmentDeletedEventEventHandler;
 import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordCommand;
 import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecordRepository;
@@ -14,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
-import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

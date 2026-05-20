@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment;
+package com.company.andy.feature.org.equipment;
 
 import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.org.equipment.command.UpdateEquipmentHolderCommand;

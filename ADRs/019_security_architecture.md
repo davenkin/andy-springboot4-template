@@ -1,0 +1,3 @@
+- 基于actor，所有的操作方，都抽象成actor
+- org操作和system从security侧就分开了，系统管理相关的接口全部以system前缀，其他的接口全部为针对org的
+- 系统管理员（拥有system_admin角色）可以访问org接口，但是此时所扮演的actor是org范畴下的actor，而不是系统actor，也即需要指定一个org才能完成认证 （通过x-org 请求头字段传入所需要扮演的org）

@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.DisabledIf;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.*;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisabledIf(value = "#{environment.acceptsProfiles('it')}", loadContext = true)

@@ -1,4 +1,4 @@
-package com.company.andy.feature.maintenance.controller;
+package com.company.andy.feature.org.maintenance.controller;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.OrgActor;
@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
-import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaintenanceRecordControllerTest extends IntegrationTest {

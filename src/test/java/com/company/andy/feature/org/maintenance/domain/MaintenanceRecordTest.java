@@ -1,12 +1,11 @@
-package com.company.andy.feature.maintenance.domain;
+package com.company.andy.feature.org.maintenance.domain;
 
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.TestFixture.randomDescription;
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentStatus;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentStatus;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MaintenanceRecordTest {
