@@ -1,6 +1,6 @@
 package com.company.andy.common.model.actor;
 
-import com.company.andy.common.model.Role;
+import com.company.andy.common.model.OrgRole;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +18,9 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class OrgActor extends Actor {
     private String orgId;
-    private Set<Role> roles;
+    private Set<OrgRole> roles;
 
-    public OrgActor(String id, String name, String orgId, Set<Role> roles, ActorSource source, String initiator) {
+    public OrgActor(String id, String name, String orgId, Set<OrgRole> roles, ActorSource source, String initiator) {
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(roles, "roles must not be null.");
 

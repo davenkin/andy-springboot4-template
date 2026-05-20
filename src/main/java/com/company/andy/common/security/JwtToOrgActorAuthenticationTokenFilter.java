@@ -1,6 +1,6 @@
 package com.company.andy.common.security;
 
-import com.company.andy.common.model.Role;
+import com.company.andy.common.model.OrgRole;
 import com.company.andy.common.model.actor.ActorSource;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
@@ -24,9 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
-import static com.company.andy.common.util.Constants.JWT_ORG_ID;
-import static com.company.andy.common.util.Constants.JWT_PREFERRED_USERNAME;
+import static com.company.andy.common.util.Constants.*;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -42,8 +42,8 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
-    private final static Set<String> ALL_ORG_ROLES = Arrays.stream(Role.values())
-            .map(Role::name)
+    private final static Set<String> ALL_ORG_ROLES = Arrays.stream(OrgRole.values())
+            .map(OrgRole::name)
             .collect(toSet());
 
     @Override
@@ -76,7 +76,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
     }
 
     private ActorAuthenticationToken createActorAuthenticationToken(Jwt jwt, HttpServletRequest request) {
-        Set<Role> roles = getRoles(jwt);
+        Set<OrgRole> roles = getRoles(jwt);
         List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList();
         return new ActorAuthenticationToken(
                 new OrgActor(
@@ -106,11 +106,17 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         return orgId;
     }
 
-    private Set<Role> getRoles(Jwt jwt) {
-        return JwtUtils.getRoles(jwt).stream()
+    private Set<OrgRole> getRoles(Jwt jwt) {
+        // system_admin automatically implies ORG_ADMIN
+        Set<String> roles = JwtUtils.getRoles(jwt);
+        if (roles.contains(JWT_SYSTEM_ADMIN_ROLE)) {
+            return Set.of(ORG_ADMIN);
+        }
+
+        return roles.stream()
                 .map(String::toUpperCase)
                 .filter(ALL_ORG_ROLES::contains)
-                .map(Role::valueOf)
+                .map(OrgRole::valueOf)
                 .collect(toSet());
     }
 

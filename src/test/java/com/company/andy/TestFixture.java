@@ -1,6 +1,6 @@
 package com.company.andy;
 
-import com.company.andy.common.model.Role;
+import com.company.andy.common.model.OrgRole;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.model.actor.SystemActor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -32,8 +32,8 @@ public class TestFixture {
         return "ORG_" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
-    public static Role randomRole() {
-        return randomEnum(Role.class);
+    public static OrgRole randomRole() {
+        return randomEnum(OrgRole.class);
     }
 
     public static OrgActor randomHumanUserOrgActor() {
