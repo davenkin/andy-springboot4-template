@@ -1,5 +1,6 @@
 package com.company.andy.common.security;
 
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.SystemActor;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -11,11 +12,11 @@ import java.util.Collection;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public final class SystemActorAuthenticationToken extends AbstractAuthenticationToken {
-    private final SystemActor actor;
+public final class ActorAuthenticationToken extends AbstractAuthenticationToken {
+    private final Actor actor;
     private final Jwt jwt;
 
-    public SystemActorAuthenticationToken(SystemActor actor, Collection<? extends GrantedAuthority> authorities, Jwt jwt) {
+    public ActorAuthenticationToken(Actor actor, Collection<? extends GrantedAuthority> authorities, Jwt jwt) {
         requireNonNull(actor, "actor must not be null.");
         requireNonNull(jwt, "jwt must not be null.");
 

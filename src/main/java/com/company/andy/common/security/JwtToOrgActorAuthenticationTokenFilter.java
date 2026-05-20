@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
@@ -20,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
@@ -54,7 +56,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
                 if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
                     Jwt jwt = jwtAuthenticationToken.getToken();
                     if (jwt != null) {
-                        OrgActorAuthenticationToken authenticationToken = createActorAuthenticationToken(jwt, request);
+                        ActorAuthenticationToken authenticationToken = createActorAuthenticationToken(jwt, request);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         ActorMdcSupport.addMdc(authenticationToken.getActor());
                         mdcPopulated = true;
@@ -73,16 +75,19 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         }
     }
 
-    private OrgActorAuthenticationToken createActorAuthenticationToken(Jwt jwt, HttpServletRequest request) {
-        return new OrgActorAuthenticationToken(
+    private ActorAuthenticationToken createActorAuthenticationToken(Jwt jwt, HttpServletRequest request) {
+        Set<Role> roles = getRoles(jwt);
+        List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList();
+        return new ActorAuthenticationToken(
                 new OrgActor(
                         jwt.getSubject(),
                         getActorName(jwt),
                         getOrgId(jwt),
-                        getRoles(jwt),
+                        roles,
                         getActorSource(jwt),
                         initiator(request)
                 ),
+                authorities,
                 jwt
         );
     }

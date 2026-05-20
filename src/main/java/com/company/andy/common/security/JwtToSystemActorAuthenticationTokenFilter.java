@@ -46,7 +46,7 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
                 if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
                     Jwt jwt = jwtAuthenticationToken.getToken();
                     if (jwt != null) {
-                        SystemActorAuthenticationToken authenticationToken = createActorAuthenticationToken(request, jwt);
+                        ActorAuthenticationToken authenticationToken = createActorAuthenticationToken(request, jwt);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         ActorMdcSupport.addMdc(authenticationToken.getActor());
                         mdcPopulated = true;
@@ -65,9 +65,9 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
         }
     }
 
-    private SystemActorAuthenticationToken createActorAuthenticationToken(HttpServletRequest request, Jwt jwt) {
+    private ActorAuthenticationToken createActorAuthenticationToken(HttpServletRequest request, Jwt jwt) {
         List<SimpleGrantedAuthority> authorities = JwtUtils.getRoles(jwt).stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();
 
         SystemActor actor = createUserSystemActor(
@@ -76,7 +76,7 @@ public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFil
                 getActorSource(jwt),
                 "%s[%s]".formatted(request.getMethod(), request.getRequestURI())
         );
-        return new SystemActorAuthenticationToken(actor, authorities, jwt);
+        return new ActorAuthenticationToken(actor, authorities, jwt);
     }
 
     private String getActorName(Jwt jwt) {

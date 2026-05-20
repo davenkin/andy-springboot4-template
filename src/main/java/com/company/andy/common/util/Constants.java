@@ -17,11 +17,11 @@ public class Constants {
     public static final String ORG_EQUIPMENTS_CACHE = "ORG_EQUIPMENTS";
 
     // Jwt
-    public static final String JWT_ORG_ID = "orgId";
+    public static final String JWT_ORG_ID = "org_id";
     public static final String JWT_PREFERRED_USERNAME = "preferred_username";
     public static final String JWT_REALM_ACCESS = "realm_access";
     public static final String JWT_REALM_ACCESS_ROLES = "roles";
-    public static final String JWT_SYSTEM_USER_ROLE = "SYSTEM_USER";
+    public static final String JWT_SYSTEM_ADMIN_ROLE = "system_admin";
 
     // Database
 

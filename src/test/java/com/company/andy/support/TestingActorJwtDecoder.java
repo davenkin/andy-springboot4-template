@@ -44,7 +44,7 @@ public class TestingActorJwtDecoder implements JwtDecoder {
             builder.claim(JWT_ORG_ID, orgActor.getOrgId())
                     .claim(JWT_REALM_ACCESS, Map.of(JWT_REALM_ACCESS_ROLES, orgActor.getRoles().stream().map(Enum::name).toList()));
         } else if (actor instanceof SystemActor) {
-            builder.claim(JWT_REALM_ACCESS, Map.of(JWT_REALM_ACCESS_ROLES, List.of(JWT_SYSTEM_USER_ROLE)));
+            builder.claim(JWT_REALM_ACCESS, Map.of(JWT_REALM_ACCESS_ROLES, List.of(JWT_SYSTEM_ADMIN_ROLE)));
         }
 
         return builder.build();

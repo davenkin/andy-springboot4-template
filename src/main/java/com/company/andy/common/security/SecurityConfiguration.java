@@ -13,7 +13,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static com.company.andy.common.util.Constants.JWT_SYSTEM_USER_ROLE;
+import static com.company.andy.common.util.Constants.JWT_SYSTEM_ADMIN_ROLE;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -42,7 +42,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain systemFilterChain(HttpSecurity http) {
         http.securityMatcher("/system/**")
                 .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().hasRole(JWT_SYSTEM_USER_ROLE)
+                        .anyRequest().hasRole(JWT_SYSTEM_ADMIN_ROLE)
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults())
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
