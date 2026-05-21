@@ -14,6 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Configuration(proxyBeanMethods = false)
 public class IntegrationTestConfiguration {
 
+    // This enables transaction for Mongo requires replica set for transaction to work
     @Bean
     @Profile("it")
     MongodArguments mongodArguments() {

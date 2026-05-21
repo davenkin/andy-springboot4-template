@@ -1,5 +1,16 @@
 package com.company.andy.common.infrastructure.transaction;
 
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentHolderCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.actor.OrgActor;
@@ -12,92 +23,85 @@ import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentNameUpdatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.DisabledIf;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@DisabledIf(value = "#{environment.acceptsProfiles('it')}", loadContext = true)
 class TransactionIntegrationTest extends IntegrationTest {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+  @Autowired
+  private EquipmentRepository equipmentRepository;
 
-    @Autowired
-    private EquipmentCommandService equipmentCommandService;
+  @Autowired
+  private EquipmentCommandService equipmentCommandService;
 
-    @Autowired
-    protected TestingTransactionService testingTransactionService;
+  @Autowired
+  protected TestingTransactionService testingTransactionService;
 
-    @Test
-    void transaction_should_work_for_aggregate_root_and_domain_event() {
-        OrgActor actor = randomHumanUserOrgActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        equipmentCommandService.createEquipment(createAnotherEquipmentCommand, actor);
+  @Test
+  void transaction_should_work_for_aggregate_root_and_domain_event() {
+    OrgActor actor = randomHumanUserOrgActor();
+    CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+    CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
+    String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+    equipmentCommandService.createEquipment(createAnotherEquipmentCommand, actor);
 
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = new UpdateEquipmentNameCommand(createAnotherEquipmentCommand.name());
-        assertThrows(ServiceException.class,
-                () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor));
+    UpdateEquipmentNameCommand updateEquipmentNameCommand = new UpdateEquipmentNameCommand(createAnotherEquipmentCommand.name());
+    assertThrows(ServiceException.class,
+        () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor));
 
-        assertEquals(createEquipmentCommand.name(), equipmentRepository.byId(equipmentId).getName());
-        assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
-    }
+    assertEquals(createEquipmentCommand.name(), equipmentRepository.byId(equipmentId).getName());
+    assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+  }
 
-    @Test
-    void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
-        OrgActor actor = randomHumanUserOrgActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
+  @Test
+  void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
+    OrgActor actor = randomHumanUserOrgActor();
+    CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+    String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+    UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+    UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionWithTransaction(equipmentId,
-                updateEquipmentNameCommand,
-                updateEquipmentHolderCommand, actor));
+    assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionWithTransaction(equipmentId,
+        updateEquipmentNameCommand,
+        updateEquipmentHolderCommand, actor));
 
-        Equipment dbEquipment = equipmentRepository.byId(equipmentId);
-        assertNotEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
-        assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
-    }
+    Equipment dbEquipment = equipmentRepository.byId(equipmentId);
+    assertNotEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
+    assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
+    assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+  }
 
-    @Test
-    void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
-        OrgActor actor = randomHumanUserOrgActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
+  @Test
+  void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
+    OrgActor actor = randomHumanUserOrgActor();
+    CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+    String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+    UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+    UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionAtTheEndWithoutTransaction(equipmentId,
-                updateEquipmentNameCommand,
-                updateEquipmentHolderCommand, actor));
+    assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionAtTheEndWithoutTransaction(equipmentId,
+        updateEquipmentNameCommand,
+        updateEquipmentHolderCommand, actor));
 
-        Equipment dbEquipment = equipmentRepository.byId(equipmentId);
-        assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
-        assertEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
-    }
+    Equipment dbEquipment = equipmentRepository.byId(equipmentId);
+    assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
+    assertEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
+    assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+  }
 
-    @Test
-    void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        OrgActor actor = randomHumanUserOrgActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
+  @Test
+  void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
+    OrgActor actor = randomHumanUserOrgActor();
+    CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+    String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+    UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+    UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
-        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
-                updateEquipmentNameCommand,
-                updateEquipmentHolderCommand, actor));
+    assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
+        updateEquipmentNameCommand,
+        updateEquipmentHolderCommand, actor));
 
-        Equipment dbEquipment = equipmentRepository.byId(equipmentId);
-        assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
-        assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
-    }
+    Equipment dbEquipment = equipmentRepository.byId(equipmentId);
+    assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
+    assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
+    assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+  }
 }

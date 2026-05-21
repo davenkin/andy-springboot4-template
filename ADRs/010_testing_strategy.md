@@ -38,6 +38,8 @@ No need to write tests for:
 
 ## Implementation
 
+todo: 解释junit-platform.properties，类级别是并行的，类内部各个测试方法是串行的，因为有些测试类中各个方法之间可能是相互影响的，比如某些Job会操作全局数据，因此多个测试方法之间可能有冲突。一般来讲，我们应该让各个测试方法之间完全独立。
+
 All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
 doing, e.g. `should_create_equipment()`.
 

@@ -1,2 +1,3 @@
 - when to use transaction, when not
 - 记得给index加上名字：named("idx_status")
+- Mongock不能用于创建Collection，因为测试是将Mongock禁用掉的，而Collection如果不事先创建而是由MongoDB自动创建的话，测试可能会因为事务冲突而失败。因此，我们不应该依赖于MongoDB自动创建Collection的功能，而是应该显式地在[StartupInitializer](src/main/java/com/company/andy/common/init/StartupInitializer.java)创建Collection。
