@@ -27,12 +27,18 @@ public class MaintenanceRecordCreatedEventHandler extends AbstractEventHandler<M
 
     private void updateEquipmentStatus(String equipmentId, SystemActor actor) {
         equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
-            maintenanceRecordRepository.latestFor(equipmentId).ifPresent(record -> {
+            maintenanceRecordRepository.latestForOptional(equipmentId).ifPresent(record -> {
                 equipment.updateStatus(record.getStatus(), actor);
                 equipmentRepository.save(equipment);
                 log.info("Updated equipment[{}] status from its lasted maintenance record[{}].",
                         equipment.getId(), record.getId());
             });
         });
+    }
+
+    @Override
+    public boolean isIdempotent() {
+        // This handler can run multiple times safely
+        return true;
     }
 }

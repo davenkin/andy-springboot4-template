@@ -47,7 +47,7 @@ class EquipmentNameUpdatedEventHandlerIntegrationTest extends IntegrationTest {
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
 
         // Execute
-//        equipmentNameUpdatedEventHandler.handle(equipmentNameUpdatedEvent);
+        equipmentNameUpdatedEventHandler.handle(equipmentNameUpdatedEvent);
 
         // Verify
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());

@@ -13,7 +13,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 @Repository
 @RequiredArgsConstructor
 public class MaintenanceRecordRepository extends AbstractMongoRepository<MaintenanceRecord> {
-    public Optional<MaintenanceRecord> latestFor(String equipmentId) {
+    public Optional<MaintenanceRecord> latestForOptional(String equipmentId) {
         requireNonBlank(equipmentId, "equipmentId must not be blank.");
 
         Query query = Query.query(where(MaintenanceRecord.Fields.equipmentId).is(equipmentId));

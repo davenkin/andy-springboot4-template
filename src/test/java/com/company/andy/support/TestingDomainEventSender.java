@@ -30,7 +30,7 @@ public class TestingDomainEventSender implements DomainEventSender {
     @Override
     public CompletableFuture<String> send(PublishingDomainEvent publishingDomainEvent) {
         if (this.errorEventIds.contains(publishingDomainEvent.getId())) {
-            return CompletableFuture.failedFuture(new RuntimeException("stub exception"));
+            return CompletableFuture.failedFuture(new RuntimeException("Simulated error in event handler for sending event:  " + publishingDomainEvent.getId()));
         }
 
         this.events.put(publishingDomainEvent.getId(), publishingDomainEvent);

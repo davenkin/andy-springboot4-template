@@ -16,15 +16,18 @@ public abstract class AbstractEventHandler<T> {
     }
 
     public boolean isIdempotent() {
-        return false; // By default, all handlers are assumed to be not idempotent by themselves
+        // By default, all handlers are assumed to be not idempotent by themselves
+        return false;
     }
 
     public boolean isTransactional() {
-        return true; // By default, all handlers are assumed to be transactional, we should make handlers to be transactional as much as possible
+        // By default, all handlers are assumed to be transactional, we should make handlers to be transactional as much as possible
+        return true;
     }
 
     public int priority() {
-        return 0; // Smaller value means higher priority and will be handled first
+        // Smaller value means higher priority and will be handled first
+        return 0;
     }
 
     public final String getName() {

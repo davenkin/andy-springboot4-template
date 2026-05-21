@@ -22,11 +22,13 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
 
     @Override
     public boolean isIdempotent() {
-        return true;// This handler can run multiple times safely
+        // This handler can run multiple times safely
+        return true;
     }
 
     @Override
     public boolean isTransactional() {
-        return false; // Better not be transactional as it deletes multiple records which can exceed Mongo transaction restrictions
+        // Not transactional as it deletes multiple records which can exceed Mongo's transaction restrictions
+        return false;
     }
 }

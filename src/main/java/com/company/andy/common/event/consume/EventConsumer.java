@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
 
 // Single entry point for consuming all types of events.
 // Orchestrates event consuming by delegating to event handlers.
@@ -30,6 +31,7 @@ public class EventConsumer {
         this.handlers = handlers;
         this.consumingEventDao = consumingEventDao;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
+        this.transactionTemplate.setPropagationBehavior(PROPAGATION_REQUIRES_NEW);
     }
 
     // Entry point for consuming domain events

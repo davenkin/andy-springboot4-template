@@ -1,198 +1,177 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.TestFixture;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
+import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
+import com.company.andy.feature.org.equipment.domain.event.EquipmentHolderUpdatedEvent;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentNameUpdatedEvent;
-import com.company.andy.feature.org.equipment.eventhandler.EquipmentCreatedAnotherEventHandler;
-import com.company.andy.feature.org.equipment.eventhandler.EquipmentCreatedEventHandler;
-import com.company.andy.feature.org.equipment.eventhandler.EquipmentNameUpdatedEventHandler;
-import com.company.andy.feature.org.equipment.eventhandler.EquipmentUpdatedEventHandler;
+import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordCommand;
+import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
+import com.company.andy.feature.org.maintenance.domain.event.MaintenanceRecordCreatedEvent;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
+import java.time.Instant;
+
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.common.event.DomainEventType.*;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
+import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Autowired
     private EquipmentCommandService equipmentCommandService;
 
-    @MockitoSpyBean
-    private EquipmentCreatedEventHandler createdEventHandler;
-
-    @MockitoSpyBean
-    private EquipmentCreatedAnotherEventHandler createdAnotherEventHandler;
-
-    @MockitoSpyBean
-    private EquipmentUpdatedEventHandler updatedEventHandler;
-
-    @MockitoSpyBean
-    private EquipmentNameUpdatedEventHandler nameUpdatedEventHandler;
-
-    @MockitoSpyBean
+    @Autowired
     private ConsumingEventDao consumingEventDao;
 
+    @Autowired
+    private TestingEquipmentCreatedEventHandler testingEquipmentCreatedEventHandler;
+
+    @Autowired
+    private TestingIdempotentEquipmentCreatedEventHandler testingIdempotentEquipmentCreatedEventHandler;
+
+    @Autowired
+    private TestingUrgentEquipmentCreatedEventHandler testingUrgentEquipmentCreatedEventHandler;
+
+    @Autowired
+    private TestingEquipmentUpdatedEventHandler testingEquipmentUpdatedEventHandler;
+
+    @Autowired
+    private TestingEquipmentNameUpdatedEventHandler testingEquipmentNameUpdatedEventHandler;
+
+    @Autowired
+    private TestingEquipmentStatusUpdatedEventHandler testingEquipmentStatusUpdatedEventHandler;
+
+    @Autowired
+    private TestingEquipmentHolderUpdatedEventHandler testingEquipmentHolderUpdatedEventHandler;
+
+    @Autowired
+    private TestingErrorNonTxEquipmentHolderUpdatedEventHandler testingErrorNonTxEquipmentHolderUpdatedEventHandler;
+
+    @Autowired
+    private TestingErrorTxEquipmentHolderUpdatedEventHandler testingErrorTxEquipmentHolderUpdatedEventHandler;
+
+    @Autowired
+    private MaintenanceRecordCommandService maintenanceRecordCommandService;
+
+    @Autowired
+    private EquipmentRepository equipmentRepository;
+
+
     @Test
-    void should_only_handle_events_that_can_be_handled() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
+    void handlers_should_only_handle_events_that_can_be_handled() {
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        verify(createdEventHandler, times(1)).handle(any(EquipmentCreatedEvent.class));
-        verify(updatedEventHandler, times(0)).handle(any());
-        verify(consumingEventDao).markEventAsConsumedByHandler(any(ConsumingEvent.class), any(EquipmentCreatedEventHandler.class));
-        assertTrue(consumingEventDao.exists(createdEvent.getId()));
+        assertEquals(1, testingEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+        assertEquals(0, testingEquipmentStatusUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+        assertTrue(consumingEventDao.exists(createdEvent.getId(), testingEquipmentCreatedEventHandler));
     }
 
     @Test
-    void should_call_handler_for_event_hierarchy() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), actor);
-        EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
+    void should_call_handlers_for_event_hierarchy() {
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        equipmentCommandService.updateEquipmentName(equipmentId, randomUpdateEquipmentNameCommand(), actor);
+        EquipmentNameUpdatedEvent updatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
 
         eventConsumer.consumeDomainEvent(updatedEvent);
 
-        verify(nameUpdatedEventHandler).handle(any(EquipmentNameUpdatedEvent.class));
-        verify(updatedEventHandler).handle(any(EquipmentNameUpdatedEvent.class));
-        assertTrue(consumingEventDao.exists(updatedEvent.getId(), nameUpdatedEventHandler));
-        assertTrue(consumingEventDao.exists(updatedEvent.getId(), updatedEventHandler));
+        assertEquals(1, testingEquipmentUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(updatedEvent.getId())).count());
+        assertEquals(1, testingEquipmentNameUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(updatedEvent.getId())).count());
+        assertTrue(consumingEventDao.exists(updatedEvent.getId(), testingEquipmentUpdatedEventHandler));
+        assertTrue(consumingEventDao.exists(updatedEvent.getId(), testingEquipmentNameUpdatedEventHandler));
     }
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        when(createdEventHandler.priority()).thenReturn(0);
-        when(createdAnotherEventHandler.priority()).thenReturn(1);
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdAnotherEventHandler);
-        inOrder.verify(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
-        inOrder.verify(createdAnotherEventHandler).handle(any(EquipmentCreatedEvent.class));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdAnotherEventHandler));
+        Instant urgentHandledAt = testingUrgentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
+        Instant secondHandledAt = testingEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
+        Instant thirdHandledAt = testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
+        assertTrue(urgentHandledAt.isBefore(secondHandledAt));
+        assertTrue(secondHandledAt.isBefore(thirdHandledAt));
     }
 
     @Test
-    void multiple_handlers_should_run_in_order_of_priority_reversely() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        when(createdEventHandler.priority()).thenReturn(1);
-        when(createdAnotherEventHandler.priority()).thenReturn(0);
+    void should_record_consumed_or_not_if_handler_throws_exception() {
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
+        EquipmentHolderUpdatedEvent holderUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT, EquipmentHolderUpdatedEvent.class);
 
-        eventConsumer.consumeDomainEvent(createdEvent);
+        assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(holderUpdatedEvent));
 
-        InOrder inOrder = Mockito.inOrder(createdEventHandler, createdAnotherEventHandler);
-        inOrder.verify(createdAnotherEventHandler).handle(any(EquipmentCreatedEvent.class));
-        inOrder.verify(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
-        assertTrue(consumingEventDao.exists(createdEvent.getId(), createdAnotherEventHandler));
-    }
-
-    @Test
-    void should_mark_as_consumed_if_non_transactional_handler_throws_exception() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
-        when(createdEventHandler.isTransactional()).thenReturn(false);
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(createdEvent));
-
-        assertTrue(exception.getMessage().startsWith("Error while consuming event"));
-        verify(consumingEventDao).markEventAsConsumedByHandler(any(ConsumingEvent.class), any(EquipmentCreatedEventHandler.class));
-        assertTrue(consumingEventDao.exists(createdEvent.getId()));
-    }
-
-    @Test
-    void should_not_mark_as_consumed_if_transactional_handler_throws_exception() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        doThrow(new RuntimeException("stub exception")).when(createdEventHandler).handle(any(EquipmentCreatedEvent.class));
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(createdEvent));
-
-        assertTrue(exception.getMessage().startsWith("Error while consuming event"));
-        verify(consumingEventDao).markEventAsConsumedByHandler(any(ConsumingEvent.class), any(EquipmentCreatedEventHandler.class));
-        assertFalse(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
+        assertTrue(consumingEventDao.exists(holderUpdatedEvent.getId(), testingErrorNonTxEquipmentHolderUpdatedEventHandler));
+        assertFalse(consumingEventDao.exists(holderUpdatedEvent.getId(), testingErrorTxEquipmentHolderUpdatedEventHandler));
     }
 
     @Test
     void should_not_mark_as_consumed_for_idempotent_handler() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        when(createdEventHandler.isIdempotent()).thenReturn(true);
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        verify(consumingEventDao, times(0)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedEventHandler.class));
-        verify(consumingEventDao, times(1)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedAnotherEventHandler.class));
-        assertFalse(consumingEventDao.exists(createdEvent.getId(), createdEventHandler));
-        verify(createdEventHandler, times(1)).handle(any(EquipmentCreatedEvent.class));
+        assertTrue(consumingEventDao.exists(createdEvent.getId(), testingEquipmentCreatedEventHandler));
+        assertFalse(consumingEventDao.exists(createdEvent.getId(), testingIdempotentEquipmentCreatedEventHandler));
     }
 
     @Test
     void multiple_handlers_should_run_independently() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        equipmentCommandService.updateEquipmentName(arId, randomUpdateEquipmentNameCommand(), actor);
-        EquipmentNameUpdatedEvent updatedEvent = latestEventFor(arId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
-        when(nameUpdatedEventHandler.priority()).thenReturn(0);
-        when(updatedEventHandler.priority()).thenReturn(1);
-        doThrow(new RuntimeException("stub exception")).when(nameUpdatedEventHandler).handle(any(EquipmentNameUpdatedEvent.class));
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
+        EquipmentHolderUpdatedEvent holderUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT, EquipmentHolderUpdatedEvent.class);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(updatedEvent));
+        assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(holderUpdatedEvent));
 
-        assertTrue(exception.getMessage().startsWith("Error while consuming event"));
-        verify(nameUpdatedEventHandler).handle(any(EquipmentNameUpdatedEvent.class));
-        verify(updatedEventHandler).handle(any(EquipmentNameUpdatedEvent.class));
+        assertEquals(1, testingEquipmentHolderUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(holderUpdatedEvent.getId())).count());
+        assertEquals(1, testingErrorNonTxEquipmentHolderUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(holderUpdatedEvent.getId())).count());
+        assertEquals(1, testingErrorTxEquipmentHolderUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(holderUpdatedEvent.getId())).count());
     }
 
     @Test
     void should_run_for_duplicated_event_if_idempotent_handler() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        when(createdEventHandler.isIdempotent()).thenReturn(true);
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
-        eventConsumer.consumeDomainEvent(createdEvent);
+        assertEquals(1, testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+        assertEquals(1, testingUrgentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
 
-        verify(createdEventHandler, times(2)).handle(any(EquipmentCreatedEvent.class));
+        // consume again
+        eventConsumer.consumeDomainEvent(createdEvent);
+        assertEquals(2, testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+        assertEquals(1, testingUrgentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
     }
 
     @Test
-    void should_not_run_for_duplicated_event_if_non_idempotent_handler() {
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
-        String arId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        EquipmentCreatedEvent createdEvent = latestEventFor(arId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
-        when(createdEventHandler.isIdempotent()).thenReturn(false);
+    void event_handler_can_further_raise_events_and_been_handled() {
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        assertNull(equipmentRepository.byId(equipmentId).getStatus());
 
-        eventConsumer.consumeDomainEvent(createdEvent);
-        eventConsumer.consumeDomainEvent(createdEvent);
+        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        MaintenanceRecordCreatedEvent maintenanceRecordCreatedEvent = latestEventFor(maintenanceRecordId, MAINTENANCE_RECORD_CREATED_EVENT, MaintenanceRecordCreatedEvent.class);
+        eventConsumer.consumeDomainEvent(maintenanceRecordCreatedEvent);
 
-        verify(consumingEventDao, times(2)).markEventAsConsumedByHandler(any(), any(EquipmentCreatedEventHandler.class));
-        verify(createdEventHandler, times(1)).handle(any(EquipmentCreatedEvent.class));
+        assertEquals(createMaintenanceRecordCommand.status(), equipmentRepository.byId(equipmentId).getStatus());
     }
-
 }

@@ -19,4 +19,16 @@ public class EquipmentNameUpdatedEventHandler extends AbstractEventHandler<Equip
     protected void handle(EquipmentNameUpdatedEvent event, SystemActor actor) {
         ExceptionSwallowRunner.run(() -> syncEquipmentNameToMaintenanceRecordsTask.run(event.getEquipmentId()));
     }
+
+    @Override
+    public boolean isIdempotent() {
+        // This handler can run multiple times safely
+        return true;
+    }
+
+    @Override
+    public boolean isTransactional() {
+        // Not transactional as it updates multiple records which can exceed Mongo's transaction restrictions
+        return false;
+    }
 }

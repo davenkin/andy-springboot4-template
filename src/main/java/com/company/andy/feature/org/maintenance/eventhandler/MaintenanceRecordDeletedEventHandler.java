@@ -19,4 +19,10 @@ public class MaintenanceRecordDeletedEventHandler extends AbstractEventHandler<M
     protected void handle(MaintenanceRecordDeletedEvent event, SystemActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
     }
+
+    @Override
+    public boolean isIdempotent() {
+        // This handler can run multiple times safely
+        return true;
+    }
 }
