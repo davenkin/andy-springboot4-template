@@ -35,7 +35,7 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to run locally
 
-- First run `./start-docker-compose.sh` to start the following infrastructures:
+- First run `./start-docker-compose.sh` to start the following middlewares using Docker:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
@@ -61,14 +61,15 @@ This is a template Spring Boot 4 project with the following features:
             - Username: `test-system-admin`
             - Password: `11111111`
             - Role: `system_admin`
-        - An claim named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
+        - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
     - `Redis`: localhost:6125
-- Run the application in one of the following ways:
+- Run the application locally in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
       running.
     - `./clear-and-run-local.sh`: this starts the application with debug port on 5005, it also automatically starts
       docker-compose by first removing existing containers and their data if any.
     - Run `main` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
+    - By default, the `local` profile(`application-local.yaml`) is used for all the above.
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
