@@ -1,52 +1,64 @@
-package com.company.andy.feature.org.equipment.eventhandler;
+package com.company.andy.feature.org.maintenance.job;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.TestFixture;
+import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
-import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.org.maintenance.command.CreateMaintenanceRecordCommand;
 import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
+import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EVENT;
+import java.time.Instant;
+
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.common.util.Constants.MONGO_ID;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-class EquipmentDeletedEventEventHandlerIntegrationTest extends IntegrationTest {
+class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
     @Autowired
-    private EquipmentDeletedEventEventHandler equipmentDeletedEventEventHandler;
+    private MaintenanceRecordCommandService maintenanceRecordCommandService;
 
     @Autowired
     private EquipmentCommandService equipmentCommandService;
 
     @Autowired
-    private MaintenanceRecordCommandService maintenanceRecordCommandService;
+    private RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
 
     @Autowired
     private MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Test
-    void delete_equipment_should_also_delete_all_its_maintenance_records() {
+    void should_remove_old_maintenance_records() {
         // Prepare
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
-        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+
+        Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
+        Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
+        mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
         // Execute
-        equipmentCommandService.deleteEquipment(equipmentId, actor);
-        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
-        equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
+        removeOldMaintenanceRecordsJob.run();
 
         // Verify
-        assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
+        assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));
+        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
     }
+
 }

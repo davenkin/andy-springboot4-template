@@ -30,6 +30,8 @@ At the top level, there are two packages:
 - `org`: contains all business entities that are related to organizations(tenants), such as `Equipment`   
 - `system`: contains all business entities that are related to the system itself, such as `DemoInquiry`
 
+todo: 注意目录结构变成了feature/org和feature/system，看看哪里的文档需要调整
+
 When implementing, keep the folder structure as flat as possible. The Aggregate Root is at the highest level under a
 feature package, then followed by other technical layers, use the following structure:
 

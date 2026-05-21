@@ -1,6 +1,7 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.common.event.DomainEvent;
+import com.company.andy.common.model.event.ExternalEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -36,6 +37,11 @@ public class EventConsumer {
 
     // Entry point for consuming domain events
     public void consumeDomainEvent(DomainEvent event) {
+        this.consume(new ConsumingEvent(event.getId(), event));
+    }
+
+    // Entry point for consuming external events
+    public void consumeExternalEvent(ExternalEvent event) {
         this.consume(new ConsumingEvent(event.getId(), event));
     }
 

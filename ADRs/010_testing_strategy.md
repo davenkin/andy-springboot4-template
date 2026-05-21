@@ -1,4 +1,5 @@
 todo: re write as we choose calling api for integration tests but not command service anymore
+
 # Testing strategy
 
 ## Context
@@ -12,16 +13,16 @@ found [here](https://web.dev/articles/ta-strategies).
 
 ## Decision
 
+todo: eventhandler 的测试，如果是自己触发，则可以直接在contoller中写测试，如果是外部触发则通过eventConsumer来写测试 todo:
+集成测试可以通过commandservice准备数据，包括新建和更新数据，而对于更新数据，除了command service也可以通过TestReflectionUtils完成
+
 We choose to focus more on integration tests than unit tests.
 
 We write integration tests for:
 
-- CommandService,
-  e.g. [EquipmentCommandServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/command/EquipmentCommandServiceIntegrationTest.java)
-- QueryService,
-  e.g. [EquipmentQueryServiceIntegrationTest](../src/test/java/com/company/andy/feature/equipment/query/EquipmentQueryServiceIntegrationTest.java)
-- EventHandler,
-  e.g. [EquipmentDeletedEventEventHandlerIntegrationTest](../src/test/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandlerIntegrationTest.java)
+- Controller:
+  e.g. [EquipmentControllerTest](src/test/java/com/company/andy/feature/org/equipment/controller/EquipmentControllerTest.java)
+- Event consuming: only for external events, internal events should be covered inside controller tests
 - Job,
   e.g. [RemoveOldMaintenanceRecordsJobIntegrationTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobIntegrationTest.java)
 
@@ -33,12 +34,14 @@ We write unit tests for:
 
 No need to write tests for:
 
-- Controller: controllers are very thin but requires a heavy set up for testing
-- Repository: repositories are usually already covered in integration tests implicitly
+- CommandService: CommandServices are already covered by controller tests
+- QueryService: QueryServices are already covered by controller tests
+- Repository: repositories are already covered in integration tests implicitly
 
 ## Implementation
 
-todo: 解释junit-platform.properties，类级别是并行的，类内部各个测试方法是串行的，因为有些测试类中各个方法之间可能是相互影响的，比如某些Job会操作全局数据，因此多个测试方法之间可能有冲突。一般来讲，我们应该让各个测试方法之间完全独立。
+todo:
+解释junit-platform.properties，类级别是并行的，类内部各个测试方法是串行的，因为有些测试类中各个方法之间可能是相互影响的，比如某些Job会操作全局数据，因此多个测试方法之间可能有冲突。一般来讲，我们应该让各个测试方法之间完全独立。
 
 All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
 doing, e.g. `should_create_equipment()`.

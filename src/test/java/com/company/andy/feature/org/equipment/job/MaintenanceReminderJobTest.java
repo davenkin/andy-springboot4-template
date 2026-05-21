@@ -4,7 +4,7 @@ import com.company.andy.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class MaintenanceReminderJobIntegrationTest extends IntegrationTest {
+class MaintenanceReminderJobTest extends IntegrationTest {
     @Autowired
     private MaintenanceReminderJob maintenanceReminderJob;
 
