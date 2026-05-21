@@ -11,6 +11,7 @@ import com.company.andy.feature.org.equipment.domain.Equipment;
 import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.org.equipment.domain.EquipmentSummary;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
+import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.org.equipment.query.PageEquipmentsQuery;
 import com.company.andy.feature.org.equipment.query.QPagedEquipment;
@@ -25,10 +26,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
+import static com.company.andy.common.event.DomainEventType.*;
 import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
 import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,10 +121,7 @@ class EquipmentControllerTest extends IntegrationTest {
         // Prepare
         OrgActor actor = randomHumanUserOrgActor();
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
-
-        CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
-        equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-
+        equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
         List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
         assertNotNull(equipmentSummaries);
@@ -135,13 +133,46 @@ class EquipmentControllerTest extends IntegrationTest {
         // Create another equipment to evict the cache
         restTestClient.post()
                 .uri("/equipments").headers(authHeaderOf(actor))
-                .body(new CreateEquipmentCommand(randomEquipmentName()))
+                .body(randomCreateEquipmentCommand())
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody().id();
 
 
         // Verify
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
+    }
+
+    @Test
+    void should_delete_equipment() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        assertTrue(equipmentRepository.exists(equipmentId));
+
+        // Execute
+        restTestClient.delete().uri("/equipments/{id}", equipmentId).headers(authHeaderOf(actor)).exchange().expectStatus().isOk();
+
+        // Verify
+        assertFalse(equipmentRepository.exists(equipmentId));
+        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        assertEquals(equipmentId, equipmentDeletedEvent.getEquipmentId());
+    }
+
+    @Test
+    void delete_equipment_should_also_delete_its_maintenance_records() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor);
+        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+
+        // Execute
+        restTestClient.delete().uri("/equipments/{id}", equipmentId).headers(authHeaderOf(actor)).exchange().expectStatus().isOk();
+
+        // Verify
+        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        eventConsumer.consumeDomainEvent(equipmentDeletedEvent);
+        assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
     }
 
     @Test
