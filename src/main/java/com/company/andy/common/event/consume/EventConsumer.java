@@ -13,8 +13,10 @@ import java.util.Set;
 import static java.util.Comparator.comparingInt;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-// Single entry point for consuming all types of events
-// Orchestrates event consuming by delegating to event handlers
+// Single entry point for consuming all types of events.
+// Orchestrates event consuming by delegating to event handlers.
+// It's not aware of which messaging middleware it consumes events from.
+
 @Slf4j
 @Component
 public class EventConsumer {

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
+import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
@@ -42,7 +43,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_create_equipment() {
         // Prepare
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
+        OrgActor actor = randomHumanUserOrgActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
@@ -59,8 +60,6 @@ class EquipmentControllerTest extends IntegrationTest {
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
         // Verify domain events
-        // Only need to check the existence of domain event in database,
-        // For event handling please add another test specifically for event handler
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
@@ -68,7 +67,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_update_equipment_name() {
         // Prepare
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
@@ -94,7 +93,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
 
@@ -121,11 +120,10 @@ class EquipmentControllerTest extends IntegrationTest {
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
     }
 
-
     @Test
     void should_page_equipments() {
         // Prepare
-        OrgActor actor = TestFixture.randomHumanUserOrgActor();
+        OrgActor actor = randomHumanUserOrgActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
 
         IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor));
