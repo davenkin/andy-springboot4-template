@@ -1,7 +1,6 @@
 package com.company.andy.feature.org.equipment.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.TestFixture;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.util.PagedResponse;
 import com.company.andy.common.util.ResponseId;
@@ -15,14 +14,14 @@ import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent
 import com.company.andy.feature.org.equipment.domain.event.EquipmentNameUpdatedEvent;
 import com.company.andy.feature.org.equipment.query.PageEquipmentsQuery;
 import com.company.andy.feature.org.equipment.query.QPagedEquipment;
+import com.company.andy.feature.org.maintenance.command.MaintenanceRecordCommandService;
+import com.company.andy.feature.org.maintenance.domain.MaintenanceRecordRepository;
 import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
@@ -30,6 +29,7 @@ import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EV
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.common.util.Constants.ORG_EQUIPMENTS_CACHE;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.*;
+import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NullMarked
@@ -39,6 +39,12 @@ class EquipmentControllerTest extends IntegrationTest {
 
     @Autowired
     private EquipmentCommandService equipmentCommandService;
+
+    @Autowired
+    private MaintenanceRecordCommandService maintenanceRecordCommandService;
+
+    @Autowired
+    private MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Test
     void should_create_equipment() {
@@ -68,15 +74,13 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_update_equipment_name() {
         // Prepare
         OrgActor actor = randomHumanUserOrgActor();
-        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
-
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
         // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         restTestClient.put()
-                .uri("/equipments/{id}/name", equipmentId).headers(authHeader)
+                .uri("/equipments/{id}/name", equipmentId).headers(authHeaderOf(actor))
                 .body(updateEquipmentNameCommand)
                 .exchange().expectStatus().isOk();
 
@@ -91,10 +95,30 @@ class EquipmentControllerTest extends IntegrationTest {
     }
 
     @Test
+    void update_equipment_name_should_also_sync_to_maintenance_records() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor();
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor);
+
+        // Execute
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        restTestClient.put()
+                .uri("/equipments/{id}/name", equipmentId).headers(authHeaderOf(actor))
+                .body(updateEquipmentNameCommand)
+                .exchange().expectStatus().isOk();
+
+        // Verify
+        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
+        eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
+        assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
+    }
+
+    @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
         OrgActor actor = randomHumanUserOrgActor();
-        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
 
         CreateEquipmentCommand createEquipmentCommand = new CreateEquipmentCommand(randomEquipmentName());
@@ -110,7 +134,7 @@ class EquipmentControllerTest extends IntegrationTest {
         // Execute
         // Create another equipment to evict the cache
         restTestClient.post()
-                .uri("/equipments").headers(authHeader)
+                .uri("/equipments").headers(authHeaderOf(actor))
                 .body(new CreateEquipmentCommand(randomEquipmentName()))
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody().id();
@@ -124,14 +148,12 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_page_equipments() {
         // Prepare
         OrgActor actor = randomHumanUserOrgActor();
-        Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
-
         IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor));
 
         // Execute
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
         PagedResponse<QPagedEquipment> equipments = restTestClient.post()
-                .uri("/equipments/paged").headers(authHeader)
+                .uri("/equipments/paged").headers(authHeaderOf(actor))
                 .body(query)
                 .exchange().expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<PagedResponse<QPagedEquipment>>() {
