@@ -7,10 +7,8 @@ import static lombok.AccessLevel.PRIVATE;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldNameConstants;
 
 @Getter
-@FieldNameConstants
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class AnonymousActor extends Actor {
   private static final String ANONYMOUS_ACTOR_ID = "ANONYMOUS";

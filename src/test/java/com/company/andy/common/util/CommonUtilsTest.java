@@ -128,7 +128,7 @@ class CommonUtilsTest {
     @Test
     void should_throw_exception_for_concat_mongo_fields_if_provided_with_null() {
         assertThrows(NullPointerException.class, () -> {
-            mongoConcatFields(null);
+            mongoConcatFields((String[]) null);
         });
     }
 
