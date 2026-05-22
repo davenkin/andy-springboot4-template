@@ -1,14 +1,5 @@
 package com.company.andy.feature.maintenance.domain;
 
-import static java.util.Objects.requireNonNull;
-
-import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
-import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
-import static com.company.andy.feature.maintenance.domain.MaintenanceRecord.MAINTENANCE_RECORD_COLLECTION;
-import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChannel.EXTERNAL;
-import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChannel.INTERNAL;
-import static lombok.AccessLevel.PRIVATE;
-
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
@@ -25,6 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
+import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
+import static com.company.andy.feature.maintenance.domain.MaintenanceRecord.MAINTENANCE_RECORD_COLLECTION;
+import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChannel.EXTERNAL;
+import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChannel.INTERNAL;
+import static java.util.Objects.requireNonNull;
+import static lombok.AccessLevel.PRIVATE;
+
 @Slf4j
 @Getter
 @FieldNameConstants
@@ -32,61 +31,61 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(MAINTENANCE_RECORD_COLLECTION)
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class MaintenanceRecord extends AggregateRoot {
-  public final static String MAINTENANCE_RECORD_COLLECTION = "maintenance-record";
+    public final static String MAINTENANCE_RECORD_COLLECTION = "maintenance-record";
 
-  private String equipmentId;
-  private String equipmentName;
-  private EquipmentStatus status;
-  private String description;
-  private MaintenanceRecordChannel channel;
-  private String channelRecordId;
+    private String equipmentId;
+    private String equipmentName;
+    private EquipmentStatus status;
+    private String description;
+    private MaintenanceRecordChannel channel;
+    private String channelRecordId;
 
-  public MaintenanceRecord(
-      Equipment equipment,
-      EquipmentStatus status,
-      String description,
-      OrgActor actor) {
-    requireNonNull(equipment, "equipment must not be null");
-    requireNonNull(status, "status must not be null");
-    requireNonBlank(description, "description must not be blank");
-    requireNonNull(actor, "actor must not be null");
+    public MaintenanceRecord(
+            Equipment equipment,
+            EquipmentStatus status,
+            String description,
+            OrgActor actor) {
+        requireNonNull(equipment, "equipment must not be null");
+        requireNonNull(status, "status must not be null");
+        requireNonBlank(description, "description must not be blank");
+        requireNonNull(actor, "actor must not be null");
 
-    super(newMaintenanceRecordId(), actor);
-    this.equipmentId = equipment.getId();
-    this.equipmentName = equipment.getName();
-    this.status = status;
-    this.description = description;
-    this.channel = INTERNAL;
-    raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
-  }
+        super(newMaintenanceRecordId(), actor);
+        this.equipmentId = equipment.getId();
+        this.equipmentName = equipment.getName();
+        this.status = status;
+        this.description = description;
+        this.channel = INTERNAL;
+        raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
+    }
 
-  public MaintenanceRecord(
-      Equipment equipment,
-      EquipmentStatus status,
-      String description,
-      String channelRecordId,
-      SystemActor actor) {
-    requireNonNull(equipment, "equipment must not be null");
-    requireNonNull(status, "status must not be null");
-    requireNonBlank(description, "description must not be blank");
-    requireNonBlank(channelRecordId, "channelRecordId must not be blank");
-    requireNonNull(actor, "actor must not be null");
+    public MaintenanceRecord(
+            Equipment equipment,
+            EquipmentStatus status,
+            String description,
+            String channelRecordId,
+            SystemActor actor) {
+        requireNonNull(equipment, "equipment must not be null");
+        requireNonNull(status, "status must not be null");
+        requireNonBlank(description, "description must not be blank");
+        requireNonBlank(channelRecordId, "channelRecordId must not be blank");
+        requireNonNull(actor, "actor must not be null");
 
-    super(newMaintenanceRecordId(), equipment.getOrgId(), actor);
-    this.equipmentId = equipment.getId();
-    this.equipmentName = equipment.getName();
-    this.status = status;
-    this.description = description;
-    this.channel = EXTERNAL;
-    this.channelRecordId = channelRecordId;
-    raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
-  }
+        super(newMaintenanceRecordId(), equipment.getOrgId(), actor);
+        this.equipmentId = equipment.getId();
+        this.equipmentName = equipment.getName();
+        this.status = status;
+        this.description = description;
+        this.channel = EXTERNAL;
+        this.channelRecordId = channelRecordId;
+        raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
+    }
 
-  public static String newMaintenanceRecordId() {
-    return "MTR" + newSnowflakeId();
-  }
+    public static String newMaintenanceRecordId() {
+        return "MTR" + newSnowflakeId();
+    }
 
-  public void onDelete(Actor actor) {
-    raiseEvent(new MaintenanceRecordDeletedEvent(this, actor));
-  }
+    public void onDelete(Actor actor) {
+        raiseEvent(new MaintenanceRecordDeletedEvent(this, actor));
+    }
 }

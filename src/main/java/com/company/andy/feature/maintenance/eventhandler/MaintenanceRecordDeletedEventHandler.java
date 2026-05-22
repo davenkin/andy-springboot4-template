@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MaintenanceRecordDeletedEventHandler extends AbstractEventHandler<MaintenanceRecordDeletedEvent> {
-  private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
+    private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
 
-  @Override
-  protected void handle(MaintenanceRecordDeletedEvent event, SystemActor actor) {
-    ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
-  }
+    @Override
+    protected void handle(MaintenanceRecordDeletedEvent event, SystemActor actor) {
+        ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
+    }
 
-  @Override
-  public boolean isIdempotent() {
-    // This handler can run multiple times safely
-    return true;
-  }
+    @Override
+    public boolean isIdempotent() {
+        // This handler can run multiple times safely
+        return true;
+    }
 }

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MaintenanceReminderJob {
 
-  public void run() {
-    log.info("MaintenanceReminderJob started.");
+    public void run() {
+        log.info("MaintenanceReminderJob started.");
 
-    //do something
+        //do something
 
-    log.info("MaintenanceReminderJob ended.");
-  }
+        log.info("MaintenanceReminderJob ended.");
+    }
 }

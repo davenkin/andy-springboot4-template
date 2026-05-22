@@ -18,27 +18,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class MaintenanceRecordCommandService {
-  private final MaintenanceRecordFactory maintenanceRecordFactory;
-  private final MaintenanceRecordRepository maintenanceRecordRepository;
-  private final EquipmentRepository equipmentRepository;
+    private final MaintenanceRecordFactory maintenanceRecordFactory;
+    private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final EquipmentRepository equipmentRepository;
 
-  @Transactional
-  public String createMaintenanceRecord(CreateMaintenanceRecordCommand command, OrgActor actor) {
-    Equipment equipment = equipmentRepository.byId(command.equipmentId(), actor.getOrgId());
-    MaintenanceRecord record = maintenanceRecordFactory.create(equipment,
-        command.status(),
-        command.description(),
-        actor);
-    maintenanceRecordRepository.save(record);
-    log.info("Created MaintenanceRecord[{}].", record.getId());
-    return record.getId();
-  }
+    @Transactional
+    public String createMaintenanceRecord(CreateMaintenanceRecordCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(command.equipmentId(), actor.getOrgId());
+        MaintenanceRecord record = maintenanceRecordFactory.create(equipment,
+                command.status(),
+                command.description(),
+                actor);
+        maintenanceRecordRepository.save(record);
+        log.info("Created MaintenanceRecord[{}].", record.getId());
+        return record.getId();
+    }
 
-  @Transactional
-  public void deleteMaintenanceRecord(String maintenanceRecordId, OrgActor actor) {
-    MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, actor.getOrgId());
-    maintenanceRecord.onDelete(actor);
-    maintenanceRecordRepository.delete(maintenanceRecord);
-    log.info("Deleted MaintenanceRecord[{}].", maintenanceRecordId);
-  }
+    @Transactional
+    public void deleteMaintenanceRecord(String maintenanceRecordId, OrgActor actor) {
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, actor.getOrgId());
+        maintenanceRecord.onDelete(actor);
+        maintenanceRecordRepository.delete(maintenanceRecord);
+        log.info("Deleted MaintenanceRecord[{}].", maintenanceRecordId);
+    }
 }

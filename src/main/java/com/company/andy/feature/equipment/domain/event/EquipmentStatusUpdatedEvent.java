@@ -1,8 +1,5 @@
 package com.company.andy.feature.equipment.domain.event;
 
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_STATUS_UPDATED_EVENT;
-import static lombok.AccessLevel.PRIVATE;
-
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
@@ -11,14 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 
+import static com.company.andy.common.event.DomainEventType.EQUIPMENT_STATUS_UPDATED_EVENT;
+import static lombok.AccessLevel.PRIVATE;
+
 @Getter
 @TypeAlias("EQUIPMENT_STATUS_UPDATED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentStatusUpdatedEvent extends EquipmentUpdatedEvent {
-  private EquipmentStatus status;
+    private EquipmentStatus status;
 
-  public EquipmentStatusUpdatedEvent(EquipmentStatus status, Equipment equipment, Actor actor) {
-    super(EQUIPMENT_STATUS_UPDATED_EVENT, equipment, actor);
-    this.status = status;
-  }
+    public EquipmentStatusUpdatedEvent(EquipmentStatus status, Equipment equipment, Actor actor) {
+        super(EQUIPMENT_STATUS_UPDATED_EVENT, equipment, actor);
+        this.status = status;
+    }
 }

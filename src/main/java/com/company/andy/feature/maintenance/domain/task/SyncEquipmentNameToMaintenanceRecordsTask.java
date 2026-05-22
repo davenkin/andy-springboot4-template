@@ -1,7 +1,5 @@
 package com.company.andy.feature.maintenance.domain.task;
 
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import lombok.RequiredArgsConstructor;
@@ -11,19 +9,21 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SyncEquipmentNameToMaintenanceRecordsTask {
-  private final MongoTemplate mongoTemplate;
-  private final EquipmentRepository equipmentRepository;
+    private final MongoTemplate mongoTemplate;
+    private final EquipmentRepository equipmentRepository;
 
-  public void run(String equipmentId) {
-    equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
-      Query query = new Query(where(MaintenanceRecord.Fields.equipmentId).is(equipmentId));
-      Update update = new Update().set(MaintenanceRecord.Fields.equipmentName, equipment.getName());
-      mongoTemplate.updateMulti(query, update, MaintenanceRecord.class);
-      log.info("Synced equipment[{}] name to all maintenance records.", equipment.getId());
-    });
-  }
+    public void run(String equipmentId) {
+        equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
+            Query query = new Query(where(MaintenanceRecord.Fields.equipmentId).is(equipmentId));
+            Update update = new Update().set(MaintenanceRecord.Fields.equipmentName, equipment.getName());
+            mongoTemplate.updateMulti(query, update, MaintenanceRecord.class);
+            log.info("Synced equipment[{}] name to all maintenance records.", equipment.getId());
+        });
+    }
 }

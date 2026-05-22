@@ -1,15 +1,5 @@
 package com.company.andy.common.model;
 
-import static java.util.Objects.requireNonNull;
-
-import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.AnonymousActor;
 import com.company.andy.common.model.actor.OrgActor;
@@ -20,6 +10,15 @@ import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
+import static java.util.Objects.requireNonNull;
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 // Base class for all aggregate root objects
 // The AggregateRoot object stores raised domain events temporarily in memory,
 // then the events will be persisted into DB by Repository within the same transaction that saves the AggregateRoot object
@@ -28,82 +27,82 @@ import org.springframework.data.annotation.Version;
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class AggregateRoot {
-  private String id;
-  private String orgId;
+    private String id;
+    private String orgId;
 
-  // Domain events are stored temporarily in the aggregate root and are not persisted together with the entities as events will be stored in separately
-  // @Transient is very important for not persisting events with the aggregate root, otherwise we need to do this manually by ourselves
-  @Transient
-  private List<DomainEvent> events;
-  private Instant createdAt;
-  private String createdBy;
+    // Domain events are stored temporarily in the aggregate root and are not persisted together with the entities as events will be stored in separately
+    // @Transient is very important for not persisting events with the aggregate root, otherwise we need to do this manually by ourselves
+    @Transient
+    private List<DomainEvent> events;
+    private Instant createdAt;
+    private String createdBy;
 
-  @Version
-  @Getter(PRIVATE)
-  private Long _version;
+    @Version
+    @Getter(PRIVATE)
+    private Long _version;
 
-  // For org actor to create objects under the current org
-  protected AggregateRoot(String id, OrgActor actor) {
-    requireNonBlank(id, "id must not be blank.");
-    requireNonNull(actor, "actor must not be null.");
+    // For org actor to create objects under the current org
+    protected AggregateRoot(String id, OrgActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
 
-    this.id = id;
-    this.orgId = actor.getOrgId();
-    this.createdAt = Instant.now();
-    this.createdBy = actor.getId();
-  }
-
-  // For system actor to create objects under the specified org
-  protected AggregateRoot(String id, String orgId, SystemActor actor) {
-    requireNonBlank(id, "id must not be blank.");
-    requireNonBlank(orgId, "orgId must not be blank.");
-    requireNonNull(actor, "actor must not be null.");
-
-    this.id = id;
-    this.orgId = orgId;
-    this.createdAt = Instant.now();
-    this.createdBy = actor.getId();
-  }
-
-  // For system actor to create objects what don't belong to any org but the whole system
-  protected AggregateRoot(String id, SystemActor actor) {
-    requireNonBlank(id, "id must not be blank.");
-    requireNonNull(actor, "actor must not be null.");
-
-    this.id = id;
-    this.createdAt = Instant.now();
-    this.createdBy = actor.getId();
-  }
-
-  // For anonymous actor to create objects what don't belong to any org but the whole system
-  protected AggregateRoot(String id, AnonymousActor actor) {
-    requireNonBlank(id, "id must not be blank.");
-    requireNonNull(actor, "actor must not be null.");
-
-    this.id = id;
-    this.createdAt = Instant.now();
-    this.createdBy = actor.getId();
-  }
-
-  // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object
-  // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
-  protected final void raiseEvent(DomainEvent event) {
-    requireNonNull(event, "event must not be null.");
-    requireNonNull(event.getType(), "event's type must not be null.");
-    requireNonBlank(event.getArId(), "event's arId must not be null.");
-
-    events().add(event);
-  }
-
-  private List<DomainEvent> events() {
-    if (events == null) {
-      this.events = new ArrayList<>();
+        this.id = id;
+        this.orgId = actor.getOrgId();
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
     }
 
-    return events;
-  }
+    // For system actor to create objects under the specified org
+    protected AggregateRoot(String id, String orgId, SystemActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonBlank(orgId, "orgId must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
 
-  public final void clearEvents() {
-    this.events = null;
-  }
+        this.id = id;
+        this.orgId = orgId;
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
+    }
+
+    // For system actor to create objects what don't belong to any org but the whole system
+    protected AggregateRoot(String id, SystemActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
+        this.id = id;
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
+    }
+
+    // For anonymous actor to create objects what don't belong to any org but the whole system
+    protected AggregateRoot(String id, AnonymousActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
+        this.id = id;
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
+    }
+
+    // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object
+    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
+    protected final void raiseEvent(DomainEvent event) {
+        requireNonNull(event, "event must not be null.");
+        requireNonNull(event.getType(), "event's type must not be null.");
+        requireNonBlank(event.getArId(), "event's arId must not be null.");
+
+        events().add(event);
+    }
+
+    private List<DomainEvent> events() {
+        if (events == null) {
+            this.events = new ArrayList<>();
+        }
+
+        return events;
+    }
+
+    public final void clearEvents() {
+        this.events = null;
+    }
 }

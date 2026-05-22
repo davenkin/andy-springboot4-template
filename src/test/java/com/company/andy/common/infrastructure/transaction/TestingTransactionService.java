@@ -11,38 +11,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class TestingTransactionService {
-  private final EquipmentCommandService equipmentCommandService;
+    private final EquipmentCommandService equipmentCommandService;
 
-  @Transactional
-  public void throwExceptionWithTransaction(
-      String equipmentId,
-      UpdateEquipmentNameCommand nameCommand,
-      UpdateEquipmentHolderCommand holderCommand,
-      OrgActor actor) {
-    equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
-    equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
-    throw new RuntimeException("fake exception"); // mimic exception at the end of transaction flow
-  }
-
-  public void throwExceptionAtTheEndWithoutTransaction(
-      String equipmentId,
-      UpdateEquipmentNameCommand nameCommand,
-      UpdateEquipmentHolderCommand holderCommand,
-      OrgActor actor) {
-    equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
-    equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
-    throw new RuntimeException("fake exception");
-  }
-
-  public void throwExceptionInTheMiddleWithoutTransaction(
-      String equipmentId,
-      UpdateEquipmentNameCommand nameCommand,
-      UpdateEquipmentHolderCommand holderCommand,
-      OrgActor actor) {
-    equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
-    if (true) { // mimic exception in the middle of the transaction flow
-      throw new RuntimeException("fake exception");
+    @Transactional
+    public void throwExceptionWithTransaction(
+            String equipmentId,
+            UpdateEquipmentNameCommand nameCommand,
+            UpdateEquipmentHolderCommand holderCommand,
+            OrgActor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+        throw new RuntimeException("fake exception"); // mimic exception at the end of transaction flow
     }
-    equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
-  }
+
+    public void throwExceptionAtTheEndWithoutTransaction(
+            String equipmentId,
+            UpdateEquipmentNameCommand nameCommand,
+            UpdateEquipmentHolderCommand holderCommand,
+            OrgActor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+        throw new RuntimeException("fake exception");
+    }
+
+    public void throwExceptionInTheMiddleWithoutTransaction(
+            String equipmentId,
+            UpdateEquipmentNameCommand nameCommand,
+            UpdateEquipmentHolderCommand holderCommand,
+            OrgActor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+        if (true) { // mimic exception in the middle of the transaction flow
+            throw new RuntimeException("fake exception");
+        }
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+    }
 }

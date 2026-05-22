@@ -10,6 +10,6 @@ import lombok.Builder;
 
 @Builder
 public record CreateEquipmentCommand(
-    @Schema(description = "Name of the equipment")
-    @NotBlank @Size(max = 100) String name) {
+        @Schema(description = "Name of the equipment")
+        @NotBlank @Size(max = 100) String name) {
 }

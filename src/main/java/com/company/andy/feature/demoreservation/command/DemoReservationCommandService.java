@@ -17,16 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class DemoReservationCommandService {
-  private final DemoReservationFactory demoReservationFactory;
-  private final DemoReservationRepository demoReservationRepository;
-  private final RateLimiter rateLimiter;
+    private final DemoReservationFactory demoReservationFactory;
+    private final DemoReservationRepository demoReservationRepository;
+    private final RateLimiter rateLimiter;
 
-  @Transactional
-  public String createDemoReservation(CreateDemoReservationCommand command, AnonymousActor actor) {
-    rateLimiter.applyFor("create_demo_reservation", 5);
-    DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber(), actor);
-    demoReservationRepository.save(demoReservation);
-    log.info("Created DemoReservation[{}].", demoReservation.getId());
-    return demoReservation.getId();
-  }
+    @Transactional
+    public String createDemoReservation(CreateDemoReservationCommand command, AnonymousActor actor) {
+        rateLimiter.applyFor("create_demo_reservation", 5);
+        DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber(), actor);
+        demoReservationRepository.save(demoReservation);
+        log.info("Created DemoReservation[{}].", demoReservation.getId());
+        return demoReservation.getId();
+    }
 }

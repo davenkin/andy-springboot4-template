@@ -14,19 +14,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ExternalMaintenanceRecordCreatedEventHandler extends AbstractEventHandler<ExternalMaintenanceRecordCreatedEvent> {
-  private final EquipmentRepository equipmentRepository;
-  private final MaintenanceRecordRepository maintenanceRecordRepository;
-  private final MaintenanceRecordFactory maintenanceRecordFactory;
+    private final EquipmentRepository equipmentRepository;
+    private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final MaintenanceRecordFactory maintenanceRecordFactory;
 
-  @Override
-  protected void handle(ExternalMaintenanceRecordCreatedEvent event, SystemActor actor) {
-    equipmentRepository.byIdOptional(event.getEquipmentId()).ifPresent(equipment -> {
-      MaintenanceRecord record = maintenanceRecordFactory.createFromExternal(equipment,
-          event.getEquipmentStatus(),
-          event.getDescription(),
-          event.getChannelRecordId(),
-          actor);
-      maintenanceRecordRepository.save(record);
-    });
-  }
+    @Override
+    protected void handle(ExternalMaintenanceRecordCreatedEvent event, SystemActor actor) {
+        equipmentRepository.byIdOptional(event.getEquipmentId()).ifPresent(equipment -> {
+            MaintenanceRecord record = maintenanceRecordFactory.createFromExternal(equipment,
+                    event.getEquipmentStatus(),
+                    event.getDescription(),
+                    event.getChannelRecordId(),
+                    actor);
+            maintenanceRecordRepository.save(record);
+        });
+    }
 }

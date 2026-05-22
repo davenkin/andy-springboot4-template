@@ -10,6 +10,6 @@ import lombok.Builder;
 
 @Builder
 public record UpdateEquipmentHolderCommand(
-    @Schema(description = "Holder name of the equipment")
-    @NotBlank @Size(max = 100) String name) {
+        @Schema(description = "Holder name of the equipment")
+        @NotBlank @Size(max = 100) String name) {
 }

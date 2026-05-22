@@ -8,6 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 // which usually results in state change in the system
 
 public record CreateDemoReservationCommand(
-    @Schema(description = "Contact mobile number")
-    @NotBlank @MobileNumber String mobileNumber) {
+        @Schema(description = "Contact mobile number")
+        @NotBlank @MobileNumber String mobileNumber) {
 }

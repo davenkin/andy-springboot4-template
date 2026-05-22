@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ExternalEquipmentInstalledEventHandler extends AbstractEventHandler<ExternalEquipmentInstalledEvent> {
-  private final EquipmentRepository equipmentRepository;
-  private final EquipmentFactory equipmentFactory;
+    private final EquipmentRepository equipmentRepository;
+    private final EquipmentFactory equipmentFactory;
 
-  @Override
-  protected void handle(ExternalEquipmentInstalledEvent event, SystemActor actor) {
-    Equipment equipment = equipmentFactory.create(event.getEquipmentId(), event.getName(), event.getOrgId(), event.getEngine(), actor);
-    equipmentRepository.save(equipment);
-  }
+    @Override
+    protected void handle(ExternalEquipmentInstalledEvent event, SystemActor actor) {
+        Equipment equipment = equipmentFactory.create(event.getEquipmentId(), event.getName(), event.getOrgId(), event.getEngine(), actor);
+        equipmentRepository.save(equipment);
+    }
 }

@@ -14,20 +14,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MaintenanceRecordFactory {
 
-  public MaintenanceRecord create(
-      Equipment equipment,
-      EquipmentStatus status,
-      String description,
-      OrgActor actor) {
-    return new MaintenanceRecord(equipment, status, description, actor);
-  }
+    public MaintenanceRecord create(
+            Equipment equipment,
+            EquipmentStatus status,
+            String description,
+            OrgActor actor) {
+        return new MaintenanceRecord(equipment, status, description, actor);
+    }
 
-  public MaintenanceRecord createFromExternal(
-      Equipment equipment,
-      EquipmentStatus status,
-      String description,
-      String externalRecordId,
-      SystemActor systemActor) {
-    return new MaintenanceRecord(equipment, status, description, externalRecordId, systemActor);
-  }
+    public MaintenanceRecord createFromExternal(
+            Equipment equipment,
+            EquipmentStatus status,
+            String description,
+            String externalRecordId,
+            SystemActor systemActor) {
+        return new MaintenanceRecord(equipment, status, description, externalRecordId, systemActor);
+    }
 }

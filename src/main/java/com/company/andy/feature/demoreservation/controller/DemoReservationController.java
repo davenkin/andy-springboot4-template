@@ -1,7 +1,5 @@
 package com.company.andy.feature.demoreservation.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 import com.company.andy.common.model.actor.AnonymousActor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
@@ -17,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it | it-local")
 @Tag(name = "DemoReservationController", description = "Demo reservation APIs")
@@ -30,21 +26,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "system/demo-reservations")
 public class DemoReservationController {
-  private final DemoReservationCommandService demoReservationCommandService;
-  private final DemoReservationQueryService demoReservationQueryService;
+    private final DemoReservationCommandService demoReservationCommandService;
+    private final DemoReservationQueryService demoReservationQueryService;
 
-  @PostMapping
-  @ResponseStatus(CREATED)
-  @Operation(summary = "Create a demo reservation")
-  public ResponseId createDemoReservation(
-      @RequestBody @Valid CreateDemoReservationCommand command,
-      @AuthenticationPrincipal AnonymousActor actor) {
-    return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
-  }
+    @PostMapping
+    @ResponseStatus(CREATED)
+    @Operation(summary = "Create a demo reservation")
+    public ResponseId createDemoReservation(
+            @RequestBody @Valid CreateDemoReservationCommand command,
+            @AuthenticationPrincipal AnonymousActor actor) {
+        return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
+    }
 
-  @Operation(summary = "Query demo reservations")
-  @PostMapping("/paged")
-  public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationQuery query) {
-    return this.demoReservationQueryService.pageDemoReservations(query);
-  }
+    @Operation(summary = "Query demo reservations")
+    @PostMapping("/paged")
+    public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationQuery query) {
+        return this.demoReservationQueryService.pageDemoReservations(query);
+    }
 }

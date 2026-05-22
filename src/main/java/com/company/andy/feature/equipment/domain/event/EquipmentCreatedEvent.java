@@ -1,8 +1,5 @@
 package com.company.andy.feature.equipment.domain.event;
 
-import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
-import static lombok.AccessLevel.PRIVATE;
-
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
@@ -11,14 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 
+import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
+import static lombok.AccessLevel.PRIVATE;
+
 @Getter
 @TypeAlias("EQUIPMENT_CREATED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class EquipmentCreatedEvent extends DomainEvent {
-  private String equipmentId;
+    private String equipmentId;
 
-  public EquipmentCreatedEvent(Equipment equipment, Actor actor) {
-    super(EQUIPMENT_CREATED_EVENT, equipment, actor);
-    this.equipmentId = equipment.getId();
-  }
+    public EquipmentCreatedEvent(Equipment equipment, Actor actor) {
+        super(EQUIPMENT_CREATED_EVENT, equipment, actor);
+        this.equipmentId = equipment.getId();
+    }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoReservationFactory {
-  public DemoReservation createDemoReservation(String mobileNumber, AnonymousActor actor) {
-    return new DemoReservation(mobileNumber, actor);
-  }
+    public DemoReservation createDemoReservation(String mobileNumber, AnonymousActor actor) {
+        return new DemoReservation(mobileNumber, actor);
+    }
 }

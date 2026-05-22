@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
-  private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
+    private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
-  @Override
-  protected void handle(EquipmentDeletedEvent event, SystemActor actor) {
-    ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
-  }
+    @Override
+    protected void handle(EquipmentDeletedEvent event, SystemActor actor) {
+        ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
+    }
 
-  @Override
-  public boolean isIdempotent() {
-    // This handler can run multiple times safely
-    return true;
-  }
+    @Override
+    public boolean isIdempotent() {
+        // This handler can run multiple times safely
+        return true;
+    }
 
-  @Override
-  public boolean isTransactional() {
-    // Not transactional as it deletes multiple records which can exceed Mongo's transaction restrictions
-    return false;
-  }
+    @Override
+    public boolean isTransactional() {
+        // Not transactional as it deletes multiple records which can exceed Mongo's transaction restrictions
+        return false;
+    }
 }

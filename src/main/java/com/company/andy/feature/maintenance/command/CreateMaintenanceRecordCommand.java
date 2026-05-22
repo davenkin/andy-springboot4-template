@@ -11,8 +11,8 @@ import lombok.Builder;
 
 @Builder
 public record CreateMaintenanceRecordCommand(
-    @NotBlank String equipmentId,
-    @NotBlank @Size(max = 1000) String description,
-    @NotNull EquipmentStatus status
+        @NotBlank String equipmentId,
+        @NotBlank @Size(max = 1000) String description,
+        @NotNull EquipmentStatus status
 ) {
 }

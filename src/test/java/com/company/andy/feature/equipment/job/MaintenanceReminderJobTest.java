@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class MaintenanceReminderJobTest extends IntegrationTest {
-  @Autowired
-  private MaintenanceReminderJob maintenanceReminderJob;
+    @Autowired
+    private MaintenanceReminderJob maintenanceReminderJob;
 
-  @Test
-  void should_run_maintenance_reminder_job() {
-    maintenanceReminderJob.run();
-  }
+    @Test
+    void should_run_maintenance_reminder_job() {
+        maintenanceReminderJob.run();
+    }
 }

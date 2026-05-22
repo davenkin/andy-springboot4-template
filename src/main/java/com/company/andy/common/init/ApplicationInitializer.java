@@ -1,10 +1,5 @@
 package com.company.andy.common.init;
 
-import static java.util.Locale.CHINESE;
-
-import static org.springframework.data.mongodb.core.CollectionOptions.just;
-import static org.springframework.data.mongodb.core.query.Collation.of;
-
 import com.company.andy.common.event.consume.ConsumingEvent;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.company.andy.feature.demoreservation.domain.DemoReservation;
@@ -19,55 +14,63 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import static java.util.Locale.CHINESE;
+import static org.springframework.data.mongodb.core.CollectionOptions.just;
+import static org.springframework.data.mongodb.core.query.Collation.of;
+
 @Slf4j
 @Component
 @NullMarked
 @RequiredArgsConstructor
 public class ApplicationInitializer implements SmartLifecycle {
-  private final MongoTemplate mongoTemplate;
-  private final CacheManager cacheManager;
-  private volatile boolean running = false;
+    private final MongoTemplate mongoTemplate;
+    private final CacheManager cacheManager;
+    private volatile boolean running = false;
 
-  private void ensureMongoCollectionsExists() {
-    createCollection(PublishingDomainEvent.class);
-    createCollection(ConsumingEvent.class);
-    createCollection(Equipment.class);
-    createCollection(MaintenanceRecord.class);
-    createCollection(DemoReservation.class);
-    log.info("Created all MongoDB collections.");
-  }
-
-  private void clearCaches() {
-    this.cacheManager.getCacheNames().forEach(cacheName -> {
-      Cache cache = cacheManager.getCache(cacheName);
-      if (cache != null) {
-        cache.clear();
-      }
-    });
-    log.info("Cleared application caches.");
-  }
-
-  private void createCollection(Class<?> collectionClass) {
-    if (!mongoTemplate.collectionExists(collectionClass)) {
-      mongoTemplate.createCollection(collectionClass, just(of(CHINESE).numericOrderingEnabled()));
+    private void ensureMongoCollectionsExists() {
+        createCollection(PublishingDomainEvent.class);
+        createCollection(ConsumingEvent.class);
+        createCollection(Equipment.class);
+        createCollection(MaintenanceRecord.class);
+        createCollection(DemoReservation.class);
+        log.info("Created all MongoDB collections.");
     }
-  }
 
-  @Override
-  public void start() {
-    ensureMongoCollectionsExists();
-    clearCaches();
-    running = true;
-  }
+    private void clearCaches() {
+        this.cacheManager.getCacheNames().forEach(cacheName -> {
+            Cache cache = cacheManager.getCache(cacheName);
+            if (cache != null) {
+                cache.clear();
+            }
+        });
+        log.info("Cleared application caches.");
+    }
 
-  @Override
-  public void stop() {running = false;}
+    private void createCollection(Class<?> collectionClass) {
+        if (!mongoTemplate.collectionExists(collectionClass)) {
+            mongoTemplate.createCollection(collectionClass, just(of(CHINESE).numericOrderingEnabled()));
+        }
+    }
 
-  @Override
-  public boolean isRunning() {return running;}
+    @Override
+    public void start() {
+        ensureMongoCollectionsExists();
+        clearCaches();
+        running = true;
+    }
 
-  @Override
-  public int getPhase() {
-    return 0;
-  }
+    @Override
+    public void stop() {
+        running = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    @Override
+    public int getPhase() {
+        return 0;
+    }
 }

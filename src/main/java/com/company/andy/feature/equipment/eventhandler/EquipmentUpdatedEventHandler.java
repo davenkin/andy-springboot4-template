@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EquipmentUpdatedEventHandler extends AbstractEventHandler<EquipmentUpdatedEvent> {
 
-  @Override
-  protected void handle(EquipmentUpdatedEvent event, SystemActor actor) {
-    log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
-  }
+    @Override
+    protected void handle(EquipmentUpdatedEvent event, SystemActor actor) {
+        log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
+    }
 }
