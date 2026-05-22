@@ -44,6 +44,10 @@ public class TestFixture {
     return new OrgActor(randomUserId(), randomUserName(), randomOrgId(), Set.of(randomRole()), HUMAN_USER, "some initiator");
   }
 
+  public static OrgActor randomHumanUserOrgActor(OrgRole role) {
+    return new OrgActor(randomUserId(), randomUserName(), randomOrgId(), Set.of(role), HUMAN_USER, "some initiator");
+  }
+
   public static OrgActor randomHumanUserOrgActor(String actorId, String orgId) {
     return new OrgActor(actorId, randomUserName(), orgId, Set.of(randomRole()), HUMAN_USER, "some initiator");
   }

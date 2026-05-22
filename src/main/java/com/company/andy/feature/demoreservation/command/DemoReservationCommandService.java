@@ -1,6 +1,7 @@
 package com.company.andy.feature.demoreservation.command;
 
 import com.company.andy.common.model.actor.AnonymousActor;
+import com.company.andy.common.ratelimiter.RateLimiter;
 import com.company.andy.feature.demoreservation.domain.DemoReservation;
 import com.company.andy.feature.demoreservation.domain.DemoReservationFactory;
 import com.company.andy.feature.demoreservation.domain.DemoReservationRepository;
@@ -18,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DemoReservationCommandService {
   private final DemoReservationFactory demoReservationFactory;
   private final DemoReservationRepository demoReservationRepository;
+  private final RateLimiter rateLimiter;
 
   @Transactional
   public String createDemoReservation(CreateDemoReservationCommand command, AnonymousActor actor) {
+    rateLimiter.applyFor("create_demo_reservation", 5);
     DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber(), actor);
     demoReservationRepository.save(demoReservation);
     log.info("Created DemoReservation[{}].", demoReservation.getId());

@@ -1,5 +1,6 @@
 package com.company.andy.common.security;
 
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.utils.Constants.SYSTEM_ADMIN_ROLE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -29,6 +30,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain featureFilterChain(HttpSecurity http) {
     http
         .authorizeHttpRequests((authorize) -> authorize
+            .requestMatchers(POST, "/equipments").hasRole(ORG_ADMIN.name())
             .anyRequest().authenticated()
         )
         .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))
