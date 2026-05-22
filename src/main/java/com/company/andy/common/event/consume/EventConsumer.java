@@ -62,6 +62,8 @@ public class EventConsumer {
         .forEach(handler -> {
           try {
             if (handler.isTransactional()) {
+              // TransactionTemplate is used instead of @Transactional here,
+              // because besides the handler() method, we also need to cover consumingEventDao.markEventAsConsumedByHandler() inside the whole transaction
               this.transactionTemplate.executeWithoutResult(status -> handleIdempotently(handler, event));
             } else {
               handleIdempotently(handler, event);
