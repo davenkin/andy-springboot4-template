@@ -26,11 +26,7 @@ At the top level, there are two packages:
 - `common`: contains all common code, such as Spring configuration, event infrastructure and database migration etc.
 - `feature`: contains all domain feature code categorised by business entities
 
-`feature` package further contains two direct sub-packages:
-- `org`: contains all business entities that are related to organizations(tenants), such as `Equipment`   
-- `system`: contains all business entities that are related to the system itself, such as `DemoInquiry`
-
-todo: 注意目录结构变成了feature/org和feature/system，看看哪里的文档需要调整
+todo: 删除feature下的org和system，因为有很多事件处理事system actor，但是属于org
 
 When implementing, keep the folder structure as flat as possible. The Aggregate Root is at the highest level under a
 feature package, then followed by other technical layers, use the following structure:
