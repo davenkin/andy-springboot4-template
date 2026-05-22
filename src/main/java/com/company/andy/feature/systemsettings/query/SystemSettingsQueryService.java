@@ -15,7 +15,7 @@ public class SystemSettingsQueryService {
     private final SystemSettingsRepository systemSettingsRepository;
 
     public QSystemSettings getSystemSettings() {
-        SystemSettings systemSettings = systemSettingsRepository.getSystemSettings();
+        SystemSettings systemSettings = systemSettingsRepository.cachedSystemSettings();
         return QSystemSettings.builder()
                 .baseSettings(systemSettings.getBaseSettings())
                 .build();

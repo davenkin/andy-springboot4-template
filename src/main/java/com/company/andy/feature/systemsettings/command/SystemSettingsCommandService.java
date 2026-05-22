@@ -18,6 +18,7 @@ public class SystemSettingsCommandService {
     public void updateBaseSettings(UpdateSystemBaseSettingsCommand command, SystemActor actor) {
         SystemSettings systemSettings = systemSettingsRepository.getSystemSettings();
         systemSettings.updateBaseSettings(command.baseSettings(), actor);
+        systemSettingsRepository.save(systemSettings);
         log.info("System base settings updated.");
     }
 }

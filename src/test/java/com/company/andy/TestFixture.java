@@ -64,4 +64,10 @@ public class TestFixture {
     public static String randomMobileNumber() {
         return String.valueOf(RandomUtils.secure().randomLong(13000000000L, 19000000000L));
     }
+
+    public static String randomEmail() {
+        String local = RandomStringUtils.secure().nextAlphanumeric(10).toLowerCase();
+        String domain = RandomStringUtils.secure().nextAlphanumeric(5).toLowerCase();
+        return local + "@" + domain + ".com";
+    }
 }
