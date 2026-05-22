@@ -35,7 +35,7 @@ public class ConsumingEvent {
         this.eventId = eventId;
         this.type = event.getClass().getName();
         this.event = event;
-        this.handler = null;
+        this.handler = null; // init to null, later will be set to real handler class name 
         this.consumedAt = Instant.now();
     }
 }
