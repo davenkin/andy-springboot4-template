@@ -27,6 +27,7 @@ import java.util.Set;
 import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
 import static com.company.andy.common.security.SecurityUtils.createActorInitiatorFrom;
+import static com.company.andy.common.security.SecurityUtils.getJwtRoles;
 import static com.company.andy.common.utils.Constants.*;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -77,14 +78,21 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
     }
 
     private ActorAuthenticationToken createActorAuthenticationToken(Jwt jwt, HttpServletRequest request) {
-        //todo: for system admin, the orgId should come from header first then jwt
-        Set<OrgRole> roles = getRoles(jwt);
+        Set<String> jwtRoles = getJwtRoles(jwt).stream().map(String::toUpperCase).collect(toSet());
+        boolean isSystemAdmin = jwtRoles.contains(SYSTEM_ADMIN_ROLE);
+        String orgId = getOrgId(jwt, isSystemAdmin, request);
+
+        Set<OrgRole> roles = isSystemAdmin ? Set.of(ORG_ADMIN) : jwtRoles.stream()
+                .filter(ALL_ORG_ROLES::contains)
+                .map(OrgRole::valueOf)
+                .collect(toSet());
         List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority(ROLE_PREFIX + role.name())).toList();
+
         return new ActorAuthenticationToken(
                 new OrgActor(
                         jwt.getSubject(),
                         getActorName(jwt),
-                        getOrgId(jwt),
+                        orgId,
                         roles,
                         getActorSource(jwt),
                         createActorInitiatorFrom(request)
@@ -99,28 +107,24 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         return isNotBlank(name) ? name : jwt.getSubject();
     }
 
-    private String getOrgId(Jwt jwt) {
+    private String getOrgId(Jwt jwt, boolean isSystemAdmin, HttpServletRequest request) {
+        if (isSystemAdmin) {
+            // For system admin, take the orgId from HTTP header first
+            String headerOrgId = request.getHeader(SYSTEM_ACTOR_ORG_ID_HEADER);
+            if (isNotBlank(headerOrgId)) {
+                return headerOrgId;
+            }
+        }
+
         String orgId = jwt.getClaimAsString(JWT_CLAIM_ORG_ID);
-        // advice: for super admin, you may use orgId from the http header
         if (isBlank(orgId)) {
-            throw new InvalidBearerTokenException("Cannot obtain an orgId from Jwt.");
+            if (isSystemAdmin) {
+                throw new InvalidBearerTokenException("Cannot obtain an orgId from HTTP header of x-org-id, and Jwt does not contains and orgId claim either.");
+            } else {
+                throw new InvalidBearerTokenException("Cannot obtain an orgId from Jwt.");
+            }
         }
         return orgId;
-    }
-
-    private Set<OrgRole> getRoles(Jwt jwt) {
-        // system_admin automatically implies ORG_ADMIN
-        Set<String> roles = SecurityUtils.getJwtRoles(jwt).stream()
-                .map(String::toUpperCase)
-                .collect(toSet());
-        if (roles.contains(SYSTEM_ADMIN_ROLE)) {
-            return Set.of(ORG_ADMIN);
-        }
-
-        return roles.stream()
-                .filter(ALL_ORG_ROLES::contains)
-                .map(OrgRole::valueOf)
-                .collect(toSet());
     }
 
     private ActorSource getActorSource(Jwt jwt) {
