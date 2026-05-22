@@ -2,8 +2,8 @@ package com.company.andy.feature.org.maintenance.domain;
 
 import static java.util.Objects.requireNonNull;
 
-import static com.company.andy.common.util.CommonUtils.requireNonBlank;
-import static com.company.andy.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
+import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static com.company.andy.feature.org.maintenance.domain.MaintenanceRecord.MAINTENANCE_RECORD_COLLECTION;
 import static com.company.andy.feature.org.maintenance.domain.MaintenanceRecordChannel.EXTERNAL;
 import static com.company.andy.feature.org.maintenance.domain.MaintenanceRecordChannel.INTERNAL;

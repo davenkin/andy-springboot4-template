@@ -7,6 +7,7 @@ import static org.springframework.data.mongodb.core.query.Collation.of;
 
 import com.company.andy.common.event.consume.ConsumingEvent;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
+import com.company.andy.feature.demo.domain.DemoReservation;
 import com.company.andy.feature.org.equipment.domain.Equipment;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class ApplicationInitializer implements SmartLifecycle {
     createCollection(ConsumingEvent.class);
     createCollection(Equipment.class);
     createCollection(MaintenanceRecord.class);
+    createCollection(DemoReservation.class);
     log.info("Created all MongoDB collections.");
   }
 

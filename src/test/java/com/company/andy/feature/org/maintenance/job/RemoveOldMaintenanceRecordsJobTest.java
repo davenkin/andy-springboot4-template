@@ -3,7 +3,7 @@ package com.company.andy.feature.org.maintenance.job;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.common.util.Constants.MONGO_ID;
+import static com.company.andy.common.utils.Constants.MONGO_ID;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertFalse;

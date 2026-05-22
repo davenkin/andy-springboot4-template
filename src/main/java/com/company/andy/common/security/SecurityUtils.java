@@ -2,8 +2,8 @@ package com.company.andy.common.security;
 
 import static java.util.stream.Collectors.toSet;
 
-import static com.company.andy.common.util.Constants.JWT_CLAIM_REALM_ACCESS;
-import static com.company.andy.common.util.Constants.JWT_CLAIM_REALM_ACCESS_ROLES;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS_ROLES;
 
 import java.util.Collection;
 import java.util.Map;

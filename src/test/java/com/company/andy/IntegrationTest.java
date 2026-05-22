@@ -1,5 +1,18 @@
 package com.company.andy;
 
+import static java.util.Base64.getEncoder;
+import static java.util.Objects.requireNonNull;
+
+import static com.company.andy.common.utils.CommonUtils.mongoConcatFields;
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.data.domain.Sort.by;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
+import java.util.function.Consumer;
+
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.DomainEventType;
 import com.company.andy.common.event.consume.EventConsumer;
@@ -19,18 +32,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.function.Consumer;
-
-import static com.company.andy.common.util.CommonUtils.mongoConcatFields;
-import static com.company.andy.common.util.CommonUtils.requireNonBlank;
-import static java.util.Base64.getEncoder;
-import static java.util.Objects.requireNonNull;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.data.domain.Sort.Direction.DESC;
-import static org.springframework.data.domain.Sort.by;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
-
 @Slf4j
 @ActiveProfiles("it")
 //@ActiveProfiles("it-local")
@@ -38,40 +39,40 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
 
-    @Autowired
-    protected MongoTemplate mongoTemplate;
+  @Autowired
+  protected MongoTemplate mongoTemplate;
 
-    @Autowired
-    protected StringRedisTemplate stringRedisTemplate;
+  @Autowired
+  protected StringRedisTemplate stringRedisTemplate;
 
-    @Autowired
-    protected EventConsumer eventConsumer;
+  @Autowired
+  protected EventConsumer eventConsumer;
 
-    @Autowired
-    protected Environment environment;
+  @Autowired
+  protected Environment environment;
 
-    @Autowired
-    protected RestTestClient restTestClient;
+  @Autowired
+  protected RestTestClient restTestClient;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+  @Autowired
+  protected ObjectMapper objectMapper;
 
-    @Autowired
-    protected CacheManager cacheManager;
+  @Autowired
+  protected CacheManager cacheManager;
 
-    protected <T extends DomainEvent> T latestEventFor(String arId, DomainEventType type, Class<T> eventClass) {
-        requireNonBlank(arId, "arId must not be blank.");
-        requireNonNull(type, "type must not be null.");
-        requireNonNull(eventClass, "eventClass must not be null.");
+  protected <T extends DomainEvent> T latestEventFor(String arId, DomainEventType type, Class<T> eventClass) {
+    requireNonBlank(arId, "arId must not be blank.");
+    requireNonNull(type, "type must not be null.");
+    requireNonNull(eventClass, "eventClass must not be null.");
 
-        Query query = query(where(mongoConcatFields(PublishingDomainEvent.Fields.event, DomainEvent.Fields.arId)).is(arId)
-                .and(mongoConcatFields(PublishingDomainEvent.Fields.event, DomainEvent.Fields.type)).is(type))
-                .with(by(DESC, PublishingDomainEvent.Fields.raisedAt));
-        PublishingDomainEvent domainEvent = mongoTemplate.findOne(query, PublishingDomainEvent.class);
-        return domainEvent == null ? null : (T) domainEvent.getEvent();
-    }
+    Query query = query(where(mongoConcatFields(PublishingDomainEvent.Fields.event, DomainEvent.Fields.arId)).is(arId)
+        .and(mongoConcatFields(PublishingDomainEvent.Fields.event, DomainEvent.Fields.type)).is(type))
+        .with(by(DESC, PublishingDomainEvent.Fields.raisedAt));
+    PublishingDomainEvent domainEvent = mongoTemplate.findOne(query, PublishingDomainEvent.class);
+    return domainEvent == null ? null : (T) domainEvent.getEvent();
+  }
 
-    protected Consumer<HttpHeaders> authHeaderOf(Actor actor) {
-        return headers -> headers.setBearerAuth(getEncoder().encodeToString(objectMapper.writeValueAsString(actor).getBytes()));
-    }
+  protected Consumer<HttpHeaders> authHeaderOf(Actor actor) {
+    return headers -> headers.setBearerAuth(getEncoder().encodeToString(objectMapper.writeValueAsString(actor).getBytes()));
+  }
 }

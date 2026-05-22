@@ -2,11 +2,11 @@ package com.company.andy.support;
 
 import static java.util.Base64.getDecoder;
 
-import static com.company.andy.common.util.Constants.JWT_CLAIM_ORG_ID;
-import static com.company.andy.common.util.Constants.JWT_CLAIM_PREFERRED_USERNAME;
-import static com.company.andy.common.util.Constants.JWT_CLAIM_REALM_ACCESS;
-import static com.company.andy.common.util.Constants.JWT_CLAIM_REALM_ACCESS_ROLES;
-import static com.company.andy.common.util.Constants.SYSTEM_ADMIN_ROLE;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_ORG_ID;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_PREFERRED_USERNAME;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS_ROLES;
+import static com.company.andy.common.utils.Constants.SYSTEM_ADMIN_ROLE;
 
 import java.time.Instant;
 import java.util.List;

@@ -1,9 +1,9 @@
 package com.company.andy.feature.org.maintenance.query;
 
 import static com.company.andy.common.exception.ErrorCode.MAINTENANCE_RECORD_NOT_FOUND;
-import static com.company.andy.common.util.Constants.ID;
-import static com.company.andy.common.util.Constants.MONGO_ID;
-import static com.company.andy.common.util.NullableMapUtils.mapOf;
+import static com.company.andy.common.utils.Constants.ID;
+import static com.company.andy.common.utils.Constants.MONGO_ID;
+import static com.company.andy.common.utils.NullableMapUtils.mapOf;
 import static com.company.andy.feature.org.maintenance.domain.MaintenanceRecord.MAINTENANCE_RECORD_COLLECTION;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -13,7 +13,7 @@ import java.util.List;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.util.PagedResponse;
+import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.feature.org.maintenance.domain.MaintenanceRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

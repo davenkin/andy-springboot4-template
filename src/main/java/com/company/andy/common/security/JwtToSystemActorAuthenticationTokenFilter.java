@@ -3,9 +3,9 @@ package com.company.andy.common.security;
 import static com.company.andy.common.model.actor.ActorSource.HUMAN_USER;
 import static com.company.andy.common.model.actor.SystemActor.createUserSystemActor;
 import static com.company.andy.common.security.SecurityUtils.createActorInitiatorFrom;
-import static com.company.andy.common.util.Constants.JWT_CLAIM_PREFERRED_USERNAME;
-import static com.company.andy.common.util.Constants.ROLE_PREFIX;
-import static com.company.andy.common.util.Constants.SYSTEM_ADMIN_ROLE;
+import static com.company.andy.common.utils.Constants.JWT_CLAIM_PREFERRED_USERNAME;
+import static com.company.andy.common.utils.Constants.ROLE_PREFIX;
+import static com.company.andy.common.utils.Constants.SYSTEM_ADMIN_ROLE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.IOException;

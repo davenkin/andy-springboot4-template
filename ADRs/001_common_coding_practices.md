@@ -1,7 +1,7 @@
 # Common coding practices
 
 - Do not rely on database to generate IDs, instead, generate IDs within the code
-  using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/util/SnowflakeIdGenerator.java).
+  using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).
   This
   means when the object is created,
   its ID should already been generated in the constructor. Reason: This decouples the code from database implementations
@@ -50,7 +50,7 @@ someMethod() {
 ```
 
 - All pagination request use HTTP POST method. The query class should
-  extend [PageQuery](../src/main/java/com/company/andy/common/util/PageQuery.java) which has the following
+  extend [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) which has the following
   pagination fields:
     - `pageNumber`: the zero-based page index
     - `pageSize`: the page size
@@ -89,7 +89,7 @@ The controller receives a query object using POST method:
     }
 ```
 
-All pagination response should return [PagedResponse](../src/main/java/com/company/andy/common/util/PagedResponse.java).
+All pagination response should return [PagedResponse](../src/main/java/com/company/andy/common/utils/PagedResponse.java).
 
 - Use Java 8's `Instant` to represent timestamp, don't use `OffsetDateTime` or `ZonedDateTime`. Reason: `Instant` is
   designed for such purpose, there is no point in storing timezone information inside a timestamp.

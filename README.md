@@ -10,9 +10,9 @@ This is a template Spring Boot 4 project with the following features:
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
 - Distributed lock for scheduled jobs using [Shedlock](https://github.com/lukas-krecan/ShedLock)
 - Standardized [folder structure](./ADRs/005_project_structure.md) with business first approach
-- Standardized pagination implementation with [PageQuery](src/main/java/com/company/andy/common/util/PageQuery.java)
-  and [PagedResponse](src/main/java/com/company/andy/common/util/PagedResponse.java)
-- Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/util/SnowflakeIdGenerator.java)
+- Standardized pagination implementation with [PageQuery](src/main/java/com/company/andy/common/utils/PageQuery.java)
+  and [PagedResponse](src/main/java/com/company/andy/common/utils/PagedResponse.java)
+- Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java)
 - Domain event modeling based on [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java)
 - [Domain event publishing](./ADRs/008_domain_event_publishing.md)
   using [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern

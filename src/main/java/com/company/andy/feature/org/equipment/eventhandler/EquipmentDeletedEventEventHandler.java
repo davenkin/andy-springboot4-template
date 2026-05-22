@@ -2,7 +2,7 @@ package com.company.andy.feature.org.equipment.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.SystemActor;
-import com.company.andy.common.util.ExceptionSwallowRunner;
+import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.org.maintenance.domain.task.DeleteAllMaintenanceRecordsUnderEquipmentTask;
 import lombok.RequiredArgsConstructor;
@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
-    private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
+  private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
-    @Override
-    protected void handle(EquipmentDeletedEvent event, SystemActor actor) {
-        ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
-    }
+  @Override
+  protected void handle(EquipmentDeletedEvent event, SystemActor actor) {
+    ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
+  }
 
-    @Override
-    public boolean isIdempotent() {
-        // This handler can run multiple times safely
-        return true;
-    }
+  @Override
+  public boolean isIdempotent() {
+    // This handler can run multiple times safely
+    return true;
+  }
 
-    @Override
-    public boolean isTransactional() {
-        // Not transactional as it deletes multiple records which can exceed Mongo's transaction restrictions
-        return false;
-    }
+  @Override
+  public boolean isTransactional() {
+    // Not transactional as it deletes multiple records which can exceed Mongo's transaction restrictions
+    return false;
+  }
 }

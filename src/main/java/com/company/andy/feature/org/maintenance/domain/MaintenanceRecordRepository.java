@@ -1,6 +1,6 @@
 package com.company.andy.feature.org.maintenance.domain;
 
-import static com.company.andy.common.util.CommonUtils.requireNonBlank;
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import java.util.Optional;

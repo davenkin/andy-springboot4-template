@@ -5,7 +5,7 @@ import static com.company.andy.common.model.actor.ActorSource.BACKGROUND_JOB;
 import static com.company.andy.common.model.actor.ActorSource.EVENT_LISTENER;
 import static com.company.andy.common.model.actor.ActorSource.IMPERSONATED;
 import static com.company.andy.common.model.actor.ActorType.SYSTEM_ACTOR;
-import static com.company.andy.common.util.CommonUtils.requireNonBlank;
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.util.Set;
@@ -29,14 +29,6 @@ public class SystemActor extends Actor {
     super(id, name, SYSTEM_ACTOR, source, initiator);
   }
 
-  public OrgActor impersonateOrg(String orgId) {
-    return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), IMPERSONATED, getInitiator());
-  }
-
-  public OrgActor impersonateOrgUser(String userId, String name, Set<OrgRole> roles, String orgId) {
-    return new OrgActor(userId, name, orgId, roles, IMPERSONATED, getInitiator());
-  }
-
   public static SystemActor createJobSystemActor(String jobName) {
     requireNonBlank(jobName, "jobName must not be blank.");
 
@@ -49,5 +41,13 @@ public class SystemActor extends Actor {
 
   public static SystemActor createUserSystemActor(String id, String name, ActorSource source, String initiator) {
     return new SystemActor(id, name, source, initiator);
+  }
+
+  public OrgActor impersonateOrg(String orgId) {
+    return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), IMPERSONATED, getInitiator());
+  }
+
+  public OrgActor impersonateOrgUser(String userId, String name, Set<OrgRole> roles, String orgId) {
+    return new OrgActor(userId, name, orgId, roles, IMPERSONATED, getInitiator());
   }
 }

@@ -2,8 +2,8 @@ package com.company.andy.feature.org.equipment.domain;
 
 import static java.util.Objects.requireNonNull;
 
-import static com.company.andy.common.util.CommonUtils.requireNonBlank;
-import static com.company.andy.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
+import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static com.company.andy.feature.org.equipment.domain.Equipment.EQUIPMENT_COLLECTION;
 import static lombok.AccessLevel.PRIVATE;
 

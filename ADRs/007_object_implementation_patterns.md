@@ -530,7 +530,7 @@ public class EquipmentQueryService {
 - Query objects are quite similar to command objects, the main difference is that query objects are request objects that
   instructs the software to read data, yet command objects are for writing data
 - For queries that return paged data, the query object should
-  extend [PageQuery](../src/main/java/com/company/andy/common/util/PageQuery.java)
+  extend [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java)
 - Query objects should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 - For API documentation, `@Schema` should be used to on query fields
 - Query objects have the following class level annotations:

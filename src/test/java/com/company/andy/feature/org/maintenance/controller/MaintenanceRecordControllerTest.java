@@ -13,8 +13,8 @@ import java.util.stream.IntStream;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.util.PagedResponse;
-import com.company.andy.common.util.ResponseId;
+import com.company.andy.common.utils.PagedResponse;
+import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
