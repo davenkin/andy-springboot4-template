@@ -7,7 +7,7 @@ import static com.company.andy.common.utils.Constants.ORG_EQUIPMENTS_CACHE;
 import static org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig;
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 
-import com.company.andy.feature.org.equipment.domain.CachedOrgEquipmentSummaries;
+import com.company.andy.feature.equipment.domain.CachedOrgEquipmentSummaries;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

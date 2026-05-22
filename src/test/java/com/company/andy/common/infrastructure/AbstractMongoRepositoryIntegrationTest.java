@@ -6,7 +6,7 @@ import static com.company.andy.common.event.DomainEventType.EQUIPMENT_DELETED_EV
 import static com.company.andy.common.exception.ErrorCode.AR_NOT_FOUND;
 import static com.company.andy.common.exception.ErrorCode.NOT_SAME_ORG;
 import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentName;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentName;
 import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,11 +20,11 @@ import java.util.List;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.feature.org.equipment.domain.Equipment;
-import com.company.andy.feature.org.equipment.domain.EquipmentFactory;
-import com.company.andy.feature.org.equipment.domain.EquipmentRepository;
-import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
-import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
+import com.company.andy.feature.equipment.domain.Equipment;
+import com.company.andy.feature.equipment.domain.EquipmentFactory;
+import com.company.andy.feature.equipment.domain.EquipmentRepository;
+import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
+import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

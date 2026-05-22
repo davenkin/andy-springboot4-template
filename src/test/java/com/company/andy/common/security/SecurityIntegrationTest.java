@@ -5,7 +5,7 @@ import static com.company.andy.common.exception.ErrorCode.ACCESS_DENIED;
 import static com.company.andy.common.exception.ErrorCode.AUTHENTICATION_FAILED;
 import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.model.OrgRole.ORG_IT_ADMIN;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.company.andy.IntegrationTest;

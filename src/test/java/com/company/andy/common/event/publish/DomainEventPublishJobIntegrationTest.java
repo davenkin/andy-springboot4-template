@@ -5,16 +5,16 @@ import static com.company.andy.common.event.publish.DomainEventPublishStatus.CRE
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.PUBLISH_FAILED;
 import static com.company.andy.common.event.publish.DomainEventPublishStatus.PUBLISH_SUCCEED;
 import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
-import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentName;
+import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.TestFixture;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.feature.org.equipment.command.CreateEquipmentCommand;
-import com.company.andy.feature.org.equipment.command.EquipmentCommandService;
-import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
+import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
+import com.company.andy.feature.equipment.command.EquipmentCommandService;
+import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.support.TestingDomainEventSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

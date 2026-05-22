@@ -58,7 +58,7 @@ For the same type of objects, we follow the same implementation patterns.
 - Aggregate roots should not be annotated with lombok's `@Setter`, `@Builder`, `@Data`, `@Value` or
   `@AllArgsConstructor`
 
-Example aggregate root [Equipment](../src/main/java/com/company/andy/feature/org/equipment/domain/Equipment.java):
+Example aggregate root [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
 
@@ -153,7 +153,7 @@ public record Actor(String id,
 - All repository implementations should
   extend [AbstractMongoRepository](../src/main/java/com/company/andy/common/infrastructure/AbstractMongoRepository.java)
 
-Example repository [EquipmentRepository](../src/main/java/com/company/andy/feature/org/equipment/domain/EquipmentRepository.java):
+Example repository [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
 
 ```java
 @Repository
@@ -186,7 +186,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
   CommandService or QueryService
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
-Example controller [EquipmentController](../src/main/java/com/company/andy/feature/org/equipment/controller/EquipmentController.java):
+Example controller [EquipmentController](../src/main/java/com/company/andy/feature/equipment/controller/EquipmentController.java):
 
 ```java
 @Validated // To enable request validation
@@ -217,7 +217,7 @@ public class EquipmentController {
 - Command ServiceS return the aggregate root's ID for creating objects, and return `void` for updating or deleting
   aggregate roots
 
-Example command service [EquipmentCommandService](../src/main/java/com/company/andy/feature/org/equipment/command/EquipmentCommandService.java):
+Example command service [EquipmentCommandService](../src/main/java/com/company/andy/feature/equipment/command/EquipmentCommandService.java):
 
 ```java
 @Slf4j
@@ -245,7 +245,7 @@ public class EquipmentCommandService {
 - Command objects can be annotated with `@Builder` for testing purpose
 - Command objects object should use JSR-303 annotations  (such as `@NotNull`, `@Max` and `@Pattern`) for data validation
 
-Example command object [CreateMaintenanceRecordCommand](../src/main/java/com/company/andy/feature/org/maintenance/command/CreateMaintenanceRecordCommand.java):
+Example command object [CreateMaintenanceRecordCommand](../src/main/java/com/company/andy/feature/maintenance/command/CreateMaintenanceRecordCommand.java):
 
 ```java
 @Builder
@@ -265,7 +265,7 @@ public record CreateMaintenanceRecordCommand(
 - Use of domain services should be minimized, as domain logic should best be residing in aggregate roots. Domain services are our
   last resort if the business logic is not suitable to be put inside aggregate roots.
 
-Example domain service [EquipmentDomainService](../src/main/java/com/company/andy/feature/org/equipment/domain/EquipmentDomainService.java):
+Example domain service [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java):
 
 ```java
 @Component
@@ -311,7 +311,7 @@ itself, hence `EquipmentDomainService` is used instead.
     - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization as well as
       built from MongoDB, should be `PRIVATE` as it's not supposed to be called manually
 
-Example domain event [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/org/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
+Example domain event [MaintenanceRecordCreatedEvent](../src/main/java/com/company/andy/feature/maintenance/domain/event/MaintenanceRecordCreatedEvent.java):
 
 ```java
 @Getter
@@ -397,7 +397,7 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
 - Event handlers can use `ExceptionSwallowRunner` to run multiple independent operations, in which exceptions raised in
   one operation does not affect other operations
 
-Example event handler [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/feature/org/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
+Example event handler [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentDeletedEventEventHandler.java):
 
 ```java
 @Slf4j
@@ -422,7 +422,7 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
 - Use factories to create aggregate roots makes our code more explict as the creation of aggregate roots is an important
   moment in software
 
-Example factory [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/org/maintenance/domain/MaintenanceRecordFactory.java):
+Example factory [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecordFactory.java):
 
 ```java
 @Component
@@ -448,7 +448,7 @@ public class MaintenanceRecordFactory {
   `equipment.domain.task` package, even though the task is called by an EventHandler in `equipment.eventhandler`
   package.
 
-Example task [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/org/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
+Example task [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 
 ```java
 @Slf4j
@@ -475,7 +475,7 @@ public class SyncEquipmentNameToMaintenanceRecordsTask {
 - Jobs are quite similar to tasks, the difference is that a job is relatively heavy weight and addresses a systematic
   problem, yet a task handle a single specific problem
 
-Example job [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/org/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
+Example job [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
 
 ```java
 @Slf4j
@@ -502,10 +502,10 @@ public class RemoveOldMaintenanceRecordsJob {
 - Query services follow CQRS principle in that it can access database directly, bypassing the domain model which
   command services operate on
 - Query services can have its own data model just for querying data, for
-  example [QPagedEquipment](../src/main/java/com/company/andy/feature/org/equipment/query/QPagedEquipment.java) represents
+  example [QPagedEquipment](../src/main/java/com/company/andy/feature/equipment/query/QPagedEquipment.java) represents
   an equipment item in the list
 
-Example query service [EquipmentQueryService](../src/main/java/com/company/andy/feature/org/equipment/query/EquipmentQueryService.java):
+Example query service [EquipmentQueryService](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java):
 
 ```java
 @Component
@@ -540,7 +540,7 @@ public class EquipmentQueryService {
     - `@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)`: for Jackson deserialization, should be
       `PRIVATE` as it's not supposed to be called manually
 
-Example query object [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/org/equipment/query/PageEquipmentsQuery.java):
+Example query object [PageEquipmentsQuery](../src/main/java/com/company/andy/feature/equipment/query/PageEquipmentsQuery.java):
 
 ```java
 @Getter
