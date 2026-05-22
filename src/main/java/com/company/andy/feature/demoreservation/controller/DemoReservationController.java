@@ -1,11 +1,11 @@
-package com.company.andy.feature.demo.controller;
+package com.company.andy.feature.demoreservation.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 import com.company.andy.common.model.actor.AnonymousActor;
 import com.company.andy.common.utils.ResponseId;
-import com.company.andy.feature.demo.command.CreateDemoReservationCommand;
-import com.company.andy.feature.demo.command.DemoReservationCommandService;
+import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
+import com.company.andy.feature.demoreservation.command.DemoReservationCommandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

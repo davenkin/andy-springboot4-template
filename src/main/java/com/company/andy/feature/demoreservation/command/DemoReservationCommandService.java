@@ -1,9 +1,9 @@
-package com.company.andy.feature.demo.command;
+package com.company.andy.feature.demoreservation.command;
 
 import com.company.andy.common.model.actor.AnonymousActor;
-import com.company.andy.feature.demo.domain.DemoReservation;
-import com.company.andy.feature.demo.domain.DemoReservationFactory;
-import com.company.andy.feature.demo.domain.DemoReservationRepository;
+import com.company.andy.feature.demoreservation.domain.DemoReservation;
+import com.company.andy.feature.demoreservation.domain.DemoReservationFactory;
+import com.company.andy.feature.demoreservation.domain.DemoReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

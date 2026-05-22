@@ -1,12 +1,12 @@
-package com.company.andy.feature.demo.domain;
+package com.company.andy.feature.demoreservation.domain;
 
 import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
-import static com.company.andy.feature.demo.domain.DemoReservation.DEMO_RESERVATION_COLLECTION;
+import static com.company.andy.feature.demoreservation.domain.DemoReservation.DEMO_RESERVATION_COLLECTION;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.AnonymousActor;
-import com.company.andy.feature.demo.domain.event.DemoReservationCreatedEvent;
+import com.company.andy.feature.demoreservation.domain.event.DemoReservationCreatedEvent;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,16 +1,16 @@
-package com.company.andy.feature.demo.controller;
+package com.company.andy.feature.demoreservation.controller;
 
 import static com.company.andy.common.event.DomainEventType.DEMO_RESERVATION_CREATED_EVENT;
-import static com.company.andy.feature.demo.controller.DemoReservationTestFixture.randomDemoReservationCommand;
+import static com.company.andy.feature.demoreservation.DemoReservationTestFixture.randomDemoReservationCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.utils.ResponseId;
-import com.company.andy.feature.demo.command.CreateDemoReservationCommand;
-import com.company.andy.feature.demo.domain.DemoReservation;
-import com.company.andy.feature.demo.domain.DemoReservationRepository;
-import com.company.andy.feature.demo.domain.event.DemoReservationCreatedEvent;
+import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
+import com.company.andy.feature.demoreservation.domain.DemoReservation;
+import com.company.andy.feature.demoreservation.domain.DemoReservationRepository;
+import com.company.andy.feature.demoreservation.domain.event.DemoReservationCreatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

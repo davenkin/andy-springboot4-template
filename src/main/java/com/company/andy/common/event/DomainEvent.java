@@ -9,7 +9,7 @@ import java.time.Instant;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.demo.domain.event.DemoReservationCreatedEvent;
+import com.company.andy.feature.demoreservation.domain.event.DemoReservationCreatedEvent;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.org.equipment.domain.event.EquipmentHolderUpdatedEvent;

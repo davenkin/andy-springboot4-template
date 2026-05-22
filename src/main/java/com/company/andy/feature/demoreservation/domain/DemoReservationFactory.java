@@ -1,4 +1,4 @@
-package com.company.andy.feature.demo.domain;
+package com.company.andy.feature.demoreservation.domain;
 
 import com.company.andy.common.model.actor.AnonymousActor;
 import org.springframework.stereotype.Component;

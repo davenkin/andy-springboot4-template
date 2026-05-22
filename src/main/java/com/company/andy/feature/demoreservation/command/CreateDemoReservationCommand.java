@@ -1,4 +1,4 @@
-package com.company.andy.feature.demo.command;
+package com.company.andy.feature.demoreservation.command;
 
 import com.company.andy.common.validation.mobilenumber.MobileNumber;
 import io.swagger.v3.oas.annotations.media.Schema;
