@@ -6,6 +6,7 @@ import com.company.andy.feature.demoreservation.domain.event.DemoReservationCrea
 import com.company.andy.feature.equipment.domain.event.*;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
+import com.company.andy.feature.systemsettings.domain.event.SystemBaseSettingsUpdatedEvent;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -32,6 +33,7 @@ import static lombok.AccessLevel.PROTECTED;
         @Type(value = MaintenanceRecordCreatedEvent.class, name = "MAINTENANCE_RECORD_CREATED_EVENT"),
         @Type(value = MaintenanceRecordDeletedEvent.class, name = "MAINTENANCE_RECORD_DELETED_EVENT"),
         @Type(value = DemoReservationCreatedEvent.class, name = "DEMO_RESERVATION_CREATED_EVENT"),
+        @Type(value = SystemBaseSettingsUpdatedEvent.class, name = "SYSTEM_BASE_SETTINGS_UPDATED_EVENT"),
 })
 
 // Base class for all domain events

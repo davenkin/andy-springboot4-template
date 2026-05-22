@@ -17,6 +17,7 @@ public class Constants {
     // Cache
     public static final String CACHE_PREFIX = "Cache:";
     public static final String ORG_EQUIPMENTS_CACHE = "ORG_EQUIPMENTS";
+    public static final String SYSTEM_SETTINGS_CACHE = "SYSTEM_SETTINGS";
 
     // Jwt
     public static final String JWT_CLAIM_ORG_ID = "org_id";
