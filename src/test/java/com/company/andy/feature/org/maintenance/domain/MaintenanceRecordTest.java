@@ -1,25 +1,27 @@
 package com.company.andy.feature.org.maintenance.domain;
 
-import com.company.andy.common.model.actor.OrgActor;
-import org.junit.jupiter.api.Test;
-
 import static com.company.andy.TestFixture.randomDescription;
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentName;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomEquipmentStatus;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.feature.org.equipment.domain.Equipment;
+import org.junit.jupiter.api.Test;
+
 class MaintenanceRecordTest {
 
-    @Test
-    void should_create_maintenance_record() {
-        OrgActor actor = randomHumanUserOrgActor();
+  @Test
+  void should_create_maintenance_record() {
+    OrgActor actor = randomHumanUserOrgActor();
+    Equipment equipment = new Equipment(randomEquipmentName(), actor);
 
-        MaintenanceRecord maintenanceRecord = new MaintenanceRecord("equipment",
-                "name",
-                randomEquipmentStatus(),
-                randomDescription(),
-                actor);
+    MaintenanceRecord maintenanceRecord = new MaintenanceRecord(equipment,
+        randomEquipmentStatus(),
+        randomDescription(),
+        actor);
 
-        assertNotNull(maintenanceRecord.getId());
-    }
+    assertNotNull(maintenanceRecord.getId());
+  }
 }

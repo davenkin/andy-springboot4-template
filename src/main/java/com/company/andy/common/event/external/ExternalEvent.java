@@ -1,0 +1,15 @@
+package com.company.andy.common.event.external;
+
+import static lombok.AccessLevel.PROTECTED;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@SuperBuilder
+@NoArgsConstructor(access = PROTECTED)
+public abstract class ExternalEvent {
+  private String eventId;
+  private String eventType;
+}

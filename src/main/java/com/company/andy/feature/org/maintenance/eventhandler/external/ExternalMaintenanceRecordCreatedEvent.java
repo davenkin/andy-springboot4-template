@@ -1,0 +1,20 @@
+package com.company.andy.feature.org.maintenance.eventhandler.external;
+
+import static lombok.AccessLevel.PRIVATE;
+
+import com.company.andy.common.event.external.ExternalEvent;
+import com.company.andy.feature.org.equipment.domain.EquipmentStatus;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@SuperBuilder
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
+public class ExternalMaintenanceRecordCreatedEvent extends ExternalEvent {
+  private String equipmentId;
+  private String channelRecordId;
+  private EquipmentStatus equipmentStatus;
+  private String description;
+}
