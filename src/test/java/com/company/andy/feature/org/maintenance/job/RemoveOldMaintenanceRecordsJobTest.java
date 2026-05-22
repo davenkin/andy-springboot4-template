@@ -3,6 +3,7 @@ package com.company.andy.feature.org.maintenance.job;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.utils.Constants.MONGO_ID;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.org.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
@@ -41,7 +42,7 @@ class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
   @Test
   void should_remove_old_maintenance_records() {
     // Prepare
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
     String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);

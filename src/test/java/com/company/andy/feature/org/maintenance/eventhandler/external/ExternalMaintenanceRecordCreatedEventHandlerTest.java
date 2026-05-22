@@ -3,6 +3,7 @@ package com.company.andy.feature.org.maintenance.eventhandler.external;
 import static com.company.andy.TestFixture.randomExternalEventId;
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_CREATED_EVENT;
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.org.maintenance.domain.MaintenanceRecordChannel.EXTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ class ExternalMaintenanceRecordCreatedEventHandlerTest extends IntegrationTest {
   @Test
   void external_maintenance_record_created_event_should_be_added() {
     // Prepare
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
     String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 

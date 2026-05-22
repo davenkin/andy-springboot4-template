@@ -5,6 +5,7 @@ import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EV
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_HOLDER_UPDATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_CREATED_EVENT;
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentHolderCommand;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
@@ -73,7 +74,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void handlers_should_only_handle_events_that_can_be_handled() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -89,7 +90,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void should_call_handlers_for_event_hierarchy() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     equipmentCommandService.updateEquipmentName(equipmentId, randomUpdateEquipmentNameCommand(), actor);
     EquipmentNameUpdatedEvent updatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
@@ -107,7 +108,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void multiple_handlers_should_run_in_order_of_priority() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -125,7 +126,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void should_record_consumed_or_not_if_handler_throws_exception() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
     EquipmentHolderUpdatedEvent holderUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT,
@@ -139,7 +140,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void should_not_mark_as_consumed_for_idempotent_handler() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -151,7 +152,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void multiple_handlers_should_run_independently() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
     EquipmentHolderUpdatedEvent holderUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT,
@@ -170,7 +171,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void should_not_run_for_duplicated_event_for_non_idempotent_handler() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -186,7 +187,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void should_run_for_duplicated_event_for_idempotent_handler() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     EquipmentCreatedEvent createdEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
@@ -204,7 +205,7 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
   @Test
   void event_handler_can_further_raise_events_and_been_handled() {
-    OrgActor actor = randomHumanUserOrgActor();
+    OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
     String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
     assertNull(equipmentRepository.byId(equipmentId).getStatus());
 

@@ -3,6 +3,7 @@ package com.company.andy.common.security;
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.common.exception.ErrorCode.ACCESS_DENIED;
 import static com.company.andy.common.exception.ErrorCode.AUTHENTICATION_FAILED;
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.model.OrgRole.ORG_IT_ADMIN;
 import static com.company.andy.feature.org.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +57,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
   @Test
   void should_throw_403_error_if_jwt_not_allowed_for_system_endpoint() {
     QErrorResponse response = restTestClient.post()
-        .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserOrgActor()))
+        .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserOrgActor(ORG_ADMIN)))
         .body(PageDemoReservationQuery.builder().pageSize(12).build())
         .exchange().expectStatus().isForbidden()
         .expectBody(QErrorResponse.class).returnResult().getResponseBody();

@@ -4,6 +4,7 @@ import static com.company.andy.TestFixture.randomAnonymousActor;
 import static com.company.andy.TestFixture.randomHumanUserOrgActor;
 import static com.company.andy.TestFixture.randomHumanUserSystemActor;
 import static com.company.andy.common.event.DomainEventType.DEMO_RESERVATION_CREATED_EVENT;
+import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.demoreservation.DemoReservationTestFixture.randomDemoReservationCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -79,7 +80,7 @@ class DemoReservationControllerTest extends IntegrationTest {
   @Test
   void org_user_should_not_allowed_to_page_demo_reservations() {
     restTestClient.post()
-        .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserOrgActor()))
+        .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserOrgActor(ORG_ADMIN)))
         .body(PageDemoReservationQuery.builder().pageSize(12).build())
         .exchange().expectStatus().isForbidden();
   }
