@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,6 +32,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 // Controllers can use "@AuthenticationPrincipal SystemActor actor" to obtain the current actor
 
 @Slf4j
+@NullMarked
 public class JwtToSystemActorAuthenticationTokenFilter extends OncePerRequestFilter {
     private final static Set<String> ALL_SYSTEM_ADMIN_ROLES = Set.of(SYSTEM_ADMIN_ROLE);
     private final AuthenticationEntryPoint authenticationEntryPoint;

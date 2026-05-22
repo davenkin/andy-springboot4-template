@@ -15,6 +15,8 @@ for direct response to the client or for reference data.
 
 ## Implementation
 
+todo: 说明CacheEvictor的用法
+
 The cache architecture (take `CachedMongoEquipmentRepository` as an example):
 
 ![cache strategy](../ADRs/asset/cache-strategy.png)

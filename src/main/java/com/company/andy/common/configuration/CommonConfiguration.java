@@ -7,6 +7,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.SerializationFeature;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;

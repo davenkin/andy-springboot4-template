@@ -34,7 +34,7 @@ public class SystemActor extends Actor {
     }
 
     public static SystemActor createEventListenerSystemActor(String listenerName) {
-        return new SystemActor(EVENT_LISTENER, listenerName);
+        return new SystemActor(EVENT_HANDLER, listenerName);
     }
 
     public static SystemActor createUserSystemActor(String id, String name, ActorSource source, String initiator) {

@@ -28,15 +28,15 @@ public class CacheConfiguration {
                 .cacheDefaults(defaultCacheConfig()
                         .prefixCacheNameWith(CACHE_PREFIX)
                         .serializeValuesWith(fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper)))
-                        .entryTtl(ofDays(7)))
+                        .entryTtl(ofDays(30)))
                 .withCacheConfiguration(ORG_EQUIPMENTS_CACHE, defaultCacheConfig()
                         .prefixCacheNameWith(CACHE_PREFIX)
                         .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, CachedOrgEquipmentSummaries.class)))
-                        .entryTtl(ofDays(7)))
+                        .entryTtl(ofDays(30)))
                 .withCacheConfiguration(SYSTEM_SETTINGS_CACHE, defaultCacheConfig()
                         .prefixCacheNameWith(CACHE_PREFIX)
                         .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, SystemSettings.class)))
-                        .entryTtl(ofDays(7)))
+                        .entryTtl(ofDays(30)))
                 ;
     }
 }

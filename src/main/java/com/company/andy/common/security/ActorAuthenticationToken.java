@@ -17,6 +17,7 @@ public final class ActorAuthenticationToken extends AbstractAuthenticationToken 
 
     public ActorAuthenticationToken(Actor actor, Collection<? extends GrantedAuthority> authorities, Jwt jwt) {
         requireNonNull(actor, "actor must not be null.");
+        requireNonNull(jwt, "jwt must not be null.");
 
         super(authorities);
         this.actor = actor;

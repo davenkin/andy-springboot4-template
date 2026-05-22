@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,6 +38,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 // Controllers can use "@AuthenticationPrincipal OrgActor actor" to obtain the current actor
 
 @Slf4j
+@NullMarked
 public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter {
     private final static Set<String> ALL_ORG_ROLES = Arrays.stream(OrgRole.values())
             .map(OrgRole::name)
@@ -132,3 +134,4 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         return HUMAN_USER;
     }
 }
+

@@ -46,7 +46,7 @@ class DemoReservationControllerTest extends IntegrationTest {
         // Verify
         DemoReservation reservation = demoReservationRepository.byId(responseId.id());
         assertEquals(command.mobileNumber(), reservation.getMobileNumber());
-        assertNull(reservation.getOrgId());
+        assertNull(reservation.getOrgId()); // DemoReservation does not belong to any org
 
         // Verify domain event
         DemoReservationCreatedEvent createdEvent = latestEventFor(reservation.getId(),

@@ -5,6 +5,7 @@ import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.company.andy.feature.demoreservation.domain.DemoReservation;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
+import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
@@ -28,6 +29,7 @@ public class ApplicationInitializer implements SmartLifecycle {
     private volatile boolean running = false;
 
     private void ensureMongoCollectionsExists() {
+        createCollection(SystemSettings.class);
         createCollection(PublishingDomainEvent.class);
         createCollection(ConsumingEvent.class);
         createCollection(Equipment.class);

@@ -5,6 +5,7 @@ import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.model.actor.SystemActor;
 import com.company.andy.feature.systemsettings.command.UpdateSystemBaseSettingsCommand;
 import com.company.andy.feature.systemsettings.domain.BaseSettings;
+import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import com.company.andy.feature.systemsettings.domain.SystemSettingsRepository;
 import com.company.andy.feature.systemsettings.query.QSystemSettings;
 import org.junit.jupiter.api.Test;
@@ -27,11 +28,14 @@ class SystemSettingsControllerTest extends IntegrationTest {
     void should_get_system_settings() {
         SystemActor actor = randomHumanUserSystemActor();
 
-        QSystemSettings systemSettings = restTestClient.get()
+        QSystemSettings qSystemSettings = restTestClient.get()
                 .uri("/system/system-settings").headers(authHeaderOf(actor))
                 .exchange().expectStatus().isOk()
                 .expectBody(QSystemSettings.class).returnResult().getResponseBody();
-        assertNotNull(systemSettings);
+        assertNotNull(qSystemSettings);
+
+        SystemSettings systemSettings = systemSettingsRepository.getSystemSettings();
+        assertNull(systemSettings.getOrgId()); // SystemSettings does not belong to any org
     }
 
     @Test

@@ -186,4 +186,36 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
   testing harder. 
 - Use [RestClient](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-restclient) for
   calling remote APIs. Do not use Webclient as it's from the Webflux ecosystem. Do not use RestTemplate as is already
-  marked as deprecated. Do not use HTTP Service Clients (`@HttpExchange` etc.) as it requires extra configuration. 
+  marked as deprecated. Do not use HTTP Service Clients (`@HttpExchange` etc.) as it requires extra configuration.
+- There are two [TaskExecutors](src/main/java/com/company/andy/common/configuration/TaskExecutionConfiguration.java) in the application, choose them wisely:
+  - `applicationTaskExecutor`: this is the primary one, it uses virtual threads, generally you should use this one, especially for I/O intensive tasks.
+  - `threadPoolTaskExecutor`: this is a classic thread pool based executor, it should only be used for CPU intensive tasks.
+- Single item configuration properties should be put under `common` section in `applciation.yaml` and [CommonProperties].(src/main/java/com/company/andy/common/configuration/property/CommonProperties.java)
+- All caches should be configured in [CacheConfiguration](src/main/java/com/company/andy/common/configuration/CacheConfiguration.java) before use, otherwise the jackson serialization may not work properly.
+- [SpringKafkaEventListener](src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java) and [SpringKafkaDomainEventSender](src/main/java/com/company/andy/common/event/publish/infrastructure/SpringKafkaDomainEventSender.java) are the only two places where Kafka is touched, stick to this as this minimizes the coupling with Kafka and also makes it easier to switch to other messaging systems in the future if needed.
+- When implementing your own event handler, just extend [AbstractEventHandler](src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java), but you should carefully think about whether to override the following methods:
+```java
+    public boolean isIdempotent() {
+        // By default, all handlers are assumed to be not idempotent by themselves
+        return false;
+    }
+
+    public boolean isTransactional() {
+        // By default, all handlers are assumed to be transactional, we should make handlers to be transactional as much as possible
+        return true;
+    }
+
+    public int priority() {
+        // Smaller value means higher priority and will be handled first
+        return 0;
+    }
+```
+- For event consuming, [EventConsumer](src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the central place where all kinds of events (internal domain events, external events etc.) are consumed.
+- For domain event publishing, events are first staged(saved) in the database within the same transaction of business processing, and then published asynchronously triggered by MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be found in [EventConfiguration](src/main/java/com/company/andy/common/event/EventConfiguration.java).
+- In integration tests, Kafka is not enabled, so we need to manually trigger event consuming by calling `EventConsumer.consumeDomainEvent()` for consuming domain events and other methods for other types of events.
+- [Mongock](https://mongock.io/) is used for database migration, please refer to [Migration001_Sample](src/main/java/com/company/andy/common/migration/Migration001_Sample.java) as a template when creating your own migrations.
+- [Actor](src/main/java/com/company/andy/common/model/actor/Actor.java) is used to represent anyone/anything that interacts with the systems, it can be a human user, a background job, or event handler. For security, actors are categorized into three types:
+  - `OrgActor`: represents an organization actor, it always carries an `orgId`;
+  - `SystemActor`: represents the system itself, and also can impersonate an `OrgActor`;
+  - `AnonymousActor`: represents an anonymous actor.
+- [RateLimiter](src/main/java/com/company/andy/common/ratelimiter/RateLimiter.java) can be used for rate limiting. Use it inside CommandService and QueryService.
