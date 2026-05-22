@@ -2,7 +2,7 @@ package com.company.andy.feature.org.maintenance.eventhandler.external;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import com.company.andy.common.event.external.ExternalEvent;
+import com.company.andy.common.event.consume.external.ExternalEvent;
 import com.company.andy.feature.org.equipment.domain.EquipmentStatus;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;

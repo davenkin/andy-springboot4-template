@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.event.external.ExternalEvent;
+import com.company.andy.common.event.consume.external.ExternalEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;

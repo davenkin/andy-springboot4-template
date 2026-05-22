@@ -1,4 +1,4 @@
-package com.company.andy.common.event.external;
+package com.company.andy.common.event.consume.external;
 
 import static lombok.AccessLevel.PROTECTED;
 
