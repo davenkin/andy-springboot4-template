@@ -1,4 +1,4 @@
-package com.company.andy.common.infrastructure;
+package com.company.andy.common.mongo;
 
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.publish.PublishingDomainEventDao;

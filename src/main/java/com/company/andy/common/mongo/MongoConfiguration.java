@@ -1,4 +1,4 @@
-package com.company.andy.common.configuration;
+package com.company.andy.common.mongo;
 
 import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;

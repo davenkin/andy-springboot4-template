@@ -1,6 +1,6 @@
 package com.company.andy.feature.systemsettings.domain;
 
-import com.company.andy.common.infrastructure.AbstractMongoRepository;
+import com.company.andy.common.mongo.AbstractMongoRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

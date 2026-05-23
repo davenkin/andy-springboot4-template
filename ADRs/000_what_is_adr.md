@@ -4,7 +4,7 @@
 
 Why a decision is needed?
 
-An architecture decision record (ADR) is a document that captures an important architectural decision made along with
+An [architecture decision record (ADR)](https://github.com/architecture-decision-record/architecture-decision-record) is a document that captures an important architectural decision made along with
 its context and consequences.
 
 For each ADR, please write a separate file in the `ADRs` directory, using the format `[000]_[name_of_the_adr].md`, where

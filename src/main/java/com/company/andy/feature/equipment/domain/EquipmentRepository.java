@@ -1,8 +1,8 @@
 package com.company.andy.feature.equipment.domain;
 
 import com.company.andy.common.cache.CacheEvictor;
-import com.company.andy.common.infrastructure.AbstractMongoRepository;
 import com.company.andy.common.model.AggregateRoot;
+import com.company.andy.common.mongo.AbstractMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.query.Query;

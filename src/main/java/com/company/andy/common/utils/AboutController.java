@@ -22,7 +22,7 @@ public class AboutController {
 
     @GetMapping("/favicon.ico")
     public void dummyFavicon() {
-        //nop
+        // nop
     }
 
     public record AboutInfo(String status, String fetchTime) {

@@ -1,4 +1,4 @@
-package com.company.andy.common.configuration;
+package com.company.andy.common.cache;
 
 import com.company.andy.feature.equipment.domain.CachedOrgEquipmentSummaries;
 import com.company.andy.feature.systemsettings.domain.SystemSettings;

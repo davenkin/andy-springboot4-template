@@ -1,6 +1,6 @@
 package com.company.andy.feature.demoreservation.domain;
 
-import com.company.andy.common.infrastructure.AbstractMongoRepository;
+import com.company.andy.common.mongo.AbstractMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
