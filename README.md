@@ -4,7 +4,7 @@ This is a template Spring Boot 4 project with the following features:
 
 - Data persistence using MongoDB
 - Messaging using Kafka
-- Cache using Redis
+- Caching using Redis
 - API documentation using [Springdoc](./ADRs/011_api_documentation.md)
 - Data migration using [Mongock](https://mongock.io/)
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
@@ -24,6 +24,7 @@ This is a template Spring Boot 4 project with the following features:
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
+- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls
 
 ## Tech stack
 

@@ -52,7 +52,10 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
 
     @Bean
     public TaskDecorator taskDecorator() {
-        return new CompositeTaskDecorator(List.of(new ContextPropagatingTaskDecorator(), new ActorMdcPropagatingTaskDecorator()));
+        return new CompositeTaskDecorator(List.of(
+                new ContextPropagatingTaskDecorator(), // Handles propagation for Spring Security context and Micrometer tracing context
+                new ActorMdcPropagatingTaskDecorator() // Handles propagation for Actor MDC context
+        ));
     }
 
     @Override

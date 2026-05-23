@@ -1,6 +1,6 @@
 # Common coding practices
 
-- Do not rely on database to generate IDs, instead generate IDs within your own code
+- Do not rely on databases to generate IDs, instead generate IDs within your own code
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).
   This
   means when the object is created,
@@ -37,6 +37,7 @@ public record QDetailedEquipment(
 
 ```java
 public void someMethod() {
+  // more code here
   throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
       "Equipment Name Already Exists.",
       NullableMapUtils.mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
@@ -127,6 +128,11 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
   return equipment.getId();
 }
 ```
+- CommandService's methods should contain logs of what has been done.
+- Logs should contain objects' IDs and other important information that can help debugging and tracing:
+```java
+log.info("Created Equipment[{}].", equipment.getId());
+```
 - Do not create interface classes for services until really needed. Reason: the public methods on service classes
   already serve
   as interfaces.
@@ -152,7 +158,7 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
                 ;
     }
 ```
-- For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the central place where all kinds of events (internal domain events, external events etc.) are consumed. But you don't need to touch it when implementing your own event handlers, instead just create a event handler class that extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+- For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the central place where all kinds of events (internal domain events, external events etc.) are consumed. But you don't need to touch it when implementing your own event consuming process, instead just create an event handler class that extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
 ```java
 public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
@@ -161,7 +167,7 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 }
 ```
-- When implementing your own event handler, you should carefully think about whether to override the following methods from [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+- When implementing your own event handlers, you should carefully think about whether to override the following methods from [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
 ```java
     public boolean isIdempotent() {
         // By default, all handlers are assumed to be not idempotent by themselves
@@ -214,7 +220,9 @@ public class DemoReservationCommandService {
         log.info("Created all MongoDB collections.");
     }
 ```
-- todo: restclient调用外部接口的两种方式
+- Use [RestClient](../src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for calling external APIs. There are two RestClients which vary on how JWT token is obtained:
+  - `jwtRelayRestClient`: relays current actor's JWT token to call external APIs
+  - `serviceAccountRestClient`: represents the application itself with JWT token being obtained automatically by Spring using Oauth2 client_credentials grant type
 - [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java) and [SpringKafkaDomainEventSender](../src/main/java/com/company/andy/common/event/publish/infrastructure/SpringKafkaDomainEventSender.java) are the only two places where Kafka is touched, stick to this as it minimizes the coupling to Kafka and also makes it easier to switch to other messaging systems in the future if needed.
 - If distributed lock is required, use
   Shedlock's [LockingTaskExecutor](../src/main/java/com/company/andy/common/configuration/DistributedLockConfiguration.java).

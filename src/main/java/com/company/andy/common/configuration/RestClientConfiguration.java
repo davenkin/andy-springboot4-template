@@ -26,7 +26,7 @@ public class RestClientConfiguration {
         return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(jwtRelayInterceptor).build();
     }
 
-    // RestClient that represent the application itself to call external APIs
+    // RestClient that represents the application itself with JWT token being obtained automatically by Spring using Oauth2 client_credentials grant type
     @Bean("serviceAccountRestClient")
     public RestClient serviceAccountRestClient(RestClient.Builder builder, OAuth2AuthorizedClientManager authorizedClientManager) {
         OAuth2ClientHttpRequestInterceptor interceptor = new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
@@ -34,7 +34,7 @@ public class RestClientConfiguration {
         return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(interceptor).build();
     }
 
-    // This is required by "serviceAccountRestClient" bean to make Oauth2 client credentials flow work
+    // This is required by "serviceAccountRestClient" bean to make Oauth2 client_credentials grant type work properly
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService authorizedClientService) {
         OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build();
