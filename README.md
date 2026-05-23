@@ -129,7 +129,6 @@ contain various common coding practices that should be followed when writing you
     - domain objects
     - job
     - event hanlder
-- restclient with own and relay jwt, all wrapped inside interface such as WechatClient, testing with
 - cache 文档要改
 - todo: 添加cache统一使用@Cachable，
     - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor

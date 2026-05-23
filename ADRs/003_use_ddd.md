@@ -97,7 +97,7 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
         Equipment equipment = equipmentFactory.create(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
@@ -133,7 +133,7 @@ public class EquipmentQueryService {
   Repository. Also, Repository handles the whole Aggregate Root, but not partially.
 
 Example
-Repository [MongoEquipmentRepository](../src/main/java/com/company/andy/feature/equipment/infrastructure/MongoEquipmentRepository.java):
+Repository [EquipmentRepository](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentRepository.java):
 
 ```java
 @Repository
