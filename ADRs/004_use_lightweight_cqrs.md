@@ -44,13 +44,13 @@ firstly fetch domain models using `Repository` and then convert to query models.
   Aggregate Roots, and the Aggregate Roots contains the domain logic.
 
 ```java
-@Transactional
-public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
-        equipmentDomainService.updateEquipmentName(equipment, command.name());
+    @Transactional
+    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
+        equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
-}
+    }
 ```
 
 - Apart from CommandServices, we create standalone QueryServices to implement the query side. In
