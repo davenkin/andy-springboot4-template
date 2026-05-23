@@ -1,7 +1,7 @@
 package com.company.andy.common.model;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.model.actor.AnonymousActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.model.actor.SystemActor;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public abstract class AggregateRoot {
     @Getter(PRIVATE)
     private Long _version;
 
-    // For org actor to create objects under the current org
+    // For OrgActor to create objects under the current org
     protected AggregateRoot(String id, OrgActor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
@@ -52,7 +52,7 @@ public abstract class AggregateRoot {
         this.createdBy = actor.getId();
     }
 
-    // For system actor to create objects under the specified org
+    // For SystemActor to create objects under the specified org
     protected AggregateRoot(String id, String orgId, SystemActor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
@@ -64,18 +64,9 @@ public abstract class AggregateRoot {
         this.createdBy = actor.getId();
     }
 
-    // For system actor to create objects what don't belong to any org but the whole system
-    protected AggregateRoot(String id, SystemActor actor) {
-        requireNonBlank(id, "id must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
-
-        this.id = id;
-        this.createdAt = Instant.now();
-        this.createdBy = actor.getId();
-    }
-
-    // For anonymous actor to create objects what don't belong to any org but the whole system
-    protected AggregateRoot(String id, AnonymousActor actor) {
+    // For any actor (including AnonymousActor) to create objects that don't belong to any org but the whole system
+    // Use this constructor with caution as it creates object without an orgId, which might not be what you want
+    protected AggregateRoot(String id, Actor actor) {
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 

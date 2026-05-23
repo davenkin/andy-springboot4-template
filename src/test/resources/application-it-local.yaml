@@ -8,6 +8,7 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
+      - org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration # Disable OAuth2 Client for service account
       - de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration # Disable flapdoodle explicitly otherwise the embedded MongoDB will replace your local real MongoDB servers
   data:
     redis:
@@ -18,8 +19,3 @@ spring:
       timeout: 10000
   mongodb:
     uri: mongodb://localhost:27125/andy-springboot4-template-local
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://this-is-a-placeholder.com

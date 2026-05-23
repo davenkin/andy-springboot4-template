@@ -1,6 +1,6 @@
 package com.company.andy.feature.demoreservation.controller;
 
-import com.company.andy.common.model.actor.AnonymousActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
@@ -34,11 +34,11 @@ public class DemoReservationController {
     @Operation(summary = "Create a demo reservation")
     public ResponseId createDemoReservation(
             @RequestBody @Valid CreateDemoReservationCommand command,
-            @AuthenticationPrincipal AnonymousActor actor) {
+            @AuthenticationPrincipal Actor actor) {
         return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
     }
 
-    @Operation(summary = "Query demo reservations with pagination")
+    @Operation(summary = "Query demo reservations")
     @PostMapping("/paged")
     public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationQuery query) {
         return this.demoReservationQueryService.pageDemoReservations(query);

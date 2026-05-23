@@ -76,3 +76,8 @@ public class EventConfiguration {
 Here, `changeDefaultVisibility()` is used to enable direct field access(
 `checker.withVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY)`), which means there is no
 need for your classes to expose getters/setters.
+
+### Why and how Oauth2 client is disabled in integration tests?
+- application.yaml
+- disabled OAuth2AuthorizedClientManager
+- disabled serviceAccountRestClient

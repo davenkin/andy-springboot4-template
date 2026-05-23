@@ -25,6 +25,7 @@ public class Constants {
     public static final String JWT_CLAIM_REALM_ACCESS = "realm_access";
     public static final String JWT_CLAIM_REALM_ACCESS_ROLES = "roles";
     public static final String SYSTEM_ACTOR_ORG_ID_HEADER = "x-org-id";
+    public static final String KEYCLOAK_SERVICE_ACCOUNT = "keycloak-service-account";
 
     // Regex
     public static final String MOBILE_NUMBER_REGEX = "^[1]([3-9])[0-9]{9}$";

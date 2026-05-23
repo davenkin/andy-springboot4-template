@@ -198,7 +198,7 @@ public class DemoReservationCommandService {
     private final RateLimiter rateLimiter;
 
     @Transactional
-    public String createDemoReservation(CreateDemoReservationCommand command, AnonymousActor actor) {
+    public String createDemoReservation(CreateDemoReservationCommand command, Actor actor) {
         rateLimiter.applyFor("create_demo_reservation", 5);
         // more code here
         return demoReservation.getId();

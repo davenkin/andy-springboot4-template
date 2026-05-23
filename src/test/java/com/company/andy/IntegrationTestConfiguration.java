@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import static org.springframework.http.HttpHeaders.ACCEPT;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Configuration(proxyBeanMethods = false)
@@ -25,9 +24,7 @@ public class IntegrationTestConfiguration {
 
     @Bean
     RestTestClientBuilderCustomizer restTestClientBuilderCustomizer() {
-        return builder -> builder
-                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE);
+        return builder -> builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE);
     }
 
 }

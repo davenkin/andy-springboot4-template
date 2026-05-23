@@ -15,6 +15,7 @@ found [here](https://web.dev/articles/ta-strategies).
 
 todo: eventhandler 的测试，如果是自己触发，则可以直接在contoller中写测试，如果是外部触发则通过eventConsumer来写测试 todo:
 集成测试可以通过commandservice准备数据，包括新建和更新数据，而对于更新数据，除了command service也可以通过TestReflectionUtils完成
+todo: restclient没有启动，因为测试不会真正调用外部接口
 
 We choose to focus more on integration tests than unit tests.
 

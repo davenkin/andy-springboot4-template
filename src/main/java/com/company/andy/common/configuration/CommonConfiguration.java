@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.resilience.annotation.EnableResilientMethods;
-import org.springframework.web.client.RestClient;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
@@ -34,10 +33,5 @@ public class CommonConfiguration {
     @Bean
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         return new StringRedisTemplate(redisConnectionFactory);
-    }
-
-    @Bean
-    public RestClient restClient(RestClient.Builder builder) {
-        return builder.build();
     }
 }
