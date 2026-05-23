@@ -15,8 +15,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public final class ServiceException extends RuntimeException {
     private final ErrorCode code;
     private final Map<String, Object> data = new HashMap<>();
-    private String message;
     private final String userMessage;
+    private String message;
 
     public ServiceException(ErrorCode code, String userMessage) {
         this.code = code;
@@ -178,20 +178,6 @@ public final class ServiceException extends RuntimeException {
         this.message = formatMessage(userMessage);
     }
 
-    private String formatMessage(String userMessage) {
-        StringBuilder stringBuilder = new StringBuilder().append("[").append(this.code.toString()).append("]");
-
-        if (isNotBlank(userMessage)) {
-            stringBuilder.append(userMessage);
-        }
-
-        if (isNotEmpty(this.data)) {
-            stringBuilder.append("Data: ").append(this.data);
-        }
-
-        return stringBuilder.toString();
-    }
-
     public static ServiceException accessDeniedException() {
         return new ServiceException(ACCESS_DENIED, "Access Denied.");
     }
@@ -210,6 +196,20 @@ public final class ServiceException extends RuntimeException {
 
     public static ServiceException systemException() {
         return new ServiceException(SYSTEM_ERROR, "System error.");
+    }
+
+    private String formatMessage(String userMessage) {
+        StringBuilder stringBuilder = new StringBuilder().append("[").append(this.code.toString()).append("]");
+
+        if (isNotBlank(userMessage)) {
+            stringBuilder.append(userMessage);
+        }
+
+        if (isNotEmpty(this.data)) {
+            stringBuilder.append("Data: ").append(this.data);
+        }
+
+        return stringBuilder.toString();
     }
 
     public void addData(String key, Object value) {

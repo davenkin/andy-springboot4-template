@@ -47,9 +47,9 @@ public class EquipmentController {
     }
 
     @Operation(summary = "Update an equipment's name")
-    @PutMapping("/{equipmentId}/name")
+    @PutMapping("/{id}/name")
     public void updateEquipmentName(
-            @PathVariable("equipmentId") @NotBlank
+            @PathVariable("id") @NotBlank
             @Parameter(description = "Id of the equipment")
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
@@ -58,21 +58,21 @@ public class EquipmentController {
     }
 
     @Operation(summary = "Update an equipment's holder")
-    @PutMapping("/{equipmentId}/holder")
+    @PutMapping("/{id}/holder")
     public void updateEquipmentHolder(
-            @PathVariable("equipmentId") @NotBlank String equipmentId,
+            @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
             @AuthenticationPrincipal OrgActor actor) {
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 
     @Operation(summary = "Delete an equipment")
-    @DeleteMapping("/{equipmentId}")
-    public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal OrgActor actor) {
+    @DeleteMapping("/{id}")
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal OrgActor actor) {
         this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 
-    @Operation(summary = "Query equipments")
+    @Operation(summary = "Query equipments with pagination")
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
@@ -80,10 +80,10 @@ public class EquipmentController {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 
-    @Operation(summary = "Get equipment detail")
-    @GetMapping("/{equipmentId}")
+    @Operation(summary = "Get an equipment's detail")
+    @GetMapping("/{id}")
     public QDetailedEquipment getEquipmentDetail(
-            @PathVariable("equipmentId") @NotBlank String equipmentId,
+            @PathVariable("id") @NotBlank String equipmentId,
             @AuthenticationPrincipal OrgActor actor) {
         return this.equipmentQueryService.getEquipmentDetail(equipmentId, actor);
     }

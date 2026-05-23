@@ -29,8 +29,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain featureFilterChain(HttpSecurity http) {
-        http
-                .authorizeHttpRequests((authorize) -> authorize
+        http.authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))

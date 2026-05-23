@@ -41,14 +41,14 @@ public class MaintenanceRecordController {
     }
 
     @Operation(summary = "Delete a maintenance record")
-    @DeleteMapping("/{maintenanceRecordId}")
+    @DeleteMapping("/{id}")
     public void deleteMaintenanceRecord(
-            @PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId,
+            @PathVariable("id") @NotBlank String maintenanceRecordId,
             @AuthenticationPrincipal OrgActor actor) {
         this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, actor);
     }
 
-    @Operation(summary = "Query maintenance records")
+    @Operation(summary = "Query maintenance records with pagination")
     @PostMapping("/paged")
     public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(
             @RequestBody @Valid PageMaintenanceRecordsQuery query,
@@ -56,10 +56,10 @@ public class MaintenanceRecordController {
         return maintenanceRecordQueryService.pageMaintenanceRecords(query, actor);
     }
 
-    @Operation(summary = "Get maintenance record detail")
-    @GetMapping("/{maintenanceRecordId}")
+    @Operation(summary = "Get a maintenance record's detail")
+    @GetMapping("/{id}")
     public QDetailedMaintenanceRecord getMaintenanceRecordDetail(
-            @PathVariable("maintenanceRecordId") @NotBlank String maintenanceRecordId,
+            @PathVariable("id") @NotBlank String maintenanceRecordId,
             @AuthenticationPrincipal OrgActor actor) {
         return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, actor);
     }

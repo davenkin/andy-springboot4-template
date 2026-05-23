@@ -22,8 +22,6 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.defaults;
 @Slf4j
 @RestController
 public class RestErrorController extends AbstractErrorController {
-    private final TracingService tracingService;
-
     private static final Map<HttpStatus, String> GENERIC_MESSAGES = Map.of(
             HttpStatus.UNAUTHORIZED, "Authentication failed.",
             HttpStatus.FORBIDDEN, "Access denied.",
@@ -38,6 +36,7 @@ public class RestErrorController extends AbstractErrorController {
             HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND,
             HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.METHOD_NOT_ALLOWED,
             HttpStatus.CONFLICT, ErrorCode.CONFLICT);
+    private final TracingService tracingService;
 
     public RestErrorController(ErrorAttributes errorAttributes, TracingService tracingService) {
         super(errorAttributes);

@@ -38,7 +38,7 @@ public class DemoReservationController {
         return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
     }
 
-    @Operation(summary = "Query demo reservations")
+    @Operation(summary = "Query demo reservations with pagination")
     @PostMapping("/paged")
     public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationQuery query) {
         return this.demoReservationQueryService.pageDemoReservations(query);
