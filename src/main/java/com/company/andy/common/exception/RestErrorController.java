@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.values;
 import static org.springframework.boot.web.error.ErrorAttributeOptions.defaults;
 
-@Tag(name = "Error Controller", description = "Internal use only")
+@Tag(name = "Z:RestErrorController", description = "Internal use only")
 @Slf4j
 @RestController
 public class RestErrorController extends AbstractErrorController {

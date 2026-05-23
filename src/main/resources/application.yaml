@@ -37,6 +37,8 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+    tags-sorter: alpha
+    operations-sorter: method
 
 management:
   tracing:
