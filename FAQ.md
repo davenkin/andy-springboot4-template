@@ -33,7 +33,7 @@ public class EventConfiguration {
     }
 ```
 
-### How to make multiple domain events inherit from the same base class (not the DomainEvent base class)?
+### How to make multiple domain events inherit from the same base class (but not the DomainEvent base class)?
 
 - Please refer
   to [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
@@ -54,3 +54,25 @@ public class EventConfiguration {
   handle the same
   event [EquipmentCreatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentCreatedEvent.java)
   independently.
+
+### How a single `ObjectMapper` is configured in the application?
+
+- In [CommonConfiguration](../src/main/java/com/company/andy/common/configuration/CommonConfiguration.java) a
+  `JsonMapperBuilderCustomizer` is created for building a single `ObjectMapper` bean that is shared by the whole application.
+
+```java
+    @Bean
+    public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
+        return builder -> builder
+                .changeDefaultVisibility(it -> it.withVisibility(ALL, ANY))
+                .changeDefaultPropertyInclusion(it -> it.withValueInclusion(ALWAYS))
+                .enable(REQUIRE_SETTERS_FOR_GETTERS)
+                .disable(FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(WRITE_DATES_AS_TIMESTAMPS)
+                .disable(WRITE_DURATIONS_AS_TIMESTAMPS);
+    }
+```
+
+Here, `changeDefaultVisibility()` is used to enable direct field access(
+`checker.withVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY)`), which means there is no
+need for your classes to expose getters/setters.

@@ -175,6 +175,7 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Verify
         EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        // Manually consume the event as Kafka is not enabled for integration tests
         eventConsumer.consumeDomainEvent(equipmentDeletedEvent);
         assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
     }
