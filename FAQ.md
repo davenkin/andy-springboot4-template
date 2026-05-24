@@ -77,12 +77,12 @@ Here, `changeDefaultVisibility()` is used to enable direct field access(
 `checker.withVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY)`), which means there is no
 need for your classes to expose getters/setters.
 
-### Why and how Oauth2 client is disabled in integration tests?
-- todo: 
-- application.yaml
-- disabled OAuth2AuthorizedClientManager
-- disabled serviceAccountRestClient
-
-### How to write integration tests for event consuming?
-- todo: 
-- using EventConsumer, not event handler
+### How Oauth2 clients are disabled in integration tests?
+- in `application-it.yaml` and `application-it-local.yaml`, `OAuth2ClientAutoConfiguration` is excluded to disable the auto configuration of Oauth2 clients:
+```yaml
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration # Disable OAuth2 Client for service account
+```
+- [RestClientConfiguration](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) is marked with `@DisableForIT`.
