@@ -49,9 +49,10 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         requireNonNull(ar, arType() + " must not be null.");
         requireNonBlank(ar.getId(), arType() + " ID must not be blank.");
 
-        mongoTemplate.save(ar);
-        stageEvents(ar.getEvents());
+        List<DomainEvent> events = ar.getEvents();
         ar.clearEvents();
+        mongoTemplate.save(ar);
+        stageEvents(events);
     }
 
     @Transactional
@@ -60,17 +61,17 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
             return;
         }
         checkSameOrg(ars);
-        List<DomainEvent> events = new ArrayList<>();
+        List<DomainEvent> allEvents = new ArrayList<>();
         ars.forEach(ar -> {
-            if (isNotEmpty(ar.getEvents())) {
-                events.addAll(ar.getEvents());
+            List<DomainEvent> arEvents = ar.getEvents();
+            if (isNotEmpty(arEvents)) {
+                allEvents.addAll(arEvents);
             }
-
-            mongoTemplate.save(ar);
             ar.clearEvents();
+            mongoTemplate.save(ar);
         });
 
-        stageEvents(events);
+        stageEvents(allEvents);
     }
 
     @Transactional
@@ -172,7 +173,7 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         Set<String> orgIdS = ars.stream().map(AR::getOrgId).collect(toImmutableSet());
         if (orgIdS.size() > 1) {
             Set<String> allArIds = ars.stream().map(AggregateRoot::getId).collect(toImmutableSet());
-            throw new ServiceException(NOT_SAME_ORG, "All ARs should belong to the same organization.", "arIds", allArIds);
+            throw new ServiceException(NOT_SAME_ORG, "All " + arType() + "s should belong to the same organization.", "arIds", allArIds);
         }
     }
 }
