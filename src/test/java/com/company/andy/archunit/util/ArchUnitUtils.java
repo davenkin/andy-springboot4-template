@@ -10,9 +10,9 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.tngtech.archunit.core.domain.JavaModifier.*;
+import static java.util.stream.Collectors.toSet;
 
 public class ArchUnitUtils {
     public static ArchCondition<JavaClass> havePrivateNoArgConstructor() {
@@ -86,8 +86,7 @@ public class ArchUnitUtils {
     }
 
     public static ArchCondition<JavaClass> beRegisteredInDomainEventJsonSubTypes() {
-        final Set<String> registeredClassNames = registeredDomainEventSubTypeClassNames();
-
+        Set<String> registeredClassNames = registeredDomainEventSubTypeClassNames();
         return new ArchCondition<>("be registered in DomainEvent @JsonSubTypes") {
             @Override
             public void check(JavaClass clazz, ConditionEvents events) {
@@ -110,6 +109,6 @@ public class ArchUnitUtils {
         return Arrays.stream(jsonSubTypes.value())
                 .map(JsonSubTypes.Type::value)
                 .map(Class::getName)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }
