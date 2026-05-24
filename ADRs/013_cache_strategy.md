@@ -10,140 +10,97 @@ We implement cache on `Repository` layer. The caller should know whether to use 
 not transparent to
 callers.
 
-For updating data, you should retrieve it from the database directly, but not from cache. Cache is only for query data
-for direct response to the client or for reference data.
-
 ## Implementation
 
-todo: 说明CacheEvictor的用法
+- Use `@Cacheable` to pupulate cache
+- Use `@CacheEvict` or [CacheEvictor](../src/main/java/com/company/andy/common/cache/CacheEvictor.java) to evict cache
+- Use `CacheManager` to test cache
 
-The cache architecture (take `CachedMongoEquipmentRepository` as an example):
+Example of using `@Cacheable` and `@CacheEvict`:
 
-![cache strategy](../ADRs/asset/cache-strategy.png)
+```java
+@Repository
+@RequiredArgsConstructor
+public class SystemSettingsRepository extends AbstractMongoRepository<SystemSettings> {
+   
+    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'THE_ONLY_ONE_SYSTEM_SETTINGS'")
+    public SystemSettings cachedSystemSettings() {
+        return super.byIdOptional(SYSTEM_SETTINGS_ID).orElse(null);
+    }
 
-- Caller only knows the interface `EquipmentRepository`
-- `Equipment`'s own repository `MongoEquipmentRepository` implements `EquipmentRepository` and extends
-  `AbstractMongoRepository` for reusing common methods such as `byId()` and `save()`
-- The cache repository `CachedMongoEquipmentRepository` also extends  `AbstractMongoRepository` for reusing common
-  methods such as `byId()`
-- `MongoEquipmentRepository` holds `CachedMongoEquipmentRepository` internally and proxies cache related methods to it,
-  hence hides
-  `CachedMongoEquipmentRepository` from
-  the caller
-- Cache repository should not escape outside of the repository layer, but can be referenced across different
-  repositories, for example `MongoMaintenanceRecordRepository` can reference `Equipment`'s cache repository
-  `CachedMongoEquipmentRepository`
+    @Override
+    @CacheEvict(value = SYSTEM_SETTINGS_CACHE, allEntries = true)
+    public void save(SystemSettings systemSettings) {
+        super.save(systemSettings);
+    }
+}
+```
+- [CacheEvictor](../src/main/java/com/company/andy/common/cache/CacheEvictor.java) can be used instead of `@CacheEvict` for evicting cache if more control is needed:
+
+```java
+    public void evictCachedEquipmentSummaries(String orgId) {
+        this.cacheEvictor.evict(ORG_EQUIPMENTS_CACHE, orgId);
+    }
+```
 
 In order to implement a cache object, go through the following steps:
 
-1. Decide if exising class should be cached or a new class should be created.
-2. If new class is needed, it's often created with Java's Record, for example:
+1. Decide if an exising class should be cached or a new class should be created
+2. If a new class is needed, it's often created with Java's `Record`, for example:
 
 ```java
 public record CachedOrgEquipmentSummaries(List<EquipmentSummary> summaries) {
 }
 ```
+3. Make sure the cached objects can be serialized/deserialized by Jackson
 
-3. Register the cache class
+4. Register the cache class
    into [CacheConfiguration](../src/main/java/com/company/andy/common/configuration/CacheConfiguration.java) using
    `withCacheConfiguration()`:
 
 ```java
-@Bean
-public RedisCacheManagerBuilderCustomizer redisBuilderCustomizer(ObjectMapper objectMapper) {
-  return builder -> builder
-      .cacheDefaults(defaultCacheConfig()
-          .prefixCacheNameWith(Constants.CACHE_PREFIX)
-          .serializeValuesWith(fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper)))
-          .entryTtl(ofDays(7)))
-      .withCacheConfiguration(ORG_EQUIPMENTS_CACHE, defaultCacheConfig()
-          .prefixCacheNameWith(Constants.CACHE_PREFIX)
-          .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, CachedOrgEquipmentSummaries.class)))
-          .entryTtl(ofDays(7)))
-      ;
-}
+    @Bean
+    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(ObjectMapper objectMapper) {
+        return builder -> builder
+                .cacheDefaults(defaultCacheConfig()
+                        .prefixCacheNameWith(CACHE_PREFIX)
+                        .serializeValuesWith(fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper)))
+                        .entryTtl(ofDays(30)))
+                .withCacheConfiguration(ORG_EQUIPMENTS_CACHE, defaultCacheConfig()
+                        .prefixCacheNameWith(CACHE_PREFIX)
+                        .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, CachedOrgEquipmentSummaries.class)))
+                        .entryTtl(ofDays(30)))
+                .withCacheConfiguration(SYSTEM_SETTINGS_CACHE, defaultCacheConfig()
+                        .prefixCacheNameWith(CACHE_PREFIX)
+                        .serializeValuesWith(fromSerializer(new JacksonJsonRedisSerializer<>(objectMapper, SystemSettings.class)))
+                        .entryTtl(ofDays(30)))
+                ;
+    }
 ```
 
-4. Create a cache repository, this repository should only work for cache, callers should not use this repository
-   directly:
-
+5. In the Repository, create standalone methods for retrieving the cache:
 ```java
-public class CachedMongoEquipmentRepository extends AbstractMongoRepository<Equipment> {
-
-  @Cacheable(value = ORG_EQUIPMENTS_CACHE, key = "#orgId")
-  public CachedOrgEquipmentSummaries cachedEquipmentSummaries(String orgId) {
-    requireNonBlank(orgId, "orgId must not be blank.");
-
-    Query query = query(where(AggregateRoot.Fields.orgId).is(orgId)).with(by(ASC, createdAt));
-    query.fields().include(AggregateRoot.Fields.orgId, Equipment.Fields.name, Equipment.Fields.status);
-    return new CachedOrgEquipmentSummaries(mongoTemplate.find(query, EquipmentSummary.class, EQUIPMENT_COLLECTION));
-  }
-
-  @Caching(evict = {@CacheEvict(value = ORG_EQUIPMENTS_CACHE, key = "#orgId")})
-  public void evictCachedEquipmentSummaries(String orgId) {
-    requireNonBlank(orgId, "orgId must not be blank.");
-
-    log.debug("Evicted cached equipment summaries for org[{}].", orgId);
-  }
-}
+    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'THE_ONLY_ONE_SYSTEM_SETTINGS'")
+    public SystemSettings cachedSystemSettings() {
+        return super.byIdOptional(SYSTEM_SETTINGS_ID).orElse(null);
+    }
 ```
 
-5. Add cache related methods in the caller facing `Repository` interface:
-
+6. When retrieving the cache, call the cached method:
 ```java
-public interface EquipmentRepository {
-
-  List<EquipmentSummary> cachedEquipmentSummaries(String orgId);
-
-  void evictCachedEquipmentSummaries(String orgId);
-}
+    public QSystemSettings getSystemSettings() {
+        SystemSettings systemSettings = systemSettingsRepository.cachedSystemSettings();
+        return QSystemSettings.builder()
+                .baseSettings(systemSettings.getBaseSettings())
+                .build();
+    }
 ```
 
-6. Implement the cache methods by calling into the cache repository:
-
+7. Evict the cache when necessary, for example, in the `save()` method of the Repository:
 ```java
-public class MongoEquipmentRepository extends AbstractMongoRepository<Equipment> implements EquipmentRepository {
-  private final CachedMongoEquipmentRepository cachedMongoEquipmentRepository;
-
-  @Override
-  public List<EquipmentSummary> cachedEquipmentSummaries(String orgId) {
-    return cachedMongoEquipmentRepository.cachedEquipmentSummaries(orgId).summaries();
-  }
-
-  @Override
-  public void evictCachedEquipmentSummaries(String orgId) {
-    cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(orgId);
-  }
-}
+    @Override
+    @CacheEvict(value = SYSTEM_SETTINGS_CACHE, allEntries = true)
+    public void save(SystemSettings systemSettings) {
+        super.save(systemSettings);
+    }
 ```
-
-As you can see, the cache repository (`CachedMongoEquipmentRepository`) is hidden by `MongoEquipmentRepository`, the
-caller code can just
-use
-`EquipmentRepository.cachedEquipmentSummaries()` to access caches.
-
-7. In caller code, call `EquipmentRepository.cachedEquipmentSummaries()` explicitly to get the cached data:
-
-```java
-public List<EquipmentSummary> getAllEquipmentSummaries(Actor actor) {
-  return equipmentRepository.cachedEquipmentSummaries(actor.getOrgId());
-}
-```
-
-8. Cache eviction often happens inside Repositories' data mutation methods such `save()` and `delete()`:
-
-```java
-@Override
-  public void save(Equipment equipment) {
-    super.save(equipment);
-    cachedMongoEquipmentRepository.evictCachedEquipmentSummaries(equipment.getOrgId());
-}
-```
-
-Notes:
-
-- We could build the cache methods(those annotated`@Cacheable` and `@CacheEvict` etc.) directly on
-  `MongoEquipmentRepository` and remove `CachedMongoEquipmentRepository`, but in reality we cannot, because:
-    - Due to Spring AOP's limitation, calling `@Cacheable` annotated methods from within the same class
-      will [not work](https://www.baeldung.com/spring-aop-method-call-within-same-class)
-    - From a design perspective, isolate cache related methods promotes separation of concerns principle
