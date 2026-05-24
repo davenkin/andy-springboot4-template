@@ -467,7 +467,7 @@ public class MaintenanceRecordFactory {
   package.
 
 Example
-task [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/equipment/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
+task [SyncEquipmentNameToMaintenanceRecordsTask](../src/main/java/com/company/andy/feature/maintenance/domain/task/SyncEquipmentNameToMaintenanceRecordsTask.java):
 
 ```java
 @Slf4j
