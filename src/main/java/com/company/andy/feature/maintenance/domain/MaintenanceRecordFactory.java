@@ -7,8 +7,8 @@ import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-// Always use factories to create aggregate root objects,
-// which makes the creation process of aggregate roots more explicit
+// Always use factories to create Aggregate Root objects,
+// which makes the creation process of Aggregate Roots more explicit
 
 @Component
 @RequiredArgsConstructor

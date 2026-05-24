@@ -23,10 +23,10 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Slf4j
 @Getter
-@FieldNameConstants
-@TypeAlias(EQUIPMENT_COLLECTION)
-@Document(EQUIPMENT_COLLECTION)
-@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
+@FieldNameConstants // For accessing field names
+@TypeAlias(EQUIPMENT_COLLECTION) // Use an explict type alias
+@Document(EQUIPMENT_COLLECTION) // Explicitly set MongoDB collection name
+@NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator) // For Jackson and MongoDB deserialization
 public class Equipment extends AggregateRoot {
     public final static String EQUIPMENT_COLLECTION = "equipment";
     private String name;

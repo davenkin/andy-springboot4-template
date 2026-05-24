@@ -1,3 +1,4 @@
 - mdc
 - spring security context
 - tracing context
+- 要做到：业务程序是和线程架构无关的，也即在Servlet容器这种多线程架构能够工作，在其他线程架构中（比如Akka或Spring WebFlux）也能工作。

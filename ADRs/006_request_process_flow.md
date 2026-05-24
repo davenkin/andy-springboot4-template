@@ -11,8 +11,6 @@ We choose to follow a standard way to implement various **request process flows*
 
 ## Implementation
 
-todo: add test for every flow
-
 ### Overall architecture
 
 ![overall architecture](../ADRs/asset/overall-architecture.png)
@@ -27,14 +25,14 @@ For HTTP requests, they can be further split into multiple sub-categories.
 
 Given above, we have the following process flows:
 
-- [HTTP request for creating aggregate root](#http-request-for-creating-aggregate-root)
-- [HTTP request for updating aggregate root](#http-request-for-updating-aggregate-root)
-- [HTTP request for deleting aggregate root](#http-request-for-deleting-aggregate-root)
-- [HTTP request for querying aggregate root](#http-request-for-querying-aggregate-root)
+- [HTTP request for creating Aggregate Root](#http-request-for-creating-aggregate-root)
+- [HTTP request for updating Aggregate Root](#http-request-for-updating-aggregate-root)
+- [HTTP request for deleting Aggregate Root](#http-request-for-deleting-aggregate-root)
+- [HTTP request for querying Aggregate Root](#http-request-for-querying-aggregate-root)
 - [Scheduled jobs triggered by timers](#scheduled-jobs-triggered-by-timers)
 - [Consuming events from Kafka](#consuming-events-from-kafka)
 
-### HTTP request for creating aggregate root
+### HTTP request for creating Aggregate Root
 
 Creating data involves 2 major steps: Create and Save. Take "Creating an equipment" as an example, the request process
 flow is:
@@ -44,10 +42,11 @@ flow is:
 1. `EquipmentController` receives the request:
 
 ```java
+    @PreAuthorize("hasRole('ORG_ADMIN')")
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal Actor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal OrgActor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 ```
@@ -55,24 +54,22 @@ flow is:
 2. `EquipmentCommandService` orchestrates the creation process:
 
 ```java
-@Transactional
-public String createEquipment(CreateEquipmentCommand command, Actor actor) {
-  Equipment equipment = equipmentFactory.create(command.name(), actor);
-  equipmentRepository.save(equipment);
-  log.info("Created Equipment[{}].", equipment.getId());
-  return equipment.getId();
-}
+    @Transactional
+    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
+        Equipment equipment = equipmentFactory.create(command.name(), actor);
+        equipmentRepository.save(equipment);
+        log.info("Created Equipment[{}].", equipment.getId());
+        return equipment.getId();
+    }
 ```
 
 3. `EquipmentFactory` creates the `Equipment` object. Remember, for code consistency, always use factory to create
-   aggregate roots:
+   Aggregate Roots:
 
 ```java
-public class EquipmentFactory {
-  public Equipment create(String name, Actor actor) {
-    return new Equipment(name, actor);
-  }
-}
+    public Equipment create(String name, OrgActor actor) {
+        return new Equipment(name, actor);
+    }
 ```
 
 4. `Equipment` constructor generates the ID for `Equipment` using `newEquipmentId()`, then sets data fields, and raises
@@ -80,15 +77,19 @@ public class EquipmentFactory {
    event infrastructure and no further actions are required from your side:
 
 ```java
-public Equipment(String name, Actor actor) {
-  super(newEquipmentId(), actor);
-  this.name = name;
-  raiseEvent(new EquipmentCreatedEvent(this, actor));
-}
+    public Equipment(String name, OrgActor actor) {
+        requireNonBlank(name, "name must not be blank");
+        requireNonNull(actor, "actor must not be null");
 
-public static String newEquipmentId() {
-  return "EQP" + newSnowflakeId(); // Generate ID in the code
-}
+        super(newEquipmentId(), actor);
+        this.name = name;
+        this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
+        raiseEvent(new EquipmentCreatedEvent(this, actor));
+    }
+
+    public static String newEquipmentId() {
+        return "EQP" + newSnowflakeId(); // Generate ID in the code
+    }
 ```
 
 5. `EquipmentRepository` saves the newly created `Equipment` object:
@@ -101,10 +102,10 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
 
 6. Return the ID of the newly created `Equipment` object to the caller.
 
-### HTTP request for updating aggregate root
+### HTTP request for updating Aggregate Root
 
 Updating data has 3 major steps: (1)Load the Aggregate Root; (2)Call Aggregate Root's business method; (3) Save it back
-to database. Take "updating `Equipment`'s holder name" as an example.
+to database. Take "updating `Equipment`'s holder" as an example.
 
 ![http-request-for-updating-aggregate-root](../ADRs/asset/http-request-for-updating-aggregate-root.png)
 
@@ -112,10 +113,11 @@ to database. Take "updating `Equipment`'s holder name" as an example.
 
 ```java
     @Operation(summary = "Update an equipment's holder")
-    @PutMapping("/{equipmentId}/holder")
-    public void updateEquipmentHolder(@PathVariable("equipmentId") @NotBlank String equipmentId,
-                                      @RequestBody @Valid UpdateEquipmentHolderCommand command,
-                                      @AuthenticationPrincipal Actor actor) {
+    @PutMapping("/{id}/holder")
+    public void updateEquipmentHolder(
+            @PathVariable("id") @NotBlank String equipmentId,
+            @RequestBody @Valid UpdateEquipmentHolderCommand command,
+            @AuthenticationPrincipal OrgActor actor) {
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 ```
@@ -124,8 +126,8 @@ to database. Take "updating `Equipment`'s holder name" as an example.
 
 ```java
     @Transactional
-    public void updateEquipmentHolder(String id, UpdateEquipmentHolderCommand command, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(id, actor.orgId());
+    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
         equipment.updateHolder(command.name(), actor);
         equipmentRepository.save(equipment);
         log.info("Updated holder for Equipment[{}].", equipment.getId());
@@ -139,14 +141,14 @@ Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
 ```
 
 4. `Equipment`'s `updateHolder()` is called to update its state according business logic(rules), and also raise
-   `EquipmentHolderUpdatedEvent` if the holder name is changed:
+   `EquipmentHolderUpdatedEvent` if the holder is changed:
 
 ```java
     public void updateHolder(String newHolder, Actor actor) {
         if (Objects.equals(this.holder, newHolder)) {
             return;
         }
-        
+
         String oldHolder = this.holder;
         this.holder = newHolder;
         raiseEvent(new EquipmentHolderUpdatedEvent(oldHolder, newHolder, this, actor));
@@ -171,13 +173,14 @@ directly from `EquipmentCommandService`, domain service `EquipmentDomainService.
 
 
 ```java
-@Transactional
-public void updateEquipmentName(String id, UpdateEquipmentNameCommand command, Actor actor) {
-  Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
-  equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
-  equipmentRepository.save(equipment);
-  log.info("Updated name for Equipment[{}].", equipment.getId());
-}
+    @Transactional
+    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
+        equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
+        equipmentRepository.save(equipment);
+        log.info("Updated name for Equipment[{}].", equipment.getId());
+    }
+
 ```
 
 Inside `EquipmentDomainService.updateEquipmentName()`, it first checks whether the name is already taken, if not then
@@ -196,9 +199,9 @@ update `Equipment`'s name:
     }
 ```
 
-### HTTP request for deleting aggregate root
+### HTTP request for deleting Aggregate Root
 
-For deleting data, first load the `AggregateRoot` and then delete it. For example, for deleting an `Equipment`:
+For deleting data, first load the Aggregate Root and then delete it. For example, for deleting an `Equipment`:
 
 ![http-request-for-deleting-aggregate-root](../ADRs/asset/http-request-for-deleting-aggregate-root.png)
 
@@ -207,8 +210,8 @@ For deleting data, first load the `AggregateRoot` and then delete it. For exampl
 
 ```java
     @Operation(summary = "Delete an equipment")
-    @DeleteMapping("/{equipmentId}")
-    public void deleteEquipment(@PathVariable("equipmentId") @NotBlank String equipmentId, @AuthenticationPrincipal Actor actor) {
+    @DeleteMapping("/{id}")
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal OrgActor actor) {
         this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 ```
@@ -217,8 +220,8 @@ For deleting data, first load the `AggregateRoot` and then delete it. For exampl
 
 ```java
     @Transactional
-    public void deleteEquipment(String equipmentId, Actor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+    public void deleteEquipment(String equipmentId, OrgActor actor) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
         equipment.onDelete(actor);
         equipmentRepository.delete(equipment);
         log.info("Deleted Equipment[{}].", equipmentId);
@@ -244,7 +247,7 @@ Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
    before deletion, there might be some validations that need to happen, and also it might raise Domain Events. So, in
    order to ensure such possibilities, the whole `Equipment` object is loaded into the memory.
 
-### HTTP request for querying aggregate root
+### HTTP request for querying Aggregate Root
 
 There are two ways to query data:
 
@@ -262,9 +265,11 @@ directly. For example, when querying a list of `Equipment`s:
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
 
 ```java
-    @Operation(summary = "Query equipments")
+    @Operation(summary = "Query equipments with pagination")
     @PostMapping("/paged")
-    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal Actor actor) {
+    public PagedResponse<QPagedEquipment> pageEquipments(
+            @RequestBody @Valid PageEquipmentsQuery query,
+            @AuthenticationPrincipal OrgActor actor) {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 ```
@@ -276,18 +281,12 @@ directly. For example, when querying a list of `Equipment`s:
    query model `QPagedEquipment`:
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
-  Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
-
-  if (isNotBlank(query.getSearch())) {
-    criteria.and(Equipment.Fields.name).regex(query.getSearch());
-  }
-
-  // code omitted
-
-  List<QPagedEquipment> equipments = mongoTemplate.find(query.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);
-  return new PagedResponse<>(equipments, pageable, count);
-}
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
+        // code omited
+        List<QPagedEquipment> equipments = mongoTemplate.find(mongoQuery.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);
+        return new PagedResponse<>(equipments, pageable, count);
+    }
 ```
 
 ### Scheduled jobs triggered by timers
@@ -301,16 +300,17 @@ public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, 
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {
-  private final MaintenanceReminderJob maintenanceReminderJob;
+    private final MaintenanceReminderJob maintenanceReminderJob;
 
     @Scheduled(cron = "0 10 2 1 * ?")
     @SchedulerLock(name = "remindForEquipmentMaintenance")
     public void remindForEquipmentMaintenance() {
         assertLocked();
 
-        Actor actor = createJobActor("remindForEquipmentMaintenance");
+        SystemActor actor = createJobSystemActor("remindForEquipmentMaintenance");
         ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderJob::run);
     }
+}
 ```
 
 The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into MDC.
@@ -378,9 +378,10 @@ You may add more `@KafkaListener` methods for consuming different topics if need
 @RequiredArgsConstructor
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
-  @Override
-  public void handle(EquipmentCreatedEvent event, Actor actor) {
-  }
+    @Override
+    protected void handle(EquipmentCreatedEvent event, SystemActor actor) {
+        log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
+    }
 }
 ```
 

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-// Base class for all aggregate root objects
+// Base class for all Aggregate Root objects
 // The AggregateRoot object stores raised domain events temporarily in memory,
 // then the events will be persisted into DB by Repository within the same transaction that saves the AggregateRoot object
 
@@ -30,8 +30,8 @@ public abstract class AggregateRoot {
     private String id;
     private String orgId;
 
-    // Domain events are stored temporarily in the aggregate root and are not persisted together with the entities as events will be stored in separately
-    // @Transient is very important for not persisting events with the aggregate root, otherwise we need to do this manually by ourselves
+    // Domain events are stored temporarily in the Aggregate Root and are not persisted together with the entities as events will be stored in separately
+    // @Transient is very important for not persisting events with the Aggregate Root, otherwise we need to do this manually by ourselves
     @Transient
     private List<DomainEvent> events;
     private Instant createdAt;
@@ -75,7 +75,7 @@ public abstract class AggregateRoot {
         this.createdBy = actor.getId();
     }
 
-    // raiseEvent() only stores events in aggregate root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the aggregate root object
+    // raiseEvent() only stores events in Aggregate Root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the Aggregate Root object
     // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
     protected final void raiseEvent(DomainEvent event) {
         requireNonNull(event, "event must not be null.");

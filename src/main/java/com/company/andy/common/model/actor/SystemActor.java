@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.model.actor.ActorSource.*;
 import static com.company.andy.common.model.actor.ActorType.SYSTEM_ACTOR;
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
@@ -41,11 +40,7 @@ public class SystemActor extends Actor {
         return new SystemActor(id, name, source, initiator);
     }
 
-    public OrgActor impersonateOrg(String orgId) {
-        return new OrgActor(getId(), getName(), orgId, Set.of(ORG_ADMIN), IMPERSONATED, getInitiator());
-    }
-
-    public OrgActor impersonateOrgUser(String userId, String name, Set<OrgRole> roles, String orgId) {
-        return new OrgActor(userId, name, orgId, roles, IMPERSONATED, getInitiator());
+    public OrgActor impersonateOrgActor(String impersonatedActorId, String name, Set<OrgRole> roles, String orgId) {
+        return new OrgActor(impersonatedActorId, name, orgId, roles, IMPERSONATED, getInitiator());
     }
 }

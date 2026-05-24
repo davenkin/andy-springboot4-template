@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 // Command services handles command objects and orchestrates the processing flow
-// Command services should not contain business logic but delegate to aggregate roots or domain services
+// Command services should not contain business logic but delegate to Aggregate Roots or domain services
 
 @Slf4j
 @Component
