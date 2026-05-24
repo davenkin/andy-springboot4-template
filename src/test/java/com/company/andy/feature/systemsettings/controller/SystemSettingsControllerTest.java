@@ -17,6 +17,7 @@ import static com.company.andy.TestFixture.*;
 import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
+import static com.company.andy.support.PollingAssertion.pollAssert;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SystemSettingsControllerTest extends IntegrationTest {
@@ -66,7 +67,7 @@ class SystemSettingsControllerTest extends IntegrationTest {
                 .exchange().expectStatus().isOk()
                 .expectBody(QSystemSettings.class).returnResult().getResponseBody();
         assertNotNull(systemSettings);
-        assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID));
+        pollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
 
         // Execute
         UpdateSystemBaseSettingsCommand updateCommand = UpdateSystemBaseSettingsCommand.builder()
@@ -78,13 +79,13 @@ class SystemSettingsControllerTest extends IntegrationTest {
                 .exchange().expectStatus().isOk();
 
         // Verify
-        assertNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID));
+        pollAssert().run(() -> assertNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
         QSystemSettings updatedCachedSettings = restTestClient.get()
                 .uri("/system/system-settings").headers(authHeaderOf(actor))
                 .exchange().expectStatus().isOk()
                 .expectBody(QSystemSettings.class).returnResult().getResponseBody();
         assertNotNull(updatedCachedSettings);
-        assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID));
+        pollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
     }
 
     @Test

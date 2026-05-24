@@ -196,6 +196,11 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 ```
+- For testing, when assert some conditions that happens asynchronously, such as cache eviction, you can use [PollingAssertion](../src/test/java/com/company/andy/support/PollingAssertion.java) to poll and then assert:
+```java
+PollingAssertion.pollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
+```
+
 - [Mongock](https://mongock.io/) is used for database migration, please refer to [Migration001_Sample](../src/main/java/com/company/andy/common/migration/Migration001_Sample.java) as a template when creating your own migrations.
 - Database indexes should be managed by Mongock migrations, take [Migration002_BaseSetup](../src/main/java/com/company/andy/common/migration/Migration002_BaseSetup.java) as an example. Also, make sure that every index has a specified name for better index maintenability.
 - [RateLimiter](../src/main/java/com/company/andy/common/ratelimiter/RateLimiter.java) can be used for rate limiting. Use it inside CommandService and QueryService:

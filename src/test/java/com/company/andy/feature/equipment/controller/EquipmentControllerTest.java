@@ -32,6 +32,7 @@ import static com.company.andy.common.utils.Constants.ORG_EQUIPMENTS_CACHE;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
+import static com.company.andy.support.PollingAssertion.pollAssert;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NullMarked
@@ -124,14 +125,14 @@ class EquipmentControllerTest extends IntegrationTest {
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
         OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
-        assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
         equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
         List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
         assertNotNull(equipmentSummaries);
         List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
         assertNotNull(cachedEquipmentSummaries);
-        assertNotNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
+        pollAssert().run(() -> assertNotNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
 
         // Execute
         // Create another equipment to evict the cache
@@ -142,7 +143,7 @@ class EquipmentControllerTest extends IntegrationTest {
                 .expectBody(ResponseId.class).returnResult().getResponseBody().id();
 
         // Verify
-        assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId()));
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
     }
 
     @Test
