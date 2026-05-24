@@ -12,7 +12,7 @@ services:
       test: |
         mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok }"
       start_period: 0s
-      interval: 500ms
+      interval: 2s
       timeout: 5s
       retries: 5
     networks:
@@ -74,6 +74,12 @@ services:
     volumes:
       - andy-springboot4-template-redis-volume:/data
     command: redis-server --requirepass aredissecret
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "aredissecret", "ping" ]
+      start_period: 2s
+      interval: 2s
+      timeout: 5s
+      retries: 5
     networks:
       - andy-springboot4-template-network
     restart: always
