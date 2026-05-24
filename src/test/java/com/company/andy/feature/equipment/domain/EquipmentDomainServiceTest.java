@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class EquipmentDomainServiceTest {
 
-    @Mock
+    @Mock // @Mock means it's a mocked object
     private EquipmentRepository equipmentRepository;
 
-    @InjectMocks
+    @InjectMocks // @InjectMocks means automatically inject other @Mock objects into this object
     private EquipmentDomainService equipmentDomainService;
 
     @Test

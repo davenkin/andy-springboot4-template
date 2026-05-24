@@ -11,10 +11,6 @@ found [here](https://web.dev/articles/ta-strategies).
 
 ## Decision
 
-todo: eventhandler 的测试，如果是自己触发，则可以直接在contoller中写测试，如果是外部触发则通过eventConsumer来写测试 todo:
-集成测试可以通过commandservice准备数据，包括新建和更新数据，而对于更新数据，除了command service也可以通过TestReflectionUtils完成
-todo: restclient没有启动，因为测试不会真正调用外部接口
-
 We choose to focus more on integration tests than unit tests.
 
 We write integration tests for:
@@ -40,27 +36,30 @@ No need to write tests for:
 ## Implementation
 
 - [Integration tests](#integration-tests)
-  - [Test controllers](#test-controllers)
-  - [Test internal domain event handlers](#test-internal-domain-event-handlers)
+  - [Testing profiles](#testing-profiles) 
+  - [Testing Controllers](#testing-controllers)
+  - [Test internal DomainEvent handlers](#test-internal-domainevent-handlers)
   - [Test external event handlers](#test-external-event-handlers)
-  - [Test jobs](#test-jobs)
+  - [Test Jobs](#test-jobs)
 - [Unit tests](#unit-tests)
 
-todo:
-解释junit-platform.properties，类级别是并行的，类内部各个测试方法是串行的，因为有些测试类中各个方法之间可能是相互影响的，比如某些Job会操作全局数据，因此多个测试方法之间可能有冲突。一般来讲，我们应该让各个测试方法之间完全独立。
 
 All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
 doing, e.g. `should_create_equipment()`.
 
+Junit is been configured to run all test classes in parallel; and inside each test class all tests methods run sequentially. You may modify this in [junit-platform.properties](../src/test/resources/junit-platform.properties).
+
+Maven's [surefire](https://maven.apache.org/surefire/maven-surefire-plugin/) plugin is used to run both unit tests and integration tests. Even though it's commonly advised that integration tests should be run with [failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/) plugin, we choose to use `surefire` for both types of tests for simplicity.
+
 ### Integration Tests
 
-- All integration tests class name should end with "IntegrationTest", e.g. `EquipmentCommandServiceIntegrationTest`.
 - All integration tests should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java):
 
 ```java
 @Slf4j
 @ActiveProfiles("it")
 //@ActiveProfiles("it-local")
+@AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
 }
@@ -72,30 +71,29 @@ context which uses a real servlet server.
 When write your own integration test classes, you only need to extend `IntegrationTest`:
 
 ```java
-class EquipmentCommandServiceIntegrationTest extends IntegrationTest {
-  @Autowired
-  private EquipmentCommandService equipmentCommandService;
+class EquipmentControllerTest extends IntegrationTest {
+    @Autowired
+    private EquipmentRepository equipmentRepository;
 
-  @Autowired
-  private EquipmentRepository equipmentRepository;
-
-  @Test
-  void should_create_equipment() {}
+    @Autowired
+    private EquipmentCommandService equipmentCommandService;
+    
+    @Test
+    void should_create_equipment() {
+    }
 }
 ```
 
 You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
 assist your testing.
 
-When prepare testing data, try use CommandService's methods to insert data into database as it mimics the real use case,
-do not use Repository directly to insert data into database.
+When prepare testing data, you can use methods in `CommandService`  or `Repository` to insert/update data into database. Some times you may need to set values on some fields directly, you can use Spring's `ReflectionTestUtils` for such purpose.
 
-Since integration tests write data into database, in order to avoid errors like database primary key duplication, you
-should use random IDs for your entities and domain events for every test method, do not reuse IDs across test methods.
-You can use `RandomTestUtils` for getting various random test fixtures.
+Since integration tests write data into database, in order to avoid primary key duplication errors, you
+should use random IDs for your objects in every test method, do not reuse IDs across test methods. Also, multiple tests using the same IDs can pollute each other.
 
 In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
-context repeatedly, please use as less mocks(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests.
+context repeatedly, please use as less mock beans(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests, instead create your own stub classes.
 
 #### Testing profiles
 
@@ -108,127 +106,158 @@ MongoDB and Redis while the latter uses real ones from your local machine.
 
 - `application-it.yaml`: This is the default profile which you use most of the time. This profile should be enabled for
   CI pipelines. This profile enables developers to run integration tests without setting up any middlewares locally like
-  MongoDB, Redis or Kafka. You can just pull the code and run the tests. It has the following configurations:
+  MongoDB, Redis or Kafka. It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
-    - MongoDB Transaction disabled as flapdoodle reports error for concurrent transactions
     - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
+    - MongoDB transactions enabled
     - Mongock disabled
-    - Kafka disabled for both sending and consuming events
+    - Kafka disabled for both publishing and consuming events
     - Job schedulers are disabled
+    - RestClients disabled
 - `application-it-local.yaml`: This is only for real local MongoDB/Redis servers and should not be enabled for CI
   pipelines, it has the following configurations:
     - Use your local MongoDB server
-    - MongoDB Transaction enabled
     - Use your local Redis server
+    - MongoDB transactions enabled (same as `application-it.yaml`)
     - Mongock disabled (same as `application-it.yaml`)
-    - Kafka disabled for both sending and consuming events (same as `application-it.yaml`)
+    - Kafka disabled for both publishing and consuming events (same as `application-it.yaml`)
     - Job schedulers are disabled (same as `application-it.yaml`)
+    - RestClients disabled (same as `application-it.yaml`)
 
 For both profiles:
 
-- As Kafka is disabled, you will need to call EventHandlers' `handle()` methods explicitly to ensure the processing of
-  events.
+- As Kafka is disabled, you will need to call `EventConsumer.consumeXxxEvent()` explicitly for testing event consuming.
 - As [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern is used, the
-  Domain Events will firstly be stored into database and then publish, you may use `IntegrationTest.latestEventFor()` to
-  verify the existence of domain events:
+  DomainEvents will firstly be stored into database before publishing, you may use `IntegrationTest.latestEventFor()` to
+  verify the existence of domain events.
 
-#### Testing CommandService
+#### Testing Controllers
 
-1. Prepared command
-2. Execute the method your want to test on CommandService
+1. Prepared data
+2. Call API using `RestTestClient`
 3. Verify results
-4. If the method raises domain events, you can verify is raised using `latestEventFor()`
+4. If domain events are raised, you can verify it using `latestEventFor()`
 
 ```java
-@Test
-void should_create_equipment() {
-        //Prepare data
-        Actor actor = randomOrgUserActor();
+    @Test
+    void should_create_equipment() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
-        //Execute 
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        // Execute
+        ResponseId responseId = restTestClient.post()
+                .uri("/equipments").headers(authHeaderOf(actor))
+                .body(createEquipmentCommand)
+                .exchange().expectStatus().isCreated()
+                .expectBody(ResponseId.class).returnResult().getResponseBody();
 
-        //Verify results
+        // Verify
+        String equipmentId = responseId.id();
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
         // Verify domain events
-        // Only need to check the existence of domain event in database,
-        // no need to further test event handler as that will be handled in event handlers' own tests
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
 ```
 
-#### Testing QueryService
 
-1. Prepare data using CommandService
-2. Execute the method your want to test on QueryService
+#### Test internal DomainEvent handlers
+
+Usually DomainEvent handler testing is covered in Controller test file, as normally domain events are raised from Controller API calling.
+
+1. Prepare data (usually by calling CommandService or Repository or RestTestClient)
+2. Execute the EventHandler using `EventConsumer.consumeDomainEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
 3. Verify results
+4. If other domain events are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
 
 ```java
     @Test
-    void should_page_equipments() {
-        //Prepare data
-        Actor actor = randomOrgUserActor();
-        IntStream.range(0, 20).forEach(i -> {
-            equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        });
-
-        // Fetch data
-        PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();
-        PagedResponse<QPagedEquipment> equipments = equipmentQueryService.pageEquipments(query, actor);
-
-        // Verify results
-        assertEquals(12, equipments.getContent().size());
-    }
-
-```
-
-#### Testing EventHandler
-
-1. Prepare data using CommandService
-2. Execute the EventHandler
-3. Verify results
-4. If the method raises domain events, you can verify is raised using `latestEventFor()`
-
-```java
-    @Test
-    void delete_equipment_should_also_delete_all_its_maintenance_records() {
-        // Prepare data
-        Actor actor = randomOrgUserActor();
+    void update_equipment_name_should_also_sync_to_maintenance_records() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
-        assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
+                actor);
+
+        // Execute
+        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
+        restTestClient.put()
+                .uri("/equipments/{id}/name", equipmentId).headers(authHeaderOf(actor))
+                .body(updateEquipmentNameCommand)
+                .exchange().expectStatus().isOk();
+
+        // Verify
+        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
+                EquipmentNameUpdatedEvent.class);
         
-        // Run event handler
-        equipmentCommandService.deleteEquipment(equipmentId, actor);
-        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
-        equipmentDeletedEventEventHandler.handle(equipmentDeletedEvent);
-        
-        // Verify results
-        assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
+        // Test domain events
+        eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
+        assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
 ```
 
-#### Testing Job
+#### Test external event handlers
 
-1. Prepare data using CommandService
+Unlike domain event handler tests which can be covered in controller tests, external event handlers should be tested in their own test files, as they are not triggered by our own controller APIs but by external systems.
+
+1. Prepare data (usually by calling CommandService or Repository)
+2. Execute the EventHandler using `EventConsumer.consumeExternalEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
+3. Verify results
+4. If other domain events are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
+
+```java
+   @Test
+    void external_maintenance_record_created_event_should_be_added() {
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+
+        ExternalMaintenanceRecordCreatedEvent externalEvent = ExternalMaintenanceRecordCreatedEvent.builder()
+                .eventId(randomExternalEventId())
+                .eventType("MAINTENANCE_RECORD_CREATED")
+                .channelRecordId(UUID.randomUUID().toString())
+                .equipmentId(equipmentId)
+                .equipmentStatus(EquipmentStatus.RUNNING)
+                .description("This is a maintenance record from external system")
+                .build();
+
+        // Execute
+        eventConsumer.consumeExternalEvent(externalEvent);
+
+        // Verify
+        Equipment equipment = equipmentRepository.byId(equipmentId);
+        MaintenanceRecord record = maintenanceRecordRepository.latestForOptional(equipmentId).get();
+        assertEquals(externalEvent.getChannelRecordId(), record.getChannelRecordId());
+        assertEquals(EXTERNAL, record.getChannel());
+        assertEquals(externalEvent.getEquipmentStatus(), record.getStatus());
+        assertEquals(equipment.getName(), record.getEquipmentName());
+
+        // Verify domain event
+        MaintenanceRecordCreatedEvent internalEvent = latestEventFor(record.getId(),
+                MAINTENANCE_RECORD_CREATED_EVENT,
+                MaintenanceRecordCreatedEvent.class);
+        assertEquals(equipmentId, internalEvent.getEquipmentId());
+    }
+```
+
+#### Testing Jobs
+
+1. Prepare data using CommandService or Repository
 2. Run the job
 3. Verify results
 
 ```java
     @Test
     void should_remove_old_maintenance_records() {
-        // Prepare data
-        Actor actor = randomOrgUserActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-
+        // Prepare
+        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
         String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
@@ -237,10 +266,10 @@ void should_create_equipment() {
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
         mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
-        // Run the job
+        // Execute
         removeOldMaintenanceRecordsJob.run();
 
-        // Verify results
+        // Verify
         assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
     }
@@ -248,8 +277,7 @@ void should_create_equipment() {
 
 ### Unit Tests
 
-- All unit tests class name should end with "Test", e.g. `EquipmentTest`.
-- For unit tests without mocks, it's quite straight forward.
+- For unit tests without mocks, it's quite straight forward:
 
 ```java
 class EquipmentTest {
@@ -272,21 +300,21 @@ class EquipmentTest {
 @ExtendWith(MockitoExtension.class)
 class EquipmentDomainServiceTest {
 
-  @Mock
-  private EquipmentRepository equipmentRepository;
+    @Mock // @Mock means it's a mocked object
+    private EquipmentRepository equipmentRepository;
 
-  @InjectMocks
-  private EquipmentDomainService equipmentDomainService;
+    @InjectMocks // @InjectMocks means automatically inject other @Mock objects into this object
+    private EquipmentDomainService equipmentDomainService;
 
-  @Test
-  void should_update_name() {
-    Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-    Equipment equipment = new Equipment("name", randomOrgUserActor());
+    @Test
+    void should_update_name() {
+        Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+        Equipment equipment = new Equipment("name", randomHumanUserOrgActor(ORG_ADMIN));
 
-    equipmentDomainService.updateEquipmentName(equipment, "newName");
+        equipmentDomainService.updateEquipmentName(equipment, "newName", randomHumanUserOrgActor(ORG_ADMIN));
 
-    assertEquals("newName", equipment.getName());
-  }
+        assertEquals("newName", equipment.getName());
+    }
 }
 ```
 

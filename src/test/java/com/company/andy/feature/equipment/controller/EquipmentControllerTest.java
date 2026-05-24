@@ -117,6 +117,8 @@ class EquipmentControllerTest extends IntegrationTest {
         // Verify
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
+
+        // Test domain events
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }

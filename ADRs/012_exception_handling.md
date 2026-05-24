@@ -60,6 +60,10 @@ There are 2 places of configuration that enables unified API errors:
 - [GlobalExceptionHandler](../src/main/java/com/company/andy/common/exception/GlobalExceptionHandler.java): handles
   exceptions
   raised from Spring MVC
+- [JsonAuthenticationEntryPoint](../src/main/java/com/company/andy/common/security/JsonAuthenticationEntryPoint.java): handles authentication exceptions raised
+  from Spring Security
+- [JsonAccessDeniedHandler](../src/main/java/com/company/andy/common/security/JsonAccessDeniedHandler.java): handles authorization exceptions raised
+  from Spring Security
 - [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a fallback for
   handling exceptions for the whole application  
 
