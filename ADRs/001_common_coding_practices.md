@@ -2,11 +2,8 @@
 
 - Do not rely on databases to generate IDs, instead generate IDs within your own code
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).
-  This
-  means when the object is created,
-  its ID should already been generated in the constructor. Reason: This decouples the code from database implementations
-  and also makes
-  testing much easier:
+  This means when the object is created, its ID should already been generated in the constructor. Reason: This decouples
+  the code from database implementations and also makes testing much easier:
 
 ```java
     public static String newEquipmentId() {
@@ -15,8 +12,7 @@
 ```
 
 - Prefer using Java Record over Lombok for value objects. Reason: Records are Java's built-in support, they are more
-  concise
-  and embodies common best practices like immutability:
+  concise and embodies common best practices like immutability:
 
 ```java
 public record QDetailedEquipment(
@@ -45,8 +41,8 @@ public void someMethod() {
 ```
 
 - All pagination request should use HTTP POST method. The query class should
-  extend [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) which has the following
-  pagination fields:
+  extend [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) which has the following pagination
+  fields:
     - `pageNumber`: the zero-based page index
     - `pageSize`: the page size
     - `sortField`: the field name to be sorted
@@ -83,7 +79,9 @@ The controller receives a query object using POST method:
     }
 ```
 
-- All pagination response should return [PagedResponse](../src/main/java/com/company/andy/common/utils/PagedResponse.java). Reason: a unified response model makes it easier for clients to consume and also makes the code more consistent.
+- All pagination response should
+  return [PagedResponse](../src/main/java/com/company/andy/common/utils/PagedResponse.java). Reason: a unified response
+  model makes it easier for clients to consume and also makes the code more consistent.
 - Use Java 8's `Instant` to represent timestamp, don't use `OffsetDateTime` or `ZonedDateTime`. Reason: `Instant` is
   designed for such purpose, there is no point in storing timezone information inside a timestamp.
 - Use Lombok's `@FieldNameConstants` to access objects' field names. For example, when accessing MongoDB, filed names
@@ -107,8 +105,7 @@ private void someMethod() {
   use [Spring Data Repository](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html).
   Reason: Spring Data's auto generated repository query method names can be very long and hard to read, also it cannot
   survive code refactoring. Instead, implement your own repository classes which
-  extends [AbstractMongoRepository](../src/main/java/com/company/andy/common/mongo/AbstractMongoRepository.java),
-  this
+  extends [AbstractMongoRepository](../src/main/java/com/company/andy/common/mongo/AbstractMongoRepository.java), this
   gives you more freedom:
 
 ```java
@@ -117,7 +114,7 @@ private void someMethod() {
 public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 ```
 
-- Create 
+- Create
 
 - Always enable transaction in CommandServices by using `@Transactional`:
 
@@ -130,24 +127,32 @@ public String createEquipment(CreateEquipmentCommand command, Actor actor) {
   return equipment.getId();
 }
 ```
+
 - CommandService's methods should contain logs of what has been done.
 - Logs should contain objects' IDs and other important information that can help debugging and tracing:
+
 ```java
 log.info("Created Equipment[{}].", equipment.getId());
 ```
+
 - Do not create interface classes for services until really needed. Reason: the public methods on service classes
-  already serve
-  as interfaces.
-- Use [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) to pass current user context
-  around, do
+  already serve as interfaces.
+- Use [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) to pass current user context around, do
   not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
   `SecurityContextHolder` is essentially thread scoped global variable, it makes the code implicit and also makes
   testing harder.
-- There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutionConfiguration.java) in the application, choose them wisely:
-  - `applicationTaskExecutor`: this is the primary one, it uses virtual threads, generally you should use this one, especially for I/O intensive tasks.
-  - `threadPoolTaskExecutor`: this is a classic thread pool based executor, it should only be used for CPU intensive tasks.
-- Single item property fields should be put under `common` section in `applciation.yaml` and [CommonProperties](../src/main/java/com/company/andy/common/configuration/property/CommonProperties.java).
-- All caches should be configured in [CacheConfiguration](../src/main/java/com/company/andy/common/cache/CacheConfiguration.java) before use, otherwise the jackson serialization may not work properly:
+- There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutionConfiguration.java)
+  in the application, choose them wisely:
+    - `applicationTaskExecutor`: this is the primary one, it uses virtual threads, generally you should use this one,
+      especially for I/O intensive tasks.
+    - `threadPoolTaskExecutor`: this is a classic thread pool based executor, it should only be used for CPU intensive
+      tasks.
+- Single item property fields should be put under `common` section in `applciation.yaml`
+  and [CommonProperties](../src/main/java/com/company/andy/common/configuration/property/CommonProperties.java).
+- All caches should be configured
+  in [CacheConfiguration](../src/main/java/com/company/andy/common/cache/CacheConfiguration.java) before use, otherwise
+  the jackson serialization may not work properly:
+
 ```java
   @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(ObjectMapper objectMapper) {
@@ -160,7 +165,12 @@ log.info("Created Equipment[{}].", equipment.getId());
                 ;
     }
 ```
-- For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the central place where all kinds of events (internal domain events, external events etc.) are consumed. But you don't need to touch it when implementing your own event consuming process, instead just create an event handler class that extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+
+- For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the
+  central place where all kinds of events (internal domain events, external events etc.) are consumed. But you don't
+  need to touch it when implementing your own event consuming process, instead just create an event handler class that
+  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+
 ```java
 public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
@@ -169,7 +179,10 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 }
 ```
-- When implementing your own event handlers, you should carefully think about whether to override the following methods from [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+
+- When implementing your own event handlers, you should carefully think about whether to override the following methods
+  from [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java):
+
 ```java
     public boolean isIdempotent() {
         // By default, all handlers are assumed to be not idempotent by themselves
@@ -187,7 +200,13 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 ```
 
-- For domain event publishing, events are first staged(saved) in the database within the same transaction of business processing, and then published asynchronously triggered by MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish your own domain event, you don't need to touch all of these, instead just call `raiseDomainEvent()` method in your domain objects and everything else will be handled for you automatically. For example:
+- For domain event publishing, events are first staged(saved) in the database within the same transaction of business
+  processing, and then published asynchronously triggered by
+  MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be
+  found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish
+  your own domain event, you don't need to touch all of these, instead just call `raiseDomainEvent()` method in your
+  domain objects and everything else will be handled for you automatically. For example:
+
 ```java
     public void updateName(String newName, Actor actor) {
         if (Objects.equals(newName, this.name)) {
@@ -198,14 +217,30 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 ```
-- For testing, when assert some conditions that happens asynchronously, such as cache eviction, you can use [PollingAssertion](../src/test/java/com/company/andy/support/PollingAssertion.java) to poll and then assert:
+
+- For validating caches in integration tests, you can use `CacheManager` to retrieve the cache value
+  and then assert. For example:
+
+```java
+assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID));
+```
+
+- For testing, when assert some conditions that happens asynchronously, such as cache eviction, you can
+  use [PollingAssertion](../src/test/java/com/company/andy/support/PollingAssertion.java) to poll and then assert:
+
 ```java
 PollingAssertionpollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
 ```
 
-- [Mongock](https://mongock.io/) is used for database migration, please refer to [Migration001_Sample](../src/main/java/com/company/andy/common/migration/Migration001_Sample.java) as a template when creating your own migrations.
-- Database indexes should be managed by Mongock migrations, take [Migration002_BaseSetup](../src/main/java/com/company/andy/common/migration/Migration002_BaseSetup.java) as an example. Also, make sure that every index has a specified name for better index maintenability.
-- [RateLimiter](../src/main/java/com/company/andy/common/ratelimiter/RateLimiter.java) can be used for rate limiting. Use it inside CommandService and QueryService:
+- [Mongock](https://mongock.io/) is used for database migration, please refer
+  to [Migration001_Sample](../src/main/java/com/company/andy/common/migration/Migration001_Sample.java) as a template
+  when creating your own migrations.
+- Database indexes should be managed by Mongock migrations,
+  take [Migration002_BaseSetup](../src/main/java/com/company/andy/common/migration/Migration002_BaseSetup.java) as an
+  example. Also, make sure that every index has a specified name for better index maintenability.
+- [RateLimiter](../src/main/java/com/company/andy/common/ratelimiter/RateLimiter.java) can be used for rate limiting.
+  Use it inside CommandService and QueryService:
+
 ```java
 public class DemoReservationCommandService {
     private final RateLimiter rateLimiter;
@@ -218,7 +253,12 @@ public class DemoReservationCommandService {
     }
 }
 ```
-- When adding new MongoDB collections, make sure you pre-create the collection in [ApplicationInitializer.ensureMongoCollectionsExists()](../src/main/java/com/company/andy/common/init/ApplicationInitializer.java). This helps to avoid potential issues with MongoDB's auto collection creation, such as transaction conflicts during testing. Example:
+
+- When adding new MongoDB collections, make sure you pre-create the collection
+  in [ApplicationInitializer.ensureMongoCollectionsExists()](../src/main/java/com/company/andy/common/init/ApplicationInitializer.java).
+  This helps to avoid potential issues with MongoDB's auto collection creation, such as transaction conflicts during
+  testing. Example:
+
 ```java
     private void ensureMongoCollectionsExists() {
         createCollection(SystemSettings.class)
@@ -227,10 +267,17 @@ public class DemoReservationCommandService {
         log.info("Created all MongoDB collections.");
     }
 ```
-- Use [RestClient](../src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for calling external APIs. There are two RestClients which vary on how JWT token is obtained:
-  - `jwtRelayRestClient`: relays current actor's JWT token to call external APIs
-  - `serviceAccountRestClient`: represents the application itself with JWT token being obtained automatically by Spring using Oauth2 client_credentials grant type
-- [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java) and [SpringKafkaDomainEventSender](../src/main/java/com/company/andy/common/event/publish/infrastructure/SpringKafkaDomainEventSender.java) are the only two places where Kafka is touched, stick to this as it minimizes the coupling to Kafka and also makes it easier to switch to other messaging systems in the future if needed.
+
+- Use [RestClient](../src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for calling
+  external APIs. There are two RestClients which vary on how JWT token is obtained:
+    - `jwtRelayRestClient`: relays current actor's JWT token to call external APIs
+    - `serviceAccountRestClient`: represents the application itself with JWT token being obtained automatically by
+      Spring using Oauth2 client_credentials grant type
+- [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
+  and [SpringKafkaDomainEventSender](../src/main/java/com/company/andy/common/event/publish/infrastructure/SpringKafkaDomainEventSender.java)
+  are the only two places where Kafka is touched, stick to this as it minimizes the coupling to Kafka and also makes it
+  easier to switch to other messaging systems in the future if needed.
 - If distributed lock is required, use
   Shedlock's [LockingTaskExecutor](../src/main/java/com/company/andy/common/configuration/DistributedLockConfiguration.java).
-- Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code for configuration items that rarely change.
+- Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code for
+  configuration items that rarely change.
