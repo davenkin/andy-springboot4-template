@@ -1,5 +1,6 @@
 package com.company.andy.archunit;
 
+import com.company.andy.common.model.actor.AnonymousActor;
 import com.fasterxml.jackson.annotation.*;
 import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -131,4 +132,11 @@ class PackageDependencyArchTest {
             .resideInAnyPackage("org.springframework.security..")
             .because("Feature packages should not rely on spring security class, as we already uses Actor to represent the authenticated principal. You may reference spring security in the controller and infrastructure packages.");
 
+    @ArchTest
+    static final ArchRule should_not_use_anonymous_actor_for_anonymous_controllers = noClasses()
+            .that()
+            .resideInAnyPackage("..com.company.andy.feature..controller..")
+            .should().dependOnClassesThat()
+            .belongToAnyOf(AnonymousActor.class)
+            .because("Anonymous APIs can also be called by all other types of actors, so Actor should be used in controllers instead of AnonymousActor, otherwise you will get NullPointerException for authenticated actors.");
 }

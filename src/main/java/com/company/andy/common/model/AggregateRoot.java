@@ -32,8 +32,9 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public abstract class AggregateRoot {
     private static final Set<String> SYSTEM_LEVEL_OBJECT_CLASSES = Set.of(
-            SystemSettings.class,
-            DemoReservation.class).stream().map(Class::getName).collect(toSet());
+                    SystemSettings.class,
+                    DemoReservation.class)
+            .stream().map(Class::getName).collect(toSet());
     private String id;
     private String orgId;
 
