@@ -1,5 +1,3 @@
-todo: re write as we choose calling api for integration tests but not command service anymore
-
 # Testing strategy
 
 ## Context
@@ -21,11 +19,11 @@ We choose to focus more on integration tests than unit tests.
 
 We write integration tests for:
 
-- Controller:
-  e.g. [EquipmentControllerTest](src/test/java/com/company/andy/feature/org/equipment/controller/EquipmentControllerTest.java)
-- Event consuming: only for external events, internal events should be covered inside controller tests
-- Job,
-  e.g. [RemoveOldMaintenanceRecordsJobIntegrationTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobIntegrationTest.java)
+- Controller APIs,
+  e.g. [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java)
+- Event handlers, both internal domain events and external events, e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
+- Jobs,
+  e.g. [RemoveOldMaintenanceRecordsJobTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobTest.java)
 
 We write unit tests for:
 
@@ -40,6 +38,13 @@ No need to write tests for:
 - Repository: repositories are already covered in integration tests implicitly
 
 ## Implementation
+
+- [Integration tests](#integration-tests)
+  - [Test controllers](#test-controllers)
+  - [Test internal domain event handlers](#test-internal-domain-event-handlers)
+  - [Test external event handlers](#test-external-event-handlers)
+  - [Test jobs](#test-jobs)
+- [Unit tests](#unit-tests)
 
 todo:
 解释junit-platform.properties，类级别是并行的，类内部各个测试方法是串行的，因为有些测试类中各个方法之间可能是相互影响的，比如某些Job会操作全局数据，因此多个测试方法之间可能有冲突。一般来讲，我们应该让各个测试方法之间完全独立。

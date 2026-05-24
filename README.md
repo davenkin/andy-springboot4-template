@@ -69,8 +69,8 @@ This is a template Spring Boot 4 project with the following features:
       running.
     - `./clear-and-run-local.sh`: this starts the application with debug port on 5005, it also automatically starts
       docker-compose by first removing existing containers and their data if any.
-    - Run `main` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
-    - By default, the `local` profile(`application-local.yaml`) is used for all the above.
+    - Run `main()` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
+    - By default, the `local` profile(`application-local.yaml`) is used for all the above methods.
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
@@ -90,35 +90,18 @@ This is a template Spring Boot 4 project with the following features:
 ## Architecture Decision Records (ADRs)
 
 This project uses [Architecture Decision Records (ADRs)](https://adr.github.io/) to document important architectural
-decisions. ADRs are stored in the `ADRs` directory and follow a [specific format](ADRs/000_what_is_adr.md).
+decisions. ADRs are stored in the `ADRs` directory and follow a [specific format](ADRs/000_what_is_adr.md). You should go through all the ADRs before you start implementing any code, as they contain important information about the architecture and coding practices of this project.
 
 ## Sample implementation code
 
-The `src/main/java/com/company/andy/feature/equipment` and `src/main/java/com/company/andy/feature/maintenance` folder
-contain various common coding practices that should be followed when writing your own code.
+There are four sample Aggregate Roots which serve as reference implementations:
+- [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents an equipment that needs to be managed under an org, such as a computer. 
+- [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a maintenance record created for an `Equipment`, it's also an org level object.
+- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents an system level object that are not related to any org and should only be accessed by system admins.
+- [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that a public user has requested a demo of the product.  
 
-- There are 2 main business entities:
-    - `Equipment`: Represents an equipment that needs to be managed, such as a computer.
-    - `MaintenanceRecord`: Represents a maintenance record created for an `Equipment`.
-- The business stories includes:
-    - Create an `Equipment`.
-    - Update the `name` of an `Equipment`. The updated name should also be reflected in all `MaintenanceRecord`s for
-      this
-      `Equipment`,this is achieved using domain event.
-    - Update the `holder` of an `Equipment`.
-    - Delete an `Equipment`. This should also delete all `MaintenanceRecord`s for this `Equipment`, this is achieved
-      using domain event.
-    - Create a `MaintenanceRecord`. Its `status` will be used to update the `status` of the `Equipment`, this is
-      achieved using domain event.
-- It is recommended that you keep these sample code as references until you have implemented at least two real business
-  entities.
+The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.
 
-## Top level business entities (Aggregate Roots)
-
-| Entity Name       | Chinese Name | Abbreviation | Description                                                                                                                           |
-|-------------------|--------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| Equipment         | 装备           |              | Sample top level business entity that serves as a reference for consistent coding practice. An Equipment has many MaintenanceRecords. |
-| MaintenanceRecord | 装备维护记录       |              | Another sample top level business entity. Multiple MaintenanceRecords can be created for a single  Equipment.                         |
 
 ## Todo
 

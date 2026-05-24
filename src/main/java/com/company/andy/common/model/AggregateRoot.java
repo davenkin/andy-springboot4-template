@@ -4,6 +4,8 @@ import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.feature.demoreservation.domain.DemoReservation;
+import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -13,9 +15,11 @@ import org.springframework.data.annotation.Version;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toSet;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -27,6 +31,9 @@ import static lombok.AccessLevel.PROTECTED;
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class AggregateRoot {
+    private static final Set<String> SYSTEM_LEVEL_CLASSES = Set.of(
+            SystemSettings.class,
+            DemoReservation.class).stream().map(Class::getName).collect(toSet());
     private String id;
     private String orgId;
 
@@ -43,6 +50,7 @@ public abstract class AggregateRoot {
 
     // For OrgActor to create objects under the current org
     protected AggregateRoot(String id, OrgActor actor) {
+        checkOrgLevelClass();
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 
@@ -54,6 +62,7 @@ public abstract class AggregateRoot {
 
     // For SystemActor to create objects under the specified org
     protected AggregateRoot(String id, String orgId, SystemActor actor) {
+        checkOrgLevelClass();
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(actor, "actor must not be null.");
@@ -64,9 +73,20 @@ public abstract class AggregateRoot {
         this.createdBy = actor.getId();
     }
 
+    protected AggregateRoot(String id, SystemActor actor) {
+        checkSystemLevelClass();
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
+        this.id = id;
+        this.createdAt = Instant.now();
+        this.createdBy = actor.getId();
+    }
+
     // For any actor (including AnonymousActor) to create objects that don't belong to any org but the whole system
     // Use this constructor with caution as it creates object without an orgId, which might not be what you want
     protected AggregateRoot(String id, Actor actor) {
+        checkSystemLevelClass();
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 
@@ -96,4 +116,17 @@ public abstract class AggregateRoot {
     public final void clearEvents() {
         this.events = null;
     }
+
+    private void checkOrgLevelClass() {
+        if (SYSTEM_LEVEL_CLASSES.contains(this.getClass().getName())) {
+            throw new RuntimeException(this.getClass().getName() + " is not an org level Aggregate Root class.");
+        }
+    }
+
+    private void checkSystemLevelClass() {
+        if (!SYSTEM_LEVEL_CLASSES.contains(this.getClass().getName())) {
+            throw new RuntimeException(this.getClass().getName() + " is not a system level Aggregate Root class.");
+        }
+    }
+
 }

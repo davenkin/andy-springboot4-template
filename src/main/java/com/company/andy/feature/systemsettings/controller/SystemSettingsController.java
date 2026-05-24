@@ -14,6 +14,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+// This controller is not for org level actors,
+// it's for system admins to manage the system level resources
+
 @Profile("local | it | it-local")
 @Tag(name = "SystemSettingsController", description = "System settings APIs")
 @Validated

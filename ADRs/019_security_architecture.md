@@ -7,3 +7,4 @@
 - 列出3种处理流程：org actor，system actor和匿名用户，另外还有job 如何处理，event handler如何处理
 - 以后你可能需要重新实现自己的认证流程，但是无论如何actor之后是不会变的，因此从command
   service之后，也即进入真正的业务边界之后，系统将不再依赖springsecuirty，从而做到和认证技术框架的解耦。
+- 哪些api时哪些actor能访问的，给出例子

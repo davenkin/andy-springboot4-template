@@ -29,6 +29,7 @@ public class DemoReservationController {
     private final DemoReservationCommandService demoReservationCommandService;
     private final DemoReservationQueryService demoReservationQueryService;
 
+    // This API is open for anyone, including anonymous users
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create a demo reservation")
