@@ -82,9 +82,9 @@ events with type `EquipmentCreatedEvent`.
 The below section explains how the event consuming infrastructure works.
 
 - [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
-  is the entry point of the whole event consuming process, it's also the only place that Kafka is referenced
+  is the entry point of the whole event consuming process, it's also the only place where Kafka is referenced during the whole consuming process
 - Multiple `@KafkaListener` methods can be added inside `SpringKafkaEventListener` to listen to multiple categories of
-  events
+  events from different Kafka topics
 
 ```java
 public class SpringKafkaEventListener {
@@ -107,23 +107,26 @@ public class SpringKafkaEventListener {
   agnostic to
   messaging middlewares, and it manages all handlers. The below code uses `consumeDomainEvent(DomainEvent event)` to
   handle Domain Events. If you are also consuming other types of events from other external systems, you may add more
-  methods in addition to `consumeDomainEvent()`, like `consumeXxxEvent(XxxEvent event)`
+  methods in addition to `consumeDomainEvent()`, like `consumeExternalEvent(ExternalEvent event)`
 
 ```java
-public void consumeDomainEvent(DomainEvent event) { // This works for all sub-types of DomainEvent
-  this.consume(new ConsumingEvent(event.getId(), event));
-}
 
-public void consumeXxxEvent(XxxEvent event) { // This works for all sub-types of XxxEvent
-  this.consume(new ConsumingEvent(event.getId(), event));
-}
+    // Entry point for consuming domain events
+    public void consumeDomainEvent(DomainEvent event) {
+        this.consume(new ConsumingEvent(event.getId(), event));
+    }
+
+    // Entry point for consuming external events
+    public void consumeExternalEvent(ExternalEvent event) {
+        this.consume(new ConsumingEvent(event.getEventId(), event));
+    }
 ```
 
 - `EventConsumer` finds all handlers that can handle the event, and calls their `handle()` methods, the handlers'
-  `priority`, `isTransactional()` and `isIdempotent()` are checked during this orchestration process
+  `priority`, `isTransactional()` and `isIdempotent()` are checked during this process
 - A wrapper class [ConsumingEvent](../src/main/java/com/company/andy/common/event/consume/ConsumingEvent.java) is
   created to
-  enable uniform handling of various types of events, not only Domain Events
+  enable uniform handling of various types of events(not only DomainEvents)
 - `EventConsumer` uses `ConsumingEventDao.markEventAsConsumedByHandler()` to implement idempotency if the handler is not
   idempotent by itself, under the
   hood [ConsumingEventDao](../src/main/java/com/company/andy/common/event/consume/ConsumingEventDao.java) uses a table

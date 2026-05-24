@@ -35,20 +35,21 @@ refer to [event consuming](./009_event_consuming.md) for more detail.
 - For sending a Domain Event, the only action that you need is calling `raiseEvent()` from an Aggregate Root:
 
 ```java
-public void updateName(String newName) {
-  if (Objects.equals(newName, this.name)) {
-    return;
-  }
-  this.name = newName;
-  raiseEvent(new EquipmentNameUpdatedEvent(name, this));
-}
+    public void updateName(String newName, Actor actor) {
+        if (Objects.equals(newName, this.name)) {
+            return;
+        }
+        this.name = newName;
+        // call raiseEvent() for publishing domain events
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
+    }
 ```
 
 After the entity is saved into MongoDB, the event infrastructure will take care of sending the raised event into Kafka
 automatically.
 
 More details on creating domain events please refer
-to [object implementation patterns](./007_object_implementation_patterns.md#domain-event).
+to [DomainEvent section of object implementation patterns](./007_object_implementation_patterns.md#domainevent).
 
 #### Domain event publishing architecture
 
@@ -59,13 +60,15 @@ The following steps are already been implemented for you, but for illustration l
 - After `AggregateRoot.raiseEvent()` is called, the event is stored inside the Aggregate Root object temporarily:
 
 ```java
-protected final void raiseEvent(DomainEvent event) {
-  requireNonNull(event, "event must not be null.");
-  requireNonNull(event.getType(), "event's type must not be null.");
-  requireNonBlank(event.getArId(), "event's arId must not be null.");
+    // raiseEvent() only stores events in Aggregate Root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the Aggregate Root object
+    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
+    protected final void raiseEvent(DomainEvent event) {
+        requireNonNull(event, "event must not be null.");
+        requireNonNull(event.getType(), "event's type must not be null.");
+        requireNonBlank(event.getArId(), "event's arId must not be null.");
 
-  events().add(event);
-}
+        events().add(event);
+    }
 ```
 
 - Then when you save the Aggregate Root object by calling `AbstractMongoRepository.save()`, the event will be
