@@ -357,7 +357,8 @@
         "clientRole" : true,
         "containerId" : "26b23ab1-7010-4a67-8134-05643fd64a92",
         "attributes" : { }
-      } ]
+      } ],
+      "test-service-account-client" : [ ]
     }
   },
   "groups" : [ ],
@@ -402,26 +403,17 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids" : [ ],
   "webAuthnPolicyPasswordlessExtraOrigins" : [ ],
   "users" : [ {
-    "id" : "b5c2405d-c3d3-4326-af1f-901b5c223d59",
-    "username" : "test-org-it-admin",
-    "firstName" : "Orgitadmin",
-    "lastName" : "Test",
-    "email" : "testorgitadmin@somedomain.com",
+    "id" : "f583a621-a71a-4004-ac72-880bccf665b0",
+    "username" : "service-account-test-service-account-client",
     "emailVerified" : false,
-    "createdTimestamp" : 1779281897471,
+    "createdTimestamp" : 1779540936201,
     "enabled" : true,
     "totp" : false,
-    "credentials" : [ {
-      "id" : "1777a54e-e52c-4e35-b9c6-23e0179cd754",
-      "type" : "password",
-      "userLabel" : "My password",
-      "createdDate" : 1779281934806,
-      "secretData" : "{\"value\":\"vz7zPGScMHGOjs/oM6WR4ySYQOVwZurQpHuzOziTMVo=\",\"salt\":\"te2s4SawWtAMm5QiRSVPjw==\",\"additionalParameters\":{}}",
-      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
-    } ],
+    "serviceAccountClientId" : "test-service-account-client",
+    "credentials" : [ ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-test-realm", "org_it_admin" ],
+    "realmRoles" : [ "default-roles-test-realm" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -445,6 +437,29 @@
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "org_admin", "default-roles-test-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "b5c2405d-c3d3-4326-af1f-901b5c223d59",
+    "username" : "test-org-it-admin",
+    "firstName" : "Orgitadmin",
+    "lastName" : "Test",
+    "email" : "testorgitadmin@somedomain.com",
+    "emailVerified" : false,
+    "createdTimestamp" : 1779281897471,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "1777a54e-e52c-4e35-b9c6-23e0179cd754",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1779281934806,
+      "secretData" : "{\"value\":\"vz7zPGScMHGOjs/oM6WR4ySYQOVwZurQpHuzOziTMVo=\",\"salt\":\"te2s4SawWtAMm5QiRSVPjw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-test-realm", "org_it_admin" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -744,6 +759,45 @@
       }
     } ],
     "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
+  }, {
+    "id" : "00885c5e-3be5-4fc7-b7ef-c5584f96f29d",
+    "clientId" : "test-service-account-client",
+    "name" : "",
+    "description" : "",
+    "rootUrl" : "",
+    "adminUrl" : "",
+    "baseUrl" : "",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "pEuTKGJU2WicZFaEMsAKuwPBKhSChRKd",
+    "redirectUris" : [ "/*" ],
+    "webOrigins" : [ "/*" ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : false,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : false,
+    "serviceAccountsEnabled" : true,
+    "publicClient" : false,
+    "frontchannelLogout" : true,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "realm_client" : "false",
+      "oidc.ciba.grant.enabled" : "false",
+      "client.secret.creation.time" : "1779540936",
+      "backchannel.logout.session.required" : "true",
+      "standard.token.exchange.enabled" : "false",
+      "oauth2.device.authorization.grant.enabled" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
+    "defaultClientScopes" : [ "web-origins", "service_account", "acr", "profile", "roles", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
   } ],
   "clientScopes" : [ {
@@ -1405,7 +1459,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "saml-user-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "oidc-usermodel-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-address-mapper", "saml-user-attribute-mapper" ]
       }
     }, {
       "id" : "615f10ca-41c0-4dc2-9f99-171191f87b99",
@@ -1442,7 +1496,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper", "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "fee71add-f421-45ad-bebd-92dfaf076f4d",

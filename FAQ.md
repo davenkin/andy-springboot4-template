@@ -78,6 +78,11 @@ Here, `changeDefaultVisibility()` is used to enable direct field access(
 need for your classes to expose getters/setters.
 
 ### Why and how Oauth2 client is disabled in integration tests?
+- todo: 
 - application.yaml
 - disabled OAuth2AuthorizedClientManager
 - disabled serviceAccountRestClient
+
+### How to write integration tests for event consuming?
+- todo: 
+- using EventConsumer, not event handler
