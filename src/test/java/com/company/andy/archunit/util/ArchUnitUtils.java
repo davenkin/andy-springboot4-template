@@ -1,10 +1,16 @@
 package com.company.andy.archunit.util;
 
+import com.company.andy.common.event.DomainEvent;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.tngtech.archunit.core.domain.JavaModifier.*;
 
@@ -77,5 +83,33 @@ public class ArchUnitUtils {
                 return !javaClass.getModifiers().contains(ABSTRACT) && !javaClass.isInterface();
             }
         };
+    }
+
+    public static ArchCondition<JavaClass> beRegisteredInDomainEventJsonSubTypes() {
+        final Set<String> registeredClassNames = registeredDomainEventSubTypeClassNames();
+
+        return new ArchCondition<>("be registered in DomainEvent @JsonSubTypes") {
+            @Override
+            public void check(JavaClass clazz, ConditionEvents events) {
+                boolean registered = registeredClassNames.contains(clazz.getName());
+                String message = registered
+                        ? String.format("Class %s is registered in DomainEvent @JsonSubTypes.", clazz.getName())
+                        : String.format("Class %s is NOT registered in DomainEvent @JsonSubTypes.", clazz.getName());
+
+                events.add(new SimpleConditionEvent(clazz, registered, message));
+            }
+        };
+    }
+
+    private static Set<String> registeredDomainEventSubTypeClassNames() {
+        JsonSubTypes jsonSubTypes = DomainEvent.class.getAnnotation(JsonSubTypes.class);
+        if (jsonSubTypes == null) {
+            throw new IllegalStateException("DomainEvent must declare @JsonSubTypes.");
+        }
+
+        return Arrays.stream(jsonSubTypes.value())
+                .map(JsonSubTypes.Type::value)
+                .map(Class::getName)
+                .collect(Collectors.toSet());
     }
 }

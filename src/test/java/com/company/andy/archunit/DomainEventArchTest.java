@@ -67,4 +67,12 @@ class DomainEventArchTest {
             .areAssignableTo(DomainEvent.class)
             .should(notHaveSetterMethods())
             .because("Domain events should be immutable, hence it should not have setter methods");
+
+    @ArchTest
+    static final ArchRule concrete_domain_event_should_be_registered_in_domain_event_json_subtypes = classes()
+            .that()
+            .areAssignableTo(DomainEvent.class)
+            .and(areConcreteClasses())
+            .should(beRegisteredInDomainEventJsonSubTypes())
+            .because("All concrete DomainEvent subclasses must be registered under DomainEvent's @JsonSubTypes");
 }
