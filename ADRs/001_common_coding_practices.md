@@ -117,6 +117,8 @@ private void someMethod() {
 public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 ```
 
+- Create 
+
 - Always enable transaction in CommandServices by using `@Transactional`:
 
 ```java
@@ -198,7 +200,7 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
 ```
 - For testing, when assert some conditions that happens asynchronously, such as cache eviction, you can use [PollingAssertion](../src/test/java/com/company/andy/support/PollingAssertion.java) to poll and then assert:
 ```java
-PollingAssertion.pollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
+PollingAssertionpollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID)));
 ```
 
 - [Mongock](https://mongock.io/) is used for database migration, please refer to [Migration001_Sample](../src/main/java/com/company/andy/common/migration/Migration001_Sample.java) as a template when creating your own migrations.
@@ -216,7 +218,7 @@ public class DemoReservationCommandService {
     }
 }
 ```
-- When adding new MongoDB collections, make sure you pre-create the collection in [ApplicationInitializer.ensureMongoCollectionsExists()](../src/main/java/com/company/andy/common/init/ApplicationInitializer.java):
+- When adding new MongoDB collections, make sure you pre-create the collection in [ApplicationInitializer.ensureMongoCollectionsExists()](../src/main/java/com/company/andy/common/init/ApplicationInitializer.java). This helps to avoid potential issues with MongoDB's auto collection creation, such as transaction conflicts during testing. Example:
 ```java
     private void ensureMongoCollectionsExists() {
         createCollection(SystemSettings.class)
