@@ -17,7 +17,7 @@ events:
   not within a single handler. If retry exhausts, the
   event will be put into Dead Letter Topic(DLT), for simplicity there is no automatic listener on DLT hence human
   investigation and action is needed
-- Event consuming idempotency is achieved by either:
+- Event consuming idempotency is achieved by:
     - making the handler itself idempotent
     - or using `consuming-event` table to record consumed events, this prevents events from being consumed a second time
       by the same handler, hence idempotency is achieved on a "handler per event" basis

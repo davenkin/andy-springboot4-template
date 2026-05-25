@@ -13,7 +13,7 @@ This is a template Spring Boot 4 project with the following features:
 - Standardized pagination implementation with [PageQuery](src/main/java/com/company/andy/common/utils/PageQuery.java)
   and [PagedResponse](src/main/java/com/company/andy/common/utils/PagedResponse.java)
 - Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java)
-- Domain event modeling based on [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java)
+- [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java) as first class citizen
 - [Domain event publishing](./ADRs/008_domain_event_publishing.md)
   using [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern
 - [Event consuming](./ADRs/009_event_consuming.md) mechanism with idempotency support
