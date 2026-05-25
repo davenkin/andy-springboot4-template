@@ -44,7 +44,7 @@ public class EventConfiguration {
             DomainEventPublishJob domainEventPublishJob) {
         MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
-        // Get notification on DomainEvent insertion in MongoDB, then publish staged domain events to messaging middleware such as Kafka
+        // Get notified on DomainEvent insertion in MongoDB, then publish staged domain events to messaging middleware
         container.register(ChangeStreamRequest.builder(
                         (MessageListener<ChangeStreamDocument<Document>, PublishingDomainEvent>) message -> {
                             domainEventPublishJob.publishStagedDomainEvents(100);
@@ -67,7 +67,7 @@ public class EventConfiguration {
             JacksonJsonDeserializer valueDeserializer = new JacksonJsonDeserializer<>(jsonMapper);
             valueDeserializer.addTrustedPackages("*");
 
-            //we must wrap the JsonDeserializer into an ErrorHandlingDeserializer, otherwise deserialization error will result in endless message retry
+            // Must wrap the JsonDeserializer into an ErrorHandlingDeserializer, otherwise deserialization error will result in endless message retry
             consumerFactory.setValueDeserializer(new ErrorHandlingDeserializer<>(valueDeserializer));
         };
     }
