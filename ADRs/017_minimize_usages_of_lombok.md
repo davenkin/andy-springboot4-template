@@ -3,7 +3,7 @@
 ## Context
 
 Lombok is a great library for reducing boilerplate code, but it can also lead to issues if not used carefully. For
-example, using `@Data` on an domain objects can lead to unintended consequences, such as allowing the creation of
+example, using `@Data` on a domain objects can lead to unintended consequences, such as allowing the creation of
 invalid objects or making it harder to maintain the code in the long run.
 
 ## Decision
@@ -19,7 +19,7 @@ We choose to minimize the usages of Lombok in our codebase and use it only where
   constructor and might lead to invalid objects being created. Instead, you should provide explicit constructors for
   Aggregate Roots. All Aggregate Roots classes
   extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java), when deserializing from
-  MongoDB and Json, we need to provide an no-args constructor.
+  MongoDB and Json, we need to provide a no-args constructor.
   Example [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
 
 ```java
@@ -32,13 +32,13 @@ We choose to minimize the usages of Lombok in our codebase and use it only where
 public class Equipment extends AggregateRoot {}
 ```
 
-As you can see, there is not `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Aggregate Roots, stick with
+As you can see, there is no `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Aggregate Roots, stick with
 this in your own code.
 
 ### Entities under Aggregate Roots
 
 - Like Aggregate Roots, Entities are also mutable and usually have their own business constructors as well. Therefore,
-  it's not recommended to use Lombok's @Builder for Entities. An no-arg constructor should be used for deserializing
+  it's not recommended to use Lombok's @Builder for Entities. A no-arg constructor should be used for deserializing
   from MongoDB and Json.
   Example [EquipmentEngine](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentEngine.java):
 
@@ -49,7 +49,7 @@ this in your own code.
 public class EquipmentEngine {}
 ```
 
-As you can see, there is not `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Entities under Aggregate
+As you can see, there is no `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Entities under Aggregate
 Roots, stick with this in your own code.
 
 ### Value objects
@@ -100,7 +100,7 @@ public class CreateEquipmentCommand {
 }
 ```
 
-- For value objects with class hierarchy, Java `Record` is not an option any more, please refer
+- For value objects with class hierarchy, Java `Record` is not an option anymore, please refer
   to [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) as an example:
     - `@Getter` for getting data
     - `@SuperBuilder` for builder
