@@ -12,7 +12,7 @@ callers.
 
 ## Implementation
 
-- Use `@Cacheable` to pupulate cache
+- Use `@Cacheable` to populate cache
 - Use `@CacheEvict` or [CacheEvictor](../src/main/java/com/company/andy/common/cache/CacheEvictor.java) to evict cache
 - Use `CacheManager` to test cache
 

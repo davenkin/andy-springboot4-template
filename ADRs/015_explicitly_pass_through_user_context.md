@@ -18,7 +18,7 @@ In multithreaded applications, when retrieving the current user context, there a
 
 ## Decision
 
-We choose to explicitly pass through the user context as a parameter as we prefer explicitness over implicitness. We
+We choose to explicitly pass through the user context as a parameter, as we prefer explicitness to implicitness. We
 believe the boilerplate code will not cost much development time as developers spend most of their time on
 designing/thinking/understanding/debugging rather than typing.
 

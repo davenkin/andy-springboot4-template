@@ -334,7 +334,7 @@ public class MaintenanceReminderJob {
 ```
 
 The job class serves the same purpose as `CommandService`, which orchestrates various other components such as
-`Repository`, `AggreateRoot` and `Factory`. Hence the job itself should not contain business logic.
+`Repository`, `AggreateRoot` and `Factory`. Hence, the job itself should not contain business logic.
 
 ### Consuming events from Kafka
 
