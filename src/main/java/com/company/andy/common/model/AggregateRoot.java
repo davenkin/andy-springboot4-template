@@ -125,6 +125,8 @@ public abstract class AggregateRoot {
   }
 
   protected boolean isSystemLevelObject() {
-    return false; // System level Aggregate Root should override this and return true
+    // Default to false which means it's an org level object,
+    // System level Aggregate Root should override this and return true
+    return false;
   }
 }

@@ -101,20 +101,3 @@ There are four sample Aggregate Roots which serve as reference implementations:
 - [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that a public user has requested a demo of the product.  
 
 The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.
-
-
-## Todo
-
-- testing strategy change, convert to use controller but not command service, also change
-  doc,集成测试没有了commandservice和queryservice的测试
-- 只针对以下几种些测试：
-    - controller
-    - domain objects
-    - job
-    - event hanlder
-- cache 文档要改
-- todo: 添加cache统一使用@Cachable，
-    - 如果可以使用@CacheEvict，则直接使用，如果不行则用CacheEvictor
-    - 测试中如果需要操作cache，则可以直接使用CacheManager，但是不要使用RedisTemplate或者StringRedisTemplate等底层api来操作cache
-- repository的结构要改，文档也要改
-- AnonymousActor需要自定义filter，添加anonymousActor到SecurityContextHolder中，文档也要改
