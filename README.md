@@ -62,6 +62,10 @@ This is a template Spring Boot 4 project with the following features:
             - Username: `test-system-admin`
             - Password: `11111111`
             - Role: `system_admin`
+        - Service account:
+            - Realm: `test-realm`
+            - Client: `test-service-account-client`
+            - Client secret: `pEuTKGJU2WicZFaEMsAKuwPBKhSChRKd`
         - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
     - `Redis`: localhost:6125
 - Run the application locally in one of the following ways:
