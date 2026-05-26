@@ -54,7 +54,7 @@ public class SecurityConfiguration {
     @Bean
     @Order(-1)
     public SecurityFilterChain systemFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
-        http.securityMatcher("/system/**","/actuator/**")
+        http.securityMatcher("/system/**", "/actuator/**")
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(POST, "/system/demo-reservations").permitAll()
                         .requestMatchers(GET, "/actuator/**").permitAll()

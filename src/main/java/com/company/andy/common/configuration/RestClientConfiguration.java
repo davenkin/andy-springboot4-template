@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Configuration(proxyBeanMethods = false)
 public class RestClientConfiguration {
 
-   // RestClient that relays current actor's JWT token to call external APIs
+    // RestClient that relays current actor's JWT token to call external APIs
     @Bean("jwtRelayRestClient")
     public RestClient jwtRelayRestClient(RestClient.Builder builder, JwtRelayInterceptor jwtRelayInterceptor) {
         return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(jwtRelayInterceptor).build();
