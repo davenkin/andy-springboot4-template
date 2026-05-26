@@ -36,7 +36,7 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to run locally
 
-- First run `./start-docker-compose.sh` to start the following middlewares using Docker:
+- First run `./start-docker-containers.sh` to start the following middlewares using Docker:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
@@ -72,7 +72,7 @@ This is a template Spring Boot 4 project with the following features:
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - Actuator endpoints: [http://localhost:5125/actuator](http://localhost:5125/actuator)
-- To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
+- To stop docker-compose and delete volume data, run `./stop-docker-containers.sh`.
 
 ## How to build
 
