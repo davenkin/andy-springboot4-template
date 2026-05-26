@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import static com.company.andy.common.utils.Constants.SYSTEM_ADMIN_ROLE;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -53,9 +54,10 @@ public class SecurityConfiguration {
     @Bean
     @Order(-1)
     public SecurityFilterChain systemFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
-        http.securityMatcher("/system/**")
+        http.securityMatcher("/system/**","/actuator/**")
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(POST, "/system/demo-reservations").permitAll()
+                        .requestMatchers(GET, "/actuator/**").permitAll()
                         .anyRequest().hasRole(SYSTEM_ADMIN_ROLE)
                 )
                 .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))

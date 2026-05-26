@@ -65,14 +65,13 @@ This is a template Spring Boot 4 project with the following features:
         - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
     - `Redis`: localhost:6125
 - Run the application locally in one of the following ways:
-    - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
+    - `./run.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
       running.
-    - `./clear-and-run-local.sh`: this starts the application with debug port on 5005, it also automatically starts
-      docker-compose by first removing existing containers and their data if any.
     - Run `main()` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
     - By default, the `local` profile(`application-local.yaml`) is used for all the above methods.
 - Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
+- Actuator endpoints: [http://localhost:5125/actuator](http://localhost:5125/actuator)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
 
 ## How to build
@@ -95,9 +94,9 @@ decisions. ADRs are stored in the `ADRs` directory and follow a [specific format
 ## Sample implementation code
 
 There are four sample Aggregate Roots which serve as reference implementations:
-- [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents an equipment that needs to be managed under an org, such as a computer. 
+- [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs to be managed under an org, such as a computer. 
 - [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a maintenance record created for an `Equipment`, it's also an org level object.
-- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents an system level object that are not related to any org and should only be accessed by system admins.
+- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a system level object that are not related to any org and should only be accessed by system admins.
 - [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that a public user has requested a demo of the product.  
 
 The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.

@@ -186,6 +186,10 @@ public final class ServiceException extends RuntimeException {
         return new ServiceException(AUTHENTICATION_FAILED, "Authentication failed.");
     }
 
+    public static ServiceException notFoundException() {
+        return new ServiceException(NOT_FOUND, "Not found.");
+    }
+
     public static ServiceException requestValidationException() {
         return new ServiceException(REQUEST_VALIDATION_FAILED, "Request validation failed.");
     }
