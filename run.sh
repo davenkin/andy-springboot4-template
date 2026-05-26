@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./start-docker-containers.sh
+./start-docker-compose.sh
 
 ./mvnw spring-boot:run \
   -Dspring-boot.run.profiles=local \
