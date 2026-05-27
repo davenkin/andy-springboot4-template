@@ -87,10 +87,12 @@ class EquipmentControllerTest extends IntegrationTest {
 You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
 assist your testing.
 
-When prepare testing data, you can use methods in `CommandService`  or `Repository` to insert/update data into database. Some times you may need to set values on some fields directly, you can use Spring's `ReflectionTestUtils` for such purpose.
+When prepare testing data, you can use methods in `CommandService`  or `Repository` to insert/update data into database. Sometimes you may need to set values on some fields directly, you can use Spring's `ReflectionTestUtils` for such purpose.
 
 Since integration tests write data into database, in order to avoid primary key duplication errors, you
-should use random IDs for your objects in every test method, do not reuse IDs across test methods. Also, multiple tests using the same IDs can pollute each other.
+should use random IDs for your objects in every test method, do not reuse IDs across test methods. Random IDs ensure concurrent execution of tests which reduces the time on running tests.
+
+For every test method, do not rely on any shared state as it might result in conflicts between test methods and make the tests hard to manage. Instead, prepare everything from scratch with random IDs.
 
 In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
 context repeatedly, please use as less mock beans(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests, instead create your own stub classes.
