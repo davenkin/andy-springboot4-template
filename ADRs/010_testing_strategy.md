@@ -47,7 +47,7 @@ No need to write tests for:
 All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
 doing, e.g. `should_create_equipment()`.
 
-Junit is been configured to run all test classes in parallel; and inside each test class all tests methods run sequentially. You may modify this in [junit-platform.properties](../src/test/resources/junit-platform.properties).
+Junit has been configured to run all test classes and all test methods in parallel as configured in [junit-platform.properties](../src/test/resources/junit-platform.properties). If your test class needs to run all its methods sequentially, you may add `@Execution(ExecutionMode.SAME_THREAD)` to you test class.
 
 Maven's [surefire](https://maven.apache.org/surefire/maven-surefire-plugin/) plugin is used to run both unit tests and integration tests. Even though it's commonly advised that integration tests should be run with [failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/) plugin, we choose to use `surefire` for both types of tests for simplicity.
 

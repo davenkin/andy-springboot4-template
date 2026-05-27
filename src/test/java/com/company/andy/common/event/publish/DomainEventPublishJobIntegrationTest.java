@@ -8,6 +8,8 @@ import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import com.company.andy.support.TestingDomainEventSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
@@ -16,7 +18,9 @@ import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomEquipmentName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
+@Execution(SAME_THREAD)
 class DomainEventPublishJobIntegrationTest extends IntegrationTest {
 
     @Autowired
