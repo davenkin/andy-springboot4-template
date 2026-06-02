@@ -1,6 +1,6 @@
 package com.company.andy.common.security;
 
-import com.company.andy.common.exception.Error;
+import com.company.andy.common.exception.ApiError;
 import com.company.andy.common.tracing.TracingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class JsonAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(403);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(UTF_8);
-        Error error = new Error(ACCESS_DENIED, "Access denied.", request.getRequestURI(), tracingService.currentTraceId(), null);
+        ApiError error = new ApiError(ACCESS_DENIED, "Access denied.", request.getMethod(), request.getRequestURI(), tracingService.currentTraceId(), null);
         PrintWriter writer = response.getWriter();
         writer.print(objectMapper.writeValueAsString(error.toErrorResponse()));
         writer.flush();

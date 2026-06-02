@@ -33,26 +33,26 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<QErrorResponse> handleServiceException(ServiceException ex, HttpServletRequest request) {
-        log.error("Error happened while access[{}]: {}", request.getRequestURI(), ex.getMessage(), ex);
-        return createErrorResponse(ex, request.getRequestURI());
+    public ResponseEntity<QApiErrorResponse> handleServiceException(ServiceException ex, HttpServletRequest request) {
+        log.error("ServiceException occured while access[{}]: {}", request.getRequestURI(), ex.getDetailMessage(), ex);
+        return createErrorResponse(ex, request);
     }
 
     @ResponseBody
     @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<QErrorResponse> handleAccessDinedException(HttpServletRequest request) {
-        return createErrorResponse(accessDeniedException(), request.getRequestURI());
+    public ResponseEntity<QApiErrorResponse> handleAccessDinedException(HttpServletRequest request) {
+        return createErrorResponse(accessDeniedException(), request);
     }
 
     @ResponseBody
     @ExceptionHandler({AuthenticationException.class})
-    public ResponseEntity<QErrorResponse> handleAuthenticationFailedException(HttpServletRequest request) {
-        return createErrorResponse(authenticationException(), request.getRequestURI());
+    public ResponseEntity<QApiErrorResponse> handleAuthenticationFailedException(HttpServletRequest request) {
+        return createErrorResponse(authenticationException(), request);
     }
 
     @ResponseBody
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<QErrorResponse> handleInvalidRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<QApiErrorResponse> handleInvalidRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, Object> error = ex.getBindingResult().getFieldErrors().stream()
                 .collect(toImmutableMap(FieldError::getField, fieldError -> {
                     String message = fieldError.getDefaultMessage();
@@ -61,33 +61,33 @@ public class GlobalExceptionHandler {
 
         log.error("Method argument validation error[{}]: {}", ex.getParameter().getParameterType().getName(), error);
         ServiceException exception = requestValidationException(error);
-        return createErrorResponse(exception, request.getRequestURI());
+        return createErrorResponse(exception, request);
     }
 
     @ResponseBody
     @ExceptionHandler({ServletRequestBindingException.class, HttpMessageNotReadableException.class, ConstraintViolationException.class})
-    public ResponseEntity<QErrorResponse> handleServletRequestBindingException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<QApiErrorResponse> handleServletRequestBindingException(Exception ex, HttpServletRequest request) {
         log.error("Request processing error while access[{}]: {}", request.getRequestURI(), ex.getMessage());
-        return createErrorResponse(requestValidationException(), request.getRequestURI());
+        return createErrorResponse(requestValidationException(), request);
     }
 
     @ResponseBody
     @ExceptionHandler({NoResourceFoundException.class})
-    public ResponseEntity<QErrorResponse> handleNoResourceFoundException(HttpServletRequest request) {
-        return createErrorResponse(notFoundException(), request.getRequestURI());
+    public ResponseEntity<QApiErrorResponse> handleNoResourceFoundException(HttpServletRequest request) {
+        return createErrorResponse(notFoundException(), request);
     }
 
     @ResponseBody
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> handleGeneralException(Throwable ex, HttpServletRequest request) {
         log.error("Error access[{}]:", request.getRequestURI(), ex);
-        return createErrorResponse(systemException(), request.getRequestURI());
+        return createErrorResponse(systemException(), request);
     }
 
-    private ResponseEntity<QErrorResponse> createErrorResponse(ServiceException exception, String path) {
+    private ResponseEntity<QApiErrorResponse> createErrorResponse(ServiceException exception, HttpServletRequest request) {
         String traceId = tracingService.currentTraceId();
-        Error error = new Error(exception, path, traceId);
-        QErrorResponse representation = error.toErrorResponse();
+        ApiError error = new ApiError(exception, request.getMethod(), request.getRequestURI(), traceId);
+        QApiErrorResponse representation = error.toErrorResponse();
         return new ResponseEntity<>(representation, new HttpHeaders(), valueOf(representation.error().status()));
     }
 }

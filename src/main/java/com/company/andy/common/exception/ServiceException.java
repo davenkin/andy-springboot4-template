@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.company.andy.common.exception.ErrorCode.*;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -14,52 +15,52 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Getter
 public final class ServiceException extends RuntimeException {
     private final ErrorCode code;
-    private final Map<String, Object> data = new HashMap<>();
-    private final String userMessage;
-    private String message;
+    private Map<String, Object> data;
+    private final String message;
+    private final String detailMessage;
 
-    public ServiceException(ErrorCode code, String userMessage) {
+    public ServiceException(ErrorCode code, String message) {
         this.code = code;
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage, Throwable cause) {
+    public ServiceException(ErrorCode code, String message, Throwable cause) {
         super(cause);
         this.code = code;
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key, Object value) {
         this.code = code;
         addData(key, value);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key, Object value,
                             Throwable cause) {
         super(cause);
         this.code = code;
         addData(key, value);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2) {
         this.code = code;
         addData(key1, value1);
         addData(key2, value2);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             Throwable cause) {
@@ -67,11 +68,11 @@ public final class ServiceException extends RuntimeException {
         this.code = code;
         addData(key1, value1);
         addData(key2, value2);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3) {
@@ -79,12 +80,12 @@ public final class ServiceException extends RuntimeException {
         addData(key1, value1);
         addData(key2, value2);
         addData(key3, value3);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3,
@@ -94,11 +95,11 @@ public final class ServiceException extends RuntimeException {
         addData(key1, value1);
         addData(key2, value2);
         addData(key3, value3);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3,
@@ -108,11 +109,11 @@ public final class ServiceException extends RuntimeException {
         addData(key2, value2);
         addData(key3, value3);
         addData(key4, value4);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3,
@@ -124,11 +125,11 @@ public final class ServiceException extends RuntimeException {
         addData(key2, value2);
         addData(key3, value3);
         addData(key4, value4);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3,
@@ -140,11 +141,11 @@ public final class ServiceException extends RuntimeException {
         addData(key3, value3);
         addData(key4, value4);
         addData(key5, value5);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage,
+    public ServiceException(ErrorCode code, String message,
                             String key1, Object value1,
                             String key2, Object value2,
                             String key3, Object value3,
@@ -158,24 +159,24 @@ public final class ServiceException extends RuntimeException {
         addData(key3, value3);
         addData(key4, value4);
         addData(key5, value5);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
 
-    public ServiceException(ErrorCode code, String userMessage, Map<String, Object> data) {
+    public ServiceException(ErrorCode code, String message, Map<String, Object> data) {
         this.code = code;
-        this.data.putAll(data);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.data = data;
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
-    public ServiceException(ErrorCode code, String userMessage, Map<String, Object> data, Throwable cause) {
+    public ServiceException(ErrorCode code, String message, Map<String, Object> data, Throwable cause) {
         super(cause);
         this.code = code;
-        this.data.putAll(data);
-        this.userMessage = userMessage;
-        this.message = formatMessage(userMessage);
+        this.data = data;
+        this.message = message;
+        this.detailMessage = toDetailMessage(message);
     }
 
     public static ServiceException accessDeniedException() {
@@ -202,23 +203,27 @@ public final class ServiceException extends RuntimeException {
         return new ServiceException(SYSTEM_ERROR, "System error.");
     }
 
-    private String formatMessage(String userMessage) {
+    private String toDetailMessage(String message) {
         StringBuilder stringBuilder = new StringBuilder().append("[").append(this.code.toString()).append("]");
 
-        if (isNotBlank(userMessage)) {
-            stringBuilder.append(userMessage);
+        if (isNotBlank(message)) {
+            stringBuilder.append(message);
         }
 
         if (isNotEmpty(this.data)) {
-            stringBuilder.append("Data: ").append(this.data);
+            stringBuilder.append("|Data: ").append(this.data);
         }
 
         return stringBuilder.toString();
     }
 
     public void addData(String key, Object value) {
+        requireNonNull(key, "key should not be null");
+
+        if (this.data == null) {
+            this.data = new HashMap<>();
+        }
         this.data.put(key, value);
-        this.message = formatMessage(this.userMessage);
     }
 
 }

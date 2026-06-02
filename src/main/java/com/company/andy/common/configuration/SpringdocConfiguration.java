@@ -19,7 +19,7 @@ public class SpringdocConfiguration {
                 pathItem.readOperations().forEach(operation -> {
                     Content errorContent = new Content().addMediaType(
                             "application/json",
-                            new MediaType().schema(new ObjectSchema().$ref("#/components/schemas/QErrorResponse"))
+                            new MediaType().schema(new ObjectSchema().$ref("#/components/schemas/QApiErrorResponse"))
                     );
 
                     ApiResponses responses = operation.getResponses();

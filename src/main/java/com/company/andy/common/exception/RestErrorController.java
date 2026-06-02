@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+import static com.company.andy.common.exception.ErrorCode.SYSTEM_ERROR;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.values;
 import static org.springframework.boot.web.error.ErrorAttributeOptions.defaults;
@@ -44,7 +45,7 @@ public class RestErrorController extends AbstractErrorController {
     }
 
     @RequestMapping("${server.error.path:${error.path:/error}}")
-    public ResponseEntity<QErrorResponse> handleError(HttpServletRequest webRequest) {
+    public ResponseEntity<QApiErrorResponse> handleError(HttpServletRequest webRequest) {
         HttpStatus status = getStatus(webRequest);
         ErrorCode errorCode = getErrorCode(status);
         Map<String, Object> errorAttributes = getErrorAttributes(webRequest, defaults().including(values()));
@@ -52,7 +53,7 @@ public class RestErrorController extends AbstractErrorController {
         String path = (String) errorAttributes.get("path");
         String traceId = tracingService.currentTraceId();
         log.error("Error happened when access[{}]:{}", path, message);
-        Error errorDetail = new Error(errorCode, message, path, traceId, null);
+        ApiError errorDetail = new ApiError(errorCode, message, webRequest.getMethod(), path, traceId, null);
         return new ResponseEntity<>(errorDetail.toErrorResponse(), new HttpHeaders(), status);
     }
 
@@ -72,6 +73,6 @@ public class RestErrorController extends AbstractErrorController {
 
     private ErrorCode getErrorCode(HttpStatus status) {
         ErrorCode errorCode = STATUS_ERROR_CODES.get(status);
-        return errorCode != null ? errorCode : ErrorCode.SYSTEM_ERROR;
+        return errorCode != null ? errorCode : SYSTEM_ERROR;
     }
 }

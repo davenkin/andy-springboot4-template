@@ -17,8 +17,7 @@ single [ServiceException](../src/main/java/com/company/andy/common/exception/Ser
 Whenever you need to throw an exception, throw this `ServiceException` with the following parameters:
 
 - an [ErrorCode](../src/main/java/com/company/andy/common/exception/ErrorCode.java): the type of the exception, you may
-  add more
-  types according to your own needs. The `ErrorCode` is very useful for consumers to decide their actions.
+  add more types according to your own needs. The `ErrorCode` is very useful for consumers to decide their actions.
 - an error message
 - Context data: key-value pairs that hold the context data of the exception, usually used by consumers to create their
   own messages
@@ -33,8 +32,8 @@ someMethod() {
 
 ## API error responses
 
-A unified error response [QErrorResponse](../src/main/java/com/company/andy/common/exception/QErrorResponse.java) is
-built from
+A unified error response [QApiErrorResponse](../src/main/java/com/company/andy/common/exception/QApiErrorResponse.java)
+is built from
 `ServiceException`:
 
 ```json
@@ -42,7 +41,6 @@ built from
   "error": {
     "code": "BAD_REQUEST",
     "message": "string",
-    "userMessage": "string",
     "status": 0,
     "path": "string",
     "timestamp": "2025-08-18T13:00:03.144Z",
@@ -58,14 +56,13 @@ built from
 There are 2 places of configuration that enables unified API errors:
 
 - [GlobalExceptionHandler](../src/main/java/com/company/andy/common/exception/GlobalExceptionHandler.java): handles
-  exceptions
-  raised from Spring MVC
-- [JsonAuthenticationEntryPoint](../src/main/java/com/company/andy/common/security/JsonAuthenticationEntryPoint.java): handles authentication exceptions raised
-  from Spring Security
-- [JsonAccessDeniedHandler](../src/main/java/com/company/andy/common/security/JsonAccessDeniedHandler.java): handles authorization exceptions raised
-  from Spring Security
-- [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a fallback for
-  handling exceptions for the whole application  
+  exceptions raised from Spring MVC
+- [JsonAuthenticationEntryPoint](../src/main/java/com/company/andy/common/security/JsonAuthenticationEntryPoint.java):
+  handles authentication exceptions raised from Spring Security
+- [JsonAccessDeniedHandler](../src/main/java/com/company/andy/common/security/JsonAccessDeniedHandler.java): handles
+  authorization exceptions raised from Spring Security
+- [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a
+  fallback for handling exceptions for the whole application
 
 ![exception handling](../ADRs/asset/exception-hanlding.png)
 
