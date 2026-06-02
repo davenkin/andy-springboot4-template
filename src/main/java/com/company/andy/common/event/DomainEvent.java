@@ -41,6 +41,7 @@ import static lombok.AccessLevel.PROTECTED;
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class DomainEvent {
+    private String sourceSystem;
     private String id;
     private String arId;
     private String arOrgId;
@@ -53,6 +54,7 @@ public abstract class DomainEvent {
         requireNonNull(ar, "ar must not be null.");
         requireNonNull(raisedBy, "actor must not be null.");
 
+        this.sourceSystem = "andy-springboot4-template";
         this.id = newEventId();
         this.arId = ar.getId();
         this.arOrgId = ar.getOrgId();
