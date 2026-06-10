@@ -24,7 +24,7 @@ This is a template Spring Boot 4 project with the following features:
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
-- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls
+- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceAccountRestClient`) client and JWT token relay client(`jwtRelayRestClient`).
 
 ## Tech stack
 
