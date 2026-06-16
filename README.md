@@ -29,10 +29,10 @@ This is a template Spring Boot 4 project with the following features:
 ## Tech stack
 
 - Java 25
-- Spring Boot 4.0.1
-- Spring Data Mongodb
+- Spring Boot 4
+- Spring Data MongoDB
 - Spring Data Redis
-- Spring Kafka
+- Spring for Apache Kafka
 
 ## How to run locally
 
