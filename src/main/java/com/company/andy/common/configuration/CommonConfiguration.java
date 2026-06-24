@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.resilience.annotation.EnableResilientMethods;
+import tools.jackson.databind.PropertyNamingStrategies;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -15,6 +16,7 @@ import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
 import static tools.jackson.databind.DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES;
 import static tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static tools.jackson.databind.MapperFeature.REQUIRE_SETTERS_FOR_GETTERS;
+import static tools.jackson.databind.PropertyNamingStrategies.LOWER_CAMEL_CASE;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS;
 
@@ -25,6 +27,7 @@ public class CommonConfiguration {
     @Bean
     public JsonMapperBuilderCustomizer jsonMapperBuilderCustomizer() {
         return builder -> builder
+                .propertyNamingStrategy(LOWER_CAMEL_CASE)
                 .changeDefaultVisibility(it -> it.withVisibility(ALL, NONE).withVisibility(FIELD, ANY))
                 .changeDefaultPropertyInclusion(it -> it.withValueInclusion(ALWAYS))
                 .enable(REQUIRE_SETTERS_FOR_GETTERS)
