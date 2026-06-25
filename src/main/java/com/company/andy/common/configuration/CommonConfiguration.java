@@ -19,6 +19,11 @@ import static tools.jackson.databind.MapperFeature.REQUIRE_SETTERS_FOR_GETTERS;
 import static tools.jackson.databind.PropertyNamingStrategies.LOWER_CAMEL_CASE;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS;
+import static tools.jackson.databind.cfg.EnumFeature.READ_ENUMS_USING_TO_STRING;
+import static tools.jackson.databind.cfg.EnumFeature.READ_ENUM_KEYS_USING_INDEX;
+import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_TO_LOWERCASE;
+import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_USING_INDEX;
+import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_USING_TO_STRING;
 
 @EnableResilientMethods
 @Configuration(proxyBeanMethods = false)
@@ -31,6 +36,11 @@ public class CommonConfiguration {
                 .changeDefaultVisibility(it -> it.withVisibility(ALL, NONE).withVisibility(FIELD, ANY))
                 .changeDefaultPropertyInclusion(it -> it.withValueInclusion(ALWAYS))
                 .enable(REQUIRE_SETTERS_FOR_GETTERS)
+                .disable(READ_ENUMS_USING_TO_STRING)
+                .disable(WRITE_ENUMS_USING_TO_STRING)
+                .disable(READ_ENUM_KEYS_USING_INDEX)
+                .disable(WRITE_ENUMS_USING_INDEX)
+                .disable(WRITE_ENUMS_TO_LOWERCASE)
                 .disable(FAIL_ON_NULL_FOR_PRIMITIVES)
                 .disable(FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(WRITE_DATES_AS_TIMESTAMPS)
