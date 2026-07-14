@@ -65,6 +65,8 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         checkSameOrg(ars);
         List<DomainEvent> allEvents = new ArrayList<>();
         ars.forEach(ar -> {
+            requireNonBlank(ar.getId(), arType() + " ID must not be blank.");
+
             List<DomainEvent> arEvents = ar.getEvents();
             if (isNotEmpty(arEvents)) {
                 allEvents.addAll(arEvents);
@@ -95,6 +97,8 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         List<DomainEvent> events = new ArrayList<>();
         Set<String> ids = new HashSet<>();
         ars.forEach(ar -> {
+            requireNonBlank(ar.getId(), arType() + " ID must not be blank.");
+
             if (isNotEmpty(ar.getEvents())) {
                 events.addAll(ar.getEvents());
             }
