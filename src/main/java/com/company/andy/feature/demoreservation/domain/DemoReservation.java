@@ -33,7 +33,7 @@ public class DemoReservation extends AggregateRoot {
     }
 
     public static String newDemoReservationId() {
-        return "DRS" + newSnowflakeId();
+        return "DRV" + newSnowflakeId();
     }
 
     @Override
