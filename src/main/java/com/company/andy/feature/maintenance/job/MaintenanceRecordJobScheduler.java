@@ -13,7 +13,7 @@ import static com.company.andy.common.model.actor.SystemActor.createJobSystemAct
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
-@Profile("local | it | it-local")
+@Profile("local | it-embedded | it-local")
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class MaintenanceRecordJobScheduler {

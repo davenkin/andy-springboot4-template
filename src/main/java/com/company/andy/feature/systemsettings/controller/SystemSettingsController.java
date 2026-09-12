@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 // This controller is not for org level actors,
 // it's for system admins to manage the system level resources
 
-@Profile("local | it | it-local")
+@Profile("local | it-embedded | it-local")
 @Tag(name = "SystemSettingsController", description = "System settings APIs")
 @Validated
 @RestController

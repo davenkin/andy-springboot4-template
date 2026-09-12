@@ -15,7 +15,7 @@ public class IntegrationTestConfiguration {
 
     // This enables transaction for Mongo requires replica set for transaction to work
     @Bean
-    @Profile("it")
+    @Profile("it-embedded")
     MongodArguments mongodArguments() {
         return MongodArguments.builder()
                 .replication(Storage.of("rs0", 1000))

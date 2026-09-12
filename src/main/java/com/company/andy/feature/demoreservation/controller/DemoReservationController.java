@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Profile("local | it | it-local")
+@Profile("local | it-embedded | it-local")
 @Tag(name = "DemoReservationController", description = "Demo reservation APIs")
 @Validated
 @RestController

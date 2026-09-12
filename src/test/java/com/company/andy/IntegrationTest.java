@@ -32,7 +32,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Slf4j
-@ActiveProfiles("it")
+@ActiveProfiles("it-embedded")
 //@ActiveProfiles("it-local")
 @AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -68,7 +68,7 @@ public abstract class IntegrationTest {
                 .and(mongoConcatFields(PublishingDomainEvent.Fields.event, DomainEvent.Fields.type)).is(type))
                 .with(by(DESC, PublishingDomainEvent.Fields.raisedAt));
         PublishingDomainEvent domainEvent = mongoTemplate.findOne(query, PublishingDomainEvent.class);
-        return domainEvent == null ? null : (T) domainEvent.getEvent();
+        return domainEvent == null ? null : eventClass.cast(domainEvent.getEvent());
     }
 
     protected Consumer<HttpHeaders> authHeaderOf(Actor actor) {

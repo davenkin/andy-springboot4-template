@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@Profile("it")
+@Profile("it-embedded")
 public class TestingEmbeddedRedisServer {
     private static RedisServer redisServer;
 

@@ -57,7 +57,7 @@ Maven's [surefire](https://maven.apache.org/surefire/maven-surefire-plugin/) plu
 
 ```java
 @Slf4j
-@ActiveProfiles("it")
+@ActiveProfiles("it-embedded")
 //@ActiveProfiles("it-local")
 @AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -99,14 +99,14 @@ context repeatedly, please use as less mock beans(`@MockitoBean` or `@MockitoSpy
 
 #### Testing profiles
 
-There are two profiles for integration test: [application-it.yaml](../src/test/resources/application-it.yaml)
+There are two profiles for integration test: [application-it-embedded.yaml](../src/test/resources/application-it--embedded.yaml)
 and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
 choose to enable one of them, but not both.
 
-The main difference between `application-it.yaml` and `application-it-local.yaml` is that the former uses embedded
+The main difference between `application-it-embedded.yaml` and `application-it-local.yaml` is that the former uses embedded
 MongoDB and Redis while the latter uses real ones from your local machine.
 
-- `application-it.yaml`: This is the default profile which you use most of the time. This profile should be enabled for
+- `application-it-embedded.yaml`: This is the default profile which you use most of the time. This profile should be enabled for
   CI pipelines. This profile enables developers to run integration tests without setting up any middlewares locally like
   MongoDB, Redis or Kafka. It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
@@ -120,11 +120,11 @@ MongoDB and Redis while the latter uses real ones from your local machine.
   pipelines, it has the following configurations:
     - Use your local MongoDB server
     - Use your local Redis server
-    - MongoDB transactions enabled (same as `application-it.yaml`)
-    - Mongock disabled (same as `application-it.yaml`)
-    - Kafka disabled for both publishing and consuming events (same as `application-it.yaml`)
-    - Job schedulers are disabled (same as `application-it.yaml`)
-    - RestClients disabled (same as `application-it.yaml`)
+    - MongoDB transactions enabled (same as `application-it-embedded.yaml`)
+    - Mongock disabled (same as `application-it-embedded.yaml`)
+    - Kafka disabled for both publishing and consuming events (same as `application-it-embedded.yaml`)
+    - Job schedulers are disabled (same as `application-it-embedded.yaml`)
+    - RestClients disabled (same as `application-it-embedded.yaml`)
 
 For both profiles:
 

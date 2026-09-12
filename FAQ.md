@@ -1,6 +1,6 @@
 ### How Kafka is disabled in integration tests?
 
-- In `application-it.yaml` or `application-it-local.yaml`, the KafkaAutoConfiguration is excluded which disables the consuming side:
+- In `application-it-embedded.yaml` or `application-it-local.yaml`, the KafkaAutoConfiguration is excluded which disables the consuming side:
 
 ```yaml
 spring:
@@ -78,7 +78,7 @@ Here, `changeDefaultVisibility()` is used to enable direct field access(
 need for your classes to expose getters/setters.
 
 ### How Oauth2 clients are disabled in integration tests?
-- in `application-it.yaml` and `application-it-local.yaml`, `OAuth2ClientAutoConfiguration` is excluded to disable the auto configuration of Oauth2 clients:
+- in `application-it-embedded.yaml` and `application-it-local.yaml`, `OAuth2ClientAutoConfiguration` is excluded to disable the auto configuration of Oauth2 clients:
 ```yaml
 spring:
   autoconfigure:

@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Profile("local | it | it-local")
+@Profile("local | it-embedded | it-local")
 @Tag(name = "EquipmentController", description = "Equipment management APIs")
 @Validated
 @RestController
