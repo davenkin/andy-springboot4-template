@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +43,7 @@ public class EquipmentController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal OrgActor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 
@@ -53,7 +54,7 @@ public class EquipmentController {
             @Parameter(description = "Id of the equipment")
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
     }
 
@@ -62,13 +63,13 @@ public class EquipmentController {
     public void updateEquipmentHolder(
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{id}")
-    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal OrgActor actor) {
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 
@@ -76,7 +77,7 @@ public class EquipmentController {
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 
@@ -84,13 +85,13 @@ public class EquipmentController {
     @GetMapping("/{id}")
     public QDetailedEquipment getEquipmentDetail(
             @PathVariable("id") @NotBlank String equipmentId,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return this.equipmentQueryService.getEquipmentDetail(equipmentId, actor);
     }
 
     @Operation(summary = "Get all equipment summaries for an organization")
     @GetMapping("/summaries")
-    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal OrgActor actor) {
+    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal @NotNull OrgActor actor) {
         return this.equipmentQueryService.getAllEquipmentSummaries(actor);
     }
 }

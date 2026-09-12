@@ -8,6 +8,7 @@ import com.company.andy.feature.systemsettings.query.SystemSettingsQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,7 +38,7 @@ public class SystemSettingsController {
     @PutMapping("/base-settings")
     public void updateBaseSetting(
             @RequestBody @Valid UpdateSystemBaseSettingsCommand command,
-            @AuthenticationPrincipal SystemActor actor) {
+            @AuthenticationPrincipal @NotNull SystemActor actor) {
         systemSettingsCommandService.updateBaseSettings(command, actor);
     }
 

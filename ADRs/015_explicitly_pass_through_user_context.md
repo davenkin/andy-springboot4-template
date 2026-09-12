@@ -42,7 +42,7 @@ for you and pass it to your code as a parameter. For example:
   `@AuthenticationPrincipal` to get the actor object:
 
 ```java
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal OrgActor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 ```

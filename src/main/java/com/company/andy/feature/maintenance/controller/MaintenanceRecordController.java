@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,7 +37,7 @@ public class MaintenanceRecordController {
     @PostMapping
     public ResponseId createMaintenanceRecord(
             @RequestBody @Valid CreateMaintenanceRecordCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return new ResponseId(maintenanceRecordCommandService.createMaintenanceRecord(command, actor));
     }
 
@@ -44,7 +45,7 @@ public class MaintenanceRecordController {
     @DeleteMapping("/{id}")
     public void deleteMaintenanceRecord(
             @PathVariable("id") @NotBlank String maintenanceRecordId,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, actor);
     }
 
@@ -52,7 +53,7 @@ public class MaintenanceRecordController {
     @PostMapping("/paged")
     public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(
             @RequestBody @Valid PageMaintenanceRecordsQuery query,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return maintenanceRecordQueryService.pageMaintenanceRecords(query, actor);
     }
 
@@ -60,7 +61,7 @@ public class MaintenanceRecordController {
     @GetMapping("/{id}")
     public QDetailedMaintenanceRecord getMaintenanceRecordDetail(
             @PathVariable("id") @NotBlank String maintenanceRecordId,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, actor);
     }
 }

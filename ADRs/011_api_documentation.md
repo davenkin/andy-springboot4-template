@@ -34,7 +34,7 @@ public class EquipmentController {
             @Parameter(description = "Id of the equipment")
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
     }
 ```
@@ -61,7 +61,7 @@ public record UpdateEquipmentNameCommand(
             @Parameter(description = "Id of the equipment")
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
     }
 ```

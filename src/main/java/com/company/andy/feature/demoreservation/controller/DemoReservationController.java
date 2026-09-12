@@ -11,6 +11,7 @@ import com.company.andy.feature.demoreservation.query.QPagedDemoReservation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +36,7 @@ public class DemoReservationController {
     @Operation(summary = "Create a demo reservation")
     public ResponseId createDemoReservation(
             @RequestBody @Valid CreateDemoReservationCommand command,
-            @AuthenticationPrincipal Actor actor) {
+            @AuthenticationPrincipal @NotNull Actor actor) {
         return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
     }
 

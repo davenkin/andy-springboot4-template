@@ -74,7 +74,7 @@ The controller receives a query object using POST method:
 ```java
     @Operation(summary = "Query equipments")
     @PostMapping("/paged")
-    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal OrgActor actor) {
+    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal @NotNull OrgActor actor) {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 ```

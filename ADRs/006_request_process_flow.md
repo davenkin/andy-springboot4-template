@@ -46,7 +46,7 @@ flow is:
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal OrgActor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 ```
@@ -117,7 +117,7 @@ to database. Take "updating `Equipment`'s holder" as an example.
     public void updateEquipmentHolder(
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 ```
@@ -211,7 +211,7 @@ For deleting data, first load the Aggregate Root and then delete it. For example
 ```java
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{id}")
-    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal OrgActor actor) {
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull OrgActor actor) {
         this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 ```
@@ -269,7 +269,7 @@ directly. For example, when querying a list of `Equipment`s:
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
-            @AuthenticationPrincipal OrgActor actor) {
+            @AuthenticationPrincipal @NotNull OrgActor actor) {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 ```
