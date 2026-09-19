@@ -1,9 +1,8 @@
 package com.company.andy.common.event.consume;
 
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 
-import static com.company.andy.common.model.actor.SystemActor.createEventListenerSystemActor;
 import static com.company.andy.common.utils.CommonUtils.singleParameterizedArgumentClassOf;
 
 // Base class for all event handlers, deals with handlers' priority, idempotency and transactionality
@@ -39,9 +38,11 @@ public abstract class AbstractEventHandler<T> {
     }
 
     public final void handle(T event) {
-        SystemActor actor = createEventListenerSystemActor(event.getClass().getName());
+        PlatformActor actor = this.getActor(event);
         ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
     }
 
-    protected abstract void handle(T event, SystemActor actor);
+    protected abstract PlatformActor getActor(T event);
+
+    protected abstract void handle(T event, PlatformActor actor);
 }

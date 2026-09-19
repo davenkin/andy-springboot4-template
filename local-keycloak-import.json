@@ -72,7 +72,7 @@
       "attributes" : { }
     }, {
       "id" : "a89d62a7-40af-4575-9f9b-64c8997f56b7",
-      "name" : "system_admin",
+      "name" : "supervisor",
       "description" : "",
       "composite" : false,
       "clientRole" : false,
@@ -482,7 +482,7 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "system_admin", "default-roles-test-realm" ],
+    "realmRoles" : [ "supervisor", "default-roles-test-realm" ],
     "notBefore" : 0,
     "groups" : [ ]
   } ],

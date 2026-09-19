@@ -1,7 +1,7 @@
 package com.company.andy.feature.demoreservation.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.AnonymousActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
@@ -17,9 +17,9 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.TestFixture.*;
+import static com.company.andy.TestFixture.randomAnonymousActor;
+import static com.company.andy.TestFixture.randomSupervisorActor;
 import static com.company.andy.common.event.DomainEventType.DEMO_RESERVATION_CREATED_EVENT;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.demoreservation.DemoReservationTestFixture.randomDemoReservationCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -38,7 +38,7 @@ class DemoReservationControllerTest extends IntegrationTest {
 
         // Execute
         ResponseId responseId = restTestClient.post()
-                .uri("/system/demo-reservations")
+                .uri("/platform/demo-reservations")
                 .body(command)
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody();
@@ -49,7 +49,7 @@ class DemoReservationControllerTest extends IntegrationTest {
         assertNull(reservation.getOrgId()); // DemoReservation does not belong to any org
 
         // Verify domain event
-        DemoReservationCreatedEvent createdEvent = latestEventFor(reservation.getId(),
+        DemoReservationCreatedEvent createdEvent = latestDomainEventFor(reservation.getId(),
                 DEMO_RESERVATION_CREATED_EVENT,
                 DemoReservationCreatedEvent.class);
         assertEquals(command.mobileNumber(), createdEvent.getMobileNumber());
@@ -58,14 +58,14 @@ class DemoReservationControllerTest extends IntegrationTest {
     @Test
     void should_page_demo_reservations() {
         // Prepare
-        AnonymousActor anonymousActor = randomAnonymousActor();
+        PlatformActor anonymousActor = randomAnonymousActor();
         IntStream.range(0, 20)
                 .forEach(_ -> demoReservationCommandService.createDemoReservation(randomDemoReservationCommand(), anonymousActor));
 
         // Execute
         PageDemoReservationQuery query = PageDemoReservationQuery.builder().pageSize(12).build();
         PagedResponse<QPagedDemoReservation> response = restTestClient.post()
-                .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserSystemActor()))
+                .uri("/platform/demo-reservations/paged").headers(authHeaderOf(randomSupervisorActor()))
                 .body(query)
                 .exchange().expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<PagedResponse<QPagedDemoReservation>>() {
@@ -73,13 +73,5 @@ class DemoReservationControllerTest extends IntegrationTest {
 
         // Verify
         assertEquals(12, response.content().size());
-    }
-
-    @Test
-    void org_user_should_not_allowed_to_page_demo_reservations() {
-        restTestClient.post()
-                .uri("/system/demo-reservations/paged").headers(authHeaderOf(randomHumanUserOrgActor(ORG_ADMIN)))
-                .body(PageDemoReservationQuery.builder().pageSize(12).build())
-                .exchange().expectStatus().isForbidden();
     }
 }

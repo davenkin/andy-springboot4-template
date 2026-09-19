@@ -1,5 +1,6 @@
 package com.company.andy.common.security;
 
+import com.company.andy.common.configuration.property.CommonProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static com.company.andy.common.utils.Constants.SYSTEM_ADMIN_ROLE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -23,9 +23,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
     private final JsonAuthenticationEntryPoint jsonAuthenticationEntryPoint;
     private final JsonAccessDeniedHandler jsonAccessDeniedHandler;
+    private final CommonProperties commonProperties;
 
     @Bean
-    public SecurityFilterChain featureFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
+    public SecurityFilterChain orgApiFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
                                 "/about",
@@ -42,10 +43,8 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults())
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler))
-                .addFilterAfter(new JwtToOrgActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint), BearerTokenAuthenticationFilter.class)
-                .anonymous((it) -> {
-                    it.authenticationFilter(new AnonymousActorAuthenticationTokenFilter());
-                })
+                .addFilterAfter(new JwtToOrgActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint, commonProperties), BearerTokenAuthenticationFilter.class)
+                .anonymous((it) -> it.authenticationFilter(new AnonymousOrgActorAuthenticationTokenFilter()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
         ;
         return http.build();
@@ -53,12 +52,12 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(-1)
-    public SecurityFilterChain systemFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
-        http.securityMatcher("/system/**", "/actuator/**")
+    public SecurityFilterChain platformApiFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
+        http.securityMatcher("/platform/**", "/actuator/**")
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(POST, "/system/demo-reservations").permitAll()
+                        .requestMatchers(POST, "/platform/demo-reservations").permitAll()
                         .requestMatchers(GET, "/actuator/**").permitAll()
-                        .anyRequest().hasRole(SYSTEM_ADMIN_ROLE)
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,10 +67,8 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults())
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler))
-                .addFilterAfter(new JwtToSystemActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint), BearerTokenAuthenticationFilter.class)
-                .anonymous((it) -> {
-                    it.authenticationFilter(new AnonymousActorAuthenticationTokenFilter());
-                })
+                .addFilterAfter(new JwtToPlatformActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint, commonProperties), BearerTokenAuthenticationFilter.class)
+                .anonymous((it) -> it.authenticationFilter(new AnonymousPlatformActorAuthenticationTokenFilter()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
         ;
         return http.build();

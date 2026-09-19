@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.eventhandler.external;
 
-import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.event.consume.AbstractExternalEventHandler;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordFactory;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ExternalMaintenanceRecordCreatedEventHandler extends AbstractEventHandler<ExternalMaintenanceRecordCreatedEvent> {
+public class ExternalMaintenanceRecordCreatedEventHandler extends AbstractExternalEventHandler<ExternalMaintenanceRecordCreatedEvent> {
     private final EquipmentRepository equipmentRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintenanceRecordFactory maintenanceRecordFactory;
 
     @Override
-    protected void handle(ExternalMaintenanceRecordCreatedEvent event, SystemActor actor) {
+    protected void handle(ExternalMaintenanceRecordCreatedEvent event, PlatformActor actor) {
         equipmentRepository.byIdOptional(event.getEquipmentId()).ifPresent(equipment -> {
             MaintenanceRecord record = maintenanceRecordFactory.createFromExternal(equipment,
                     event.getEquipmentStatus(),

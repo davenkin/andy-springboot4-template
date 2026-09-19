@@ -3,7 +3,7 @@ package com.company.andy.common.model;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -19,78 +19,82 @@ import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-// Base class for all Aggregate Root objects.
-// The AggregateRoot object stores raised domain events temporarily in memory,
-// then the events will be persisted into DB by Repository within the same transaction that saves the AggregateRoot object.
+// Base class for all aggregate root objects.
 
 @Getter
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class AggregateRoot {
     private String id;
+
+    // for org level object, orgId must not be null
+    // for platform level object, orgId must be null
     private String orgId;
 
-    // Domain events are stored temporarily in the Aggregate Root and are not persisted together with the entities as events will be stored in separately.
-    // @Transient is very important for not persisting events with the Aggregate Root, otherwise we need to do this manually by ourselves.
+    // Domain events are stored temporarily in AggregateRoot.events for implementing "Transactional Outbox" pattern,
+    // refer to: https://microservices.io/patterns/data/transactional-outbox.html.
+    // Here @Transient is very important for not persisting events within the AggregateRoot.
     @Transient
     private List<DomainEvent> events;
+
     private Instant createdAt;
-    private String createdBy;
+
+    // creator never changes even if the name of the creator changes,
+    // if the name of the creator changes, no need to sync creator.name but instead you should sync creatorName
+    private Actor creator;
+
+    // duplicates with creator.id for easier query
+    private String creatorId;
+
+    // duplicates with creator.name for easier query,
+    // when the name of the creator changes, creatorName should be synced with the latest value
+    private String creatorName;
 
     @Version
     @Getter(PRIVATE)
-    private Long _version;
+    private Long _version; // for optimistic lock
 
-    // For OrgActor to create objects under the current org.
     protected AggregateRoot(String id, OrgActor actor) {
-        checkOrgLevelObject();
         requireNonBlank(id, "id must not be blank.");
         requireNonNull(actor, "actor must not be null.");
 
-        this.id = id;
-        this.orgId = actor.getOrgId();
-        this.createdAt = Instant.now();
-        this.createdBy = actor.getId();
+        if (this.isPlatformObject()) {
+            init(id, actor);
+        } else {
+            init(id, actor);
+            this.orgId = actor.getOrgId();
+        }
     }
 
-    // For SystemActor to create objects under the specified org.
-    protected AggregateRoot(String id, String orgId, SystemActor actor) {
-        checkOrgLevelObject();
-        requireNonBlank(id, "id must not be blank.");
-        requireNonBlank(orgId, "orgId must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
+    protected AggregateRoot(String id, PlatformActor actor) {
+        if (!isPlatformObject()) {
+            throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not a platform level class.");
+        }
 
-        this.id = id;
+        init(id, actor);
+    }
+
+    protected AggregateRoot(String id, String orgId, PlatformActor actor) {
+        if (isPlatformObject()) {
+            throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not an org level class.");
+        }
+
+        init(id, actor);
         this.orgId = orgId;
-        this.createdAt = Instant.now();
-        this.createdBy = actor.getId();
     }
 
-    protected AggregateRoot(String id, SystemActor actor) {
-        checkSystemLevelObject();
-        requireNonBlank(id, "id must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
-
+    private void init(String id, Actor actor) {
         this.id = id;
         this.createdAt = Instant.now();
-        this.createdBy = actor.getId();
+        this.creator = actor;
+        this.creatorId = actor.getId();
+        this.creatorName = actor.getName();
     }
 
-    // For any actor (including AnonymousActor) to create objects that don't belong to any org but the whole system.
-    // Use this constructor with caution as it creates object without an orgId, which might not be what you want.
-    protected AggregateRoot(String id, Actor actor) {
-        checkSystemLevelObject();
-        requireNonBlank(id, "id must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
-
-        this.id = id;
-        this.createdAt = Instant.now();
-        this.createdBy = actor.getId();
-    }
 
     // raiseEvent() only stores events in Aggregate Root temporarily,
     // the events will then be persisted into DB by Repository within the same transaction that saves the Aggregate Root object.
-    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
+    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob.
     protected final void raiseEvent(DomainEvent event) {
         requireNonNull(event, "event must not be null.");
         requireNonNull(event.getType(), "event's type must not be null.");
@@ -111,21 +115,11 @@ public abstract class AggregateRoot {
         this.events = null;
     }
 
-    private void checkOrgLevelObject() {
-        if (isSystemLevelObject()) {
-            throw new RuntimeException(this.getClass().getSimpleName() + " is not an org level Aggregate Root class.");
-        }
-    }
-
-    private void checkSystemLevelObject() {
-        if (!isSystemLevelObject()) {
-            throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not a system level Aggregate Root class.");
-        }
-    }
-
-    protected boolean isSystemLevelObject() {
-        // Default to false which means it's an org level object,
-        // System level Aggregate Root should override this and return true
+    protected boolean isPlatformObject() {
+        // An aggregate root object is either a platform object or an org object.
+        // Platform object has no orgId, org object has orgId.
+        // Default to false which means it's an org object.
+        // Platform object should override this and return true.
         return false;
     }
 }

@@ -7,8 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,9 +22,9 @@ class EquipmentDomainServiceTest {
     @Test
     void should_update_name() {
         Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-        Equipment equipment = new Equipment("name", randomHumanUserOrgActor(ORG_ADMIN));
+        Equipment equipment = new Equipment("name", randomMemberActor());
 
-        equipmentDomainService.updateEquipmentName(equipment, "newName", randomHumanUserOrgActor(ORG_ADMIN));
+        equipmentDomainService.updateEquipmentName(equipment, "newName", randomMemberActor());
 
         assertEquals("newName", equipment.getName());
     }

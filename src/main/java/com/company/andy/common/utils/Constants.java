@@ -5,10 +5,9 @@ public class Constants {
     public static final String ID = "id";
     public static final String TRACE_PARENT = "traceparent";
     public final static String CHINA_TIME_ZONE = "Asia/Shanghai";
-    public static final String SYSTEM_ADMIN_ROLE = "SYSTEM_ADMIN";
     public static final String ANONYMOUS_ROLE = "ANONYMOUS";
     public static final String ROLE_PREFIX = "ROLE_";
-    public static final String SYSTEM_ACTOR_ORG_ID_HEADER = "x-org-id";
+    public static final String ORG_ID_HEADER = "x-org-id";
     public static final String KEYCLOAK_SERVICE_ACCOUNT = "keycloak-service-account";
 
     // Event
@@ -22,10 +21,12 @@ public class Constants {
     public static final String SYSTEM_SETTINGS_CACHE = "SYSTEM_SETTINGS";
 
     // Jwt
-    public static final String JWT_CLAIM_ORG_ID = "org_id";
+    // todo: jwt的各个字段的含义需要文档化
     public static final String JWT_CLAIM_PREFERRED_USERNAME = "preferred_username";
     public static final String JWT_CLAIM_REALM_ACCESS = "realm_access";
     public static final String JWT_CLAIM_REALM_ACCESS_ROLES = "roles";
+    public static final String JWT_CLAIM_ORG_ID = "org_id";
+    public static final String JWT_CLAIM_PRINCIPAL_TYPE = "principal_type";
 
     // Regex
     public static final String MOBILE_NUMBER_REGEX = "^[1]([3-9])[0-9]{9}$";

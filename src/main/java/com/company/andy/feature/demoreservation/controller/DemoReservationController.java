@@ -1,6 +1,6 @@
 package com.company.andy.feature.demoreservation.controller;
 
-import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
@@ -10,14 +10,15 @@ import com.company.andy.feature.demoreservation.query.PageDemoReservationQuery;
 import com.company.andy.feature.demoreservation.query.QPagedDemoReservation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static com.company.andy.common.model.actor.Actor.createAnonymousActor;
+import static com.company.andy.common.model.actor.ActorOrigin.fromOrgApiCall;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it-embedded | it-local")
@@ -25,7 +26,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "system/demo-reservations")
+@RequestMapping(value = "/platform/demo-reservations")
 public class DemoReservationController {
     private final DemoReservationCommandService demoReservationCommandService;
     private final DemoReservationQueryService demoReservationQueryService;
@@ -36,7 +37,8 @@ public class DemoReservationController {
     @Operation(summary = "Create a demo reservation")
     public ResponseId createDemoReservation(
             @RequestBody @Valid CreateDemoReservationCommand command,
-            @AuthenticationPrincipal @NotNull Actor actor) {
+            HttpServletRequest request) {
+        PlatformActor actor = createAnonymousActor(fromOrgApiCall(request));
         return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
     }
 

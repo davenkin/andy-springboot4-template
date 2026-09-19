@@ -1,5 +1,7 @@
 common:
   limitRate: false
+  orgJwtIssuer: http://localhost:7125/realms/org
+  platformJwtIssuer: http://localhost:7125/realms/platform
 
 de.flapdoodle.mongodb.embedded.version: 7.0.12 # Enable flapdoodle Embedded MongoDB by specifying a version, otherwise flapdoodle will fail to start
 

@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.job;
 
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import static com.company.andy.common.model.actor.SystemActor.createJobSystemActor;
+import static com.company.andy.common.model.actor.Actor.createScheduledJobActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
@@ -24,7 +24,7 @@ public class MaintenanceRecordJobScheduler {
     public void removeOldMaintenanceRecords() {
         assertLocked();
 
-        SystemActor actor = createJobSystemActor("removeOldMaintenanceRecords");
+        PlatformActor actor = createScheduledJobActor("removeOldMaintenanceRecords");
         ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsJob::run);
     }
 }

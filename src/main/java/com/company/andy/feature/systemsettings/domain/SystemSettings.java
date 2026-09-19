@@ -1,7 +1,7 @@
 package com.company.andy.feature.systemsettings.domain;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.systemsettings.domain.event.SystemBaseSettingsUpdatedEvent;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -29,12 +29,12 @@ public class SystemSettings extends AggregateRoot {
 
     private BaseSettings baseSettings;
 
-    public SystemSettings(SystemActor actor) {
+    public SystemSettings(PlatformActor actor) {
         super(SYSTEM_SETTINGS_ID, actor);
         baseSettings = new BaseSettings(List.of());
     }
 
-    public void updateBaseSettings(BaseSettings newSettings, SystemActor actor) {
+    public void updateBaseSettings(BaseSettings newSettings, PlatformActor actor) {
         if (Objects.equals(this.baseSettings, newSettings)) {
             return;
         }
@@ -45,7 +45,7 @@ public class SystemSettings extends AggregateRoot {
     }
 
     @Override
-    protected boolean isSystemLevelObject() {
+    protected boolean isPlatformObject() {
         return true;
     }
 }

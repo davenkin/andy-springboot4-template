@@ -205,7 +205,6 @@ public class EquipmentController {
     private final EquipmentCommandService equipmentCommandService;
     private final EquipmentQueryService equipmentQueryService;
 
-    @PreAuthorize("hasRole('ORG_ADMIN')")
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")

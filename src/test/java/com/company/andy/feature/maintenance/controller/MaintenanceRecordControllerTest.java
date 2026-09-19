@@ -23,10 +23,9 @@ import org.springframework.http.HttpHeaders;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_CREATED_EVENT;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_DELETED_EVENT;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +47,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_create_maintenance_record() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
 
         // Execute
@@ -66,7 +65,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
         assertEquals(createCommand.description(), maintenanceRecord.getDescription());
 
         // Verify domain event
-        MaintenanceRecordCreatedEvent createdEvent = latestEventFor(maintenanceRecordId,
+        MaintenanceRecordCreatedEvent createdEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
         assertEquals(equipmentId, createdEvent.getEquipmentId());
@@ -75,7 +74,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void created_maintenance_record_should_update_count_on_equipment() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         assertEquals(0, equipmentRepository.byId(equipmentId).getMaintenanceRecordCount());
 
@@ -85,7 +84,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
                 .body(randomCreateMaintenanceRecordCommand(equipmentId))
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody().id();
-        MaintenanceRecordCreatedEvent createdEvent = latestEventFor(maintenanceRecordId,
+        MaintenanceRecordCreatedEvent createdEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -97,11 +96,11 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_delete_maintenance_record() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
                 actor);
-        MaintenanceRecordCreatedEvent createdEvent = latestEventFor(maintenanceRecordId,
+        MaintenanceRecordCreatedEvent createdEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -115,7 +114,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
         assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
 
         // Verify domain event
-        MaintenanceRecordDeletedEvent deletedEvent = latestEventFor(maintenanceRecordId,
+        MaintenanceRecordDeletedEvent deletedEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_DELETED_EVENT,
                 MaintenanceRecordDeletedEvent.class);
         eventConsumer.consumeDomainEvent(deletedEvent);
@@ -125,7 +124,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_page_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);

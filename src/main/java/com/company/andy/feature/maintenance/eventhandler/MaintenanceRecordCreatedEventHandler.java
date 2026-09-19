@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.task.CountMaintenanceRecordsForEquipmentTask;
@@ -14,18 +14,18 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MaintenanceRecordCreatedEventHandler extends AbstractEventHandler<MaintenanceRecordCreatedEvent> {
+public class MaintenanceRecordCreatedEventHandler extends AbstractDomainEventHandler<MaintenanceRecordCreatedEvent> {
     private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
     private final EquipmentRepository equipmentRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Override
-    protected void handle(MaintenanceRecordCreatedEvent event, SystemActor actor) {
+    protected void handle(MaintenanceRecordCreatedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
         ExceptionSwallowRunner.run(() -> updateEquipmentStatus(event.getEquipmentId(), actor));
     }
 
-    private void updateEquipmentStatus(String equipmentId, SystemActor actor) {
+    private void updateEquipmentStatus(String equipmentId, PlatformActor actor) {
         equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
             maintenanceRecordRepository.latestForOptional(equipmentId).ifPresent(record -> {
                 equipment.updateStatus(record.getStatus(), actor);

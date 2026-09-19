@@ -56,12 +56,12 @@ This is a template Spring Boot 4 project with the following features:
             - Username: `test-org-admin`
             - Password: `11111111`
             - Role: `org_admin`
-        - System admin:
+        - Supervisor:
             - Realm: `test-realm`
             - Client: `test-client`
-            - Username: `test-system-admin`
+            - Username: `test-supervisor`
             - Password: `11111111`
-            - Role: `system_admin`
+            - Role: `supervisor`
         - Service account:
             - Realm: `test-realm`
             - Client: `test-service-account-client`
@@ -95,12 +95,17 @@ This is a template Spring Boot 4 project with the following features:
 This project uses [Architecture Decision Records (ADRs)](https://adr.github.io/) to document important architectural
 decisions. ADRs are stored in the `ADRs` directory and follow a [specific format](ADRs/000_what_is_adr.md). You should go through all the ADRs before you start implementing any code, as they contain important information about the architecture and coding practices of this project.
 
+// todo: 添加如何导出keycloak的配置
+
 ## Sample implementation code
 
 There are four sample Aggregate Roots which serve as reference implementations:
 - [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs to be managed under an org, such as a computer. 
 - [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a maintenance record created for an `Equipment`, it's also an org level object.
-- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a system level object that are not related to any org and should only be accessed by system admins.
+- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a system level object that are not related to any org and should only be accessed by supervisor.
 - [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that a public user has requested a demo of the product.  
 
 The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.
+
+## What's left for you?
+- Authorization & Roles, todo: add doc

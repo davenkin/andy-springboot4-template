@@ -8,19 +8,17 @@ import java.util.List;
 
 public class ActorMdcSupport {
     public static final List<String> ACTOR_MDC_KEYS = List.of(
-            "actorId",
+            "actor",
             "actorOrgId",
-            "actorInitiator",
-            "actorSource"
+            "actorOrigin"
     );
 
     public static void addMdc(Actor actor) {
-        MDC.put("actorId", actor.getId());
+        MDC.put("actor", "%s[%s]".formatted(actor.getPrincipalType(), actor.getId()));
         if (actor instanceof OrgActor orgActor) {
             MDC.put("actorOrgId", orgActor.getOrgId());
         }
-        MDC.put("actorInitiator", actor.getInitiator());
-        MDC.put("actorSource", actor.getSource().name());
+        MDC.put("actorOrigin", actor.getOrigin().toString());
     }
 
     public static void clearMdc() {

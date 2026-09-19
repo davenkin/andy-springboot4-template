@@ -59,7 +59,7 @@ public abstract class IntegrationTest {
     @Autowired
     protected CacheManager cacheManager;
 
-    protected <T extends DomainEvent> T latestEventFor(String arId, DomainEventType type, Class<T> eventClass) {
+    protected <T extends DomainEvent> T latestDomainEventFor(String arId, DomainEventType type, Class<T> eventClass) {
         requireNonBlank(arId, "arId must not be blank.");
         requireNonNull(type, "type must not be null.");
         requireNonNull(eventClass, "eventClass must not be null.");

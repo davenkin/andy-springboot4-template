@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +38,6 @@ public class EquipmentController {
     private final EquipmentCommandService equipmentCommandService;
     private final EquipmentQueryService equipmentQueryService;
 
-    @PreAuthorize("hasRole('ORG_ADMIN')")
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")

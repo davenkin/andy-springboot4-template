@@ -1,6 +1,6 @@
 package com.company.andy.feature.systemsettings.controller;
 
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.systemsettings.command.SystemSettingsCommandService;
 import com.company.andy.feature.systemsettings.command.UpdateSystemBaseSettingsCommand;
 import com.company.andy.feature.systemsettings.query.QSystemSettings;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/system/system-settings")
+@RequestMapping(value = "/platform/system-settings")
 public class SystemSettingsController {
     private final SystemSettingsCommandService systemSettingsCommandService;
     private final SystemSettingsQueryService systemSettingsQueryService;
@@ -38,7 +38,7 @@ public class SystemSettingsController {
     @PutMapping("/base-settings")
     public void updateBaseSetting(
             @RequestBody @Valid UpdateSystemBaseSettingsCommand command,
-            @AuthenticationPrincipal @NotNull SystemActor actor) {
+            @AuthenticationPrincipal @NotNull PlatformActor actor) {
         systemSettingsCommandService.updateBaseSettings(command, actor);
     }
 

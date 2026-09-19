@@ -3,7 +3,7 @@ package com.company.andy.feature.equipment.domain;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class Equipment extends AggregateRoot {
             String name,
             String orgId,
             EquipmentEngine engine,
-            SystemActor actor) {
+            PlatformActor actor) {
         requireNonBlank(id, "id must not be blank");
         requireNonBlank(name, "name must not be blank");
         requireNonBlank(orgId, "orgId must not be null");

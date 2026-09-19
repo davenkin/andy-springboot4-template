@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.task.CountMaintenanceRecordsForEquipmentTask;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordDeletedEvent;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MaintenanceRecordDeletedEventHandler extends AbstractEventHandler<MaintenanceRecordDeletedEvent> {
+public class MaintenanceRecordDeletedEventHandler extends AbstractDomainEventHandler<MaintenanceRecordDeletedEvent> {
     private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
 
     @Override
-    protected void handle(MaintenanceRecordDeletedEvent event, SystemActor actor) {
+    protected void handle(MaintenanceRecordDeletedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
     }
 

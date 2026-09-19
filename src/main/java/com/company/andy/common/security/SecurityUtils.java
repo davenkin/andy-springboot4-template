@@ -1,14 +1,12 @@
 package com.company.andy.common.security;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS;
-import static com.company.andy.common.utils.Constants.JWT_CLAIM_REALM_ACCESS_ROLES;
+import static com.company.andy.common.utils.Constants.*;
 import static java.util.stream.Collectors.toSet;
 
 public class SecurityUtils {
@@ -30,7 +28,12 @@ public class SecurityUtils {
         return Set.of();
     }
 
-    public static String createActorInitiatorFrom(HttpServletRequest request) {
-        return "%s[%s]".formatted(request.getMethod(), request.getRequestURI());
+    public static String getJwtUserName(Jwt jwt) {
+        return jwt.getClaimAsString(JWT_CLAIM_PREFERRED_USERNAME);
     }
+
+    public static String getJwtPrincipalType(Jwt jwt) {
+        return jwt.getClaimAsString(JWT_CLAIM_PRINCIPAL_TYPE);
+    }
+
 }

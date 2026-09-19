@@ -42,7 +42,6 @@ flow is:
 1. `EquipmentController` receives the request:
 
 ```java
-    @PreAuthorize("hasRole('ORG_ADMIN')")
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")

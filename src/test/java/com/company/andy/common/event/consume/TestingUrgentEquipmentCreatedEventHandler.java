@@ -1,6 +1,6 @@
 package com.company.andy.common.event.consume;
 
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +15,11 @@ import java.util.List;
 @Order(2)
 @Component
 @RequiredArgsConstructor
-public class TestingUrgentEquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
+public class TestingUrgentEquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
     public List<HandledEvent> handledEvents = new ArrayList<>();
 
     @Override
-    protected void handle(EquipmentCreatedEvent event, SystemActor actor) {
+    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         this.handledEvents.add(new HandledEvent(event, Instant.now()));
     }
 

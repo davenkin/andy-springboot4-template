@@ -16,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 import static com.company.andy.TestFixture.randomExternalEventId;
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_CREATED_EVENT;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChannel.EXTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +35,7 @@ class ExternalMaintenanceRecordCreatedEventHandlerTest extends IntegrationTest {
     @Test
     void external_maintenance_record_created_event_should_be_added() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
@@ -61,7 +60,7 @@ class ExternalMaintenanceRecordCreatedEventHandlerTest extends IntegrationTest {
         assertEquals(equipment.getName(), record.getEquipmentName());
 
         // Verify domain event
-        MaintenanceRecordCreatedEvent internalEvent = latestEventFor(record.getId(),
+        MaintenanceRecordCreatedEvent internalEvent = latestDomainEventFor(record.getId(),
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
         assertEquals(equipmentId, internalEvent.getEquipmentId());

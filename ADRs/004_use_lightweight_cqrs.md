@@ -1,4 +1,4 @@
-# Use CQRS
+# Use lightweight CQRS
 
 ## Context
 

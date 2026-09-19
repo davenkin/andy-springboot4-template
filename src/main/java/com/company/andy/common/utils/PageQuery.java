@@ -3,6 +3,7 @@ package com.company.andy.common.utils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -37,6 +38,7 @@ public abstract class PageQuery {
     private int pageSize;
 
     @Schema(description = "The field name to be sorted.")
+    @Size(max = 50)
     private String sortField;
 
     @Schema(description = "The sort order for sortField.", defaultValue = "ASC")

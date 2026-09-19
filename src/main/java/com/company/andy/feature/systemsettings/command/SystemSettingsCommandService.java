@@ -1,6 +1,6 @@
 package com.company.andy.feature.systemsettings.command;
 
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import com.company.andy.feature.systemsettings.domain.SystemSettingsRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class SystemSettingsCommandService {
     private final SystemSettingsRepository systemSettingsRepository;
 
     @Transactional
-    public void updateBaseSettings(UpdateSystemBaseSettingsCommand command, SystemActor actor) {
+    public void updateBaseSettings(UpdateSystemBaseSettingsCommand command, PlatformActor actor) {
         SystemSettings systemSettings = systemSettingsRepository.getSystemSettings();
         systemSettings.updateBaseSettings(command.baseSettings(), actor);
         systemSettingsRepository.save(systemSettings);

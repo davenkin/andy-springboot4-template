@@ -15,8 +15,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import java.time.Instant;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static com.company.andy.common.utils.Constants.MONGO_ID;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
@@ -41,7 +40,7 @@ class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);

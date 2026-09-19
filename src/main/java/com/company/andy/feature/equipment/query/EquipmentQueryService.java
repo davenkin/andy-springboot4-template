@@ -44,7 +44,7 @@ public class EquipmentQueryService {
                 Equipment.Fields.name,
                 Equipment.Fields.status,
                 AggregateRoot.Fields.createdAt,
-                AggregateRoot.Fields.createdBy);
+                AggregateRoot.Fields.creatorId);
 
         Pageable pageable = query.pageable();
         long count = mongoTemplate.count(mongoQuery, Equipment.class);
@@ -64,7 +64,7 @@ public class EquipmentQueryService {
                 .name(equipment.getName())
                 .status(equipment.getStatus())
                 .createdAt(equipment.getCreatedAt())
-                .createdBy(equipment.getCreatedBy())
+                .createdBy(equipment.getCreatorId())
                 .build();
     }
 

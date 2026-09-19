@@ -49,7 +49,7 @@ public class MaintenanceRecordQueryService {
                 MaintenanceRecord.Fields.status,
                 AggregateRoot.Fields.orgId,
                 AggregateRoot.Fields.createdAt,
-                AggregateRoot.Fields.createdBy);
+                AggregateRoot.Fields.creatorId);
 
         Pageable pageable = query.pageable();
         long count = mongoTemplate.count(mongoQuery, MaintenanceRecord.class);
@@ -72,7 +72,7 @@ public class MaintenanceRecordQueryService {
                 MaintenanceRecord.Fields.description,
                 AggregateRoot.Fields.orgId,
                 AggregateRoot.Fields.createdAt,
-                AggregateRoot.Fields.createdBy);
+                AggregateRoot.Fields.creatorId);
         QDetailedMaintenanceRecord record = mongoTemplate.findOne(query, QDetailedMaintenanceRecord.class, MAINTENANCE_RECORD_COLLECTION);
 
         if (record == null) {

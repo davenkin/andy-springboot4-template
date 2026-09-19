@@ -3,7 +3,7 @@ package com.company.andy.feature.maintenance.domain;
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.SystemActor;
+import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
@@ -64,7 +64,7 @@ public class MaintenanceRecord extends AggregateRoot {
             EquipmentStatus status,
             String description,
             String channelRecordId,
-            SystemActor actor) {
+            PlatformActor actor) {
         requireNonNull(equipment, "equipment must not be null");
         requireNonNull(status, "status must not be null");
         requireNonBlank(description, "description must not be blank");

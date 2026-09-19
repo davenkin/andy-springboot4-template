@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.resilience.annotation.EnableResilientMethods;
-import tools.jackson.databind.PropertyNamingStrategies;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -19,11 +18,7 @@ import static tools.jackson.databind.MapperFeature.REQUIRE_SETTERS_FOR_GETTERS;
 import static tools.jackson.databind.PropertyNamingStrategies.LOWER_CAMEL_CASE;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static tools.jackson.databind.cfg.DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS;
-import static tools.jackson.databind.cfg.EnumFeature.READ_ENUMS_USING_TO_STRING;
-import static tools.jackson.databind.cfg.EnumFeature.READ_ENUM_KEYS_USING_INDEX;
-import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_TO_LOWERCASE;
-import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_USING_INDEX;
-import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_USING_TO_STRING;
+import static tools.jackson.databind.cfg.EnumFeature.*;
 
 @EnableResilientMethods
 @Configuration(proxyBeanMethods = false)

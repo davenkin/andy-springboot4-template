@@ -25,9 +25,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static com.company.andy.common.event.DomainEventType.*;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.common.utils.Constants.ORG_EQUIPMENTS_CACHE;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomUpdateEquipmentNameCommand;
@@ -52,7 +51,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_create_equipment() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
@@ -69,14 +68,14 @@ class EquipmentControllerTest extends IntegrationTest {
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
         // Verify domain events
-        EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
+        EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
 
     @Test
     void should_update_equipment_name() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
@@ -92,7 +91,7 @@ class EquipmentControllerTest extends IntegrationTest {
         assertEquals(updateEquipmentNameCommand.name(), equipment.getName());
 
         // Verify domain events
-        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
+        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
         assertEquals(equipmentId, equipmentNameUpdatedEvent.getEquipmentId());
         assertEquals(updateEquipmentNameCommand.name(), equipmentNameUpdatedEvent.getUpdatedName());
@@ -101,7 +100,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void update_equipment_name_should_also_sync_to_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
@@ -115,7 +114,7 @@ class EquipmentControllerTest extends IntegrationTest {
                 .exchange().expectStatus().isOk();
 
         // Verify
-        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
+        EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
 
         // Test domain events
@@ -126,7 +125,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
         equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
@@ -151,7 +150,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_delete_equipment() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         assertTrue(equipmentRepository.exists(equipmentId));
 
@@ -160,14 +159,14 @@ class EquipmentControllerTest extends IntegrationTest {
 
         // Verify
         assertFalse(equipmentRepository.exists(equipmentId));
-        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        EquipmentDeletedEvent equipmentDeletedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
         assertEquals(equipmentId, equipmentDeletedEvent.getEquipmentId());
     }
 
     @Test
     void delete_equipment_should_also_delete_its_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
                 actor);
@@ -177,7 +176,7 @@ class EquipmentControllerTest extends IntegrationTest {
         restTestClient.delete().uri("/equipments/{id}", equipmentId).headers(authHeaderOf(actor)).exchange().expectStatus().isOk();
 
         // Verify
-        EquipmentDeletedEvent equipmentDeletedEvent = latestEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
+        EquipmentDeletedEvent equipmentDeletedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_DELETED_EVENT, EquipmentDeletedEvent.class);
         // Manually consume the event as Kafka is not enabled for integration tests
         eventConsumer.consumeDomainEvent(equipmentDeletedEvent);
         assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
@@ -186,7 +185,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_page_equipments() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor));
 
         // Execute

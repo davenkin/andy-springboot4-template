@@ -13,9 +13,8 @@ import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.company.andy.TestFixture.randomHumanUserOrgActor;
+import static com.company.andy.TestFixture.randomMemberActor;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
-import static com.company.andy.common.model.OrgRole.ORG_ADMIN;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +29,7 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
@@ -41,12 +40,12 @@ class TransactionIntegrationTest extends IntegrationTest {
                 () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor));
 
         assertEquals(createEquipmentCommand.name(), equipmentRepository.byId(equipmentId).getName());
-        assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+        assertNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
     }
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -59,12 +58,12 @@ class TransactionIntegrationTest extends IntegrationTest {
         Equipment dbEquipment = equipmentRepository.byId(equipmentId);
         assertNotEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
         assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+        assertNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
     }
 
     @Test
     void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -77,12 +76,12 @@ class TransactionIntegrationTest extends IntegrationTest {
         Equipment dbEquipment = equipmentRepository.byId(equipmentId);
         assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
         assertEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+        assertNotNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
     }
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -95,6 +94,6 @@ class TransactionIntegrationTest extends IntegrationTest {
         Equipment dbEquipment = equipmentRepository.byId(equipmentId);
         assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
         assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNotNull(latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
+        assertNotNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
     }
 }
