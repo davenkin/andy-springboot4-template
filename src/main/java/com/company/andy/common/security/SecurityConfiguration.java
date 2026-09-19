@@ -1,6 +1,10 @@
 package com.company.andy.common.security;
 
 import com.company.andy.common.configuration.property.CommonProperties;
+import com.company.andy.common.security.org.AnonymousOrgActorAuthenticationTokenFilter;
+import com.company.andy.common.security.org.JwtToOrgActorAuthenticationTokenFilter;
+import com.company.andy.common.security.platform.AnonymousPlatformActorAuthenticationTokenFilter;
+import com.company.andy.common.security.platform.JwtToPlatformActorAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

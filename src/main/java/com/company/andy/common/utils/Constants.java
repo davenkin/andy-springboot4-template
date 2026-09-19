@@ -1,6 +1,7 @@
 package com.company.andy.common.utils;
 
 public class Constants {
+    public static final String THIS_SERVICE_NAME = "andy-springboot4-template";
     public static final String MONGO_ID = "_id";
     public static final String ID = "id";
     public static final String TRACE_PARENT = "traceparent";
@@ -9,6 +10,10 @@ public class Constants {
     public static final String ROLE_PREFIX = "ROLE_";
     public static final String ORG_ID_HEADER = "x-org-id";
     public static final String KEYCLOAK_SERVICE_ACCOUNT = "keycloak-service-account";
+    public static final String JWT_RELAY_REST_CLIENT = "jwtRelayRestClient";
+    public static final String SERVICE_ACCOUNT_REST_CLIENT = "serviceAccountRestClient";
+    public static final String APPLICATION_TASK_EXECUTOR = "applicationTaskExecutor";
+    public static final String THREAD_POOL_TASK_EXECUTOR = "threadPoolTaskExecutor";
 
     // Event
     public static final String KAFKA_DOMAIN_EVENT_TOPIC = "domain-event-topic";
@@ -20,7 +25,7 @@ public class Constants {
     public static final String ORG_EQUIPMENTS_CACHE = "ORG_EQUIPMENTS";
     public static final String SYSTEM_SETTINGS_CACHE = "SYSTEM_SETTINGS";
 
-    // Jwt
+    // JWT
     // todo: jwt的各个字段的含义需要文档化
     public static final String JWT_CLAIM_PREFERRED_USERNAME = "preferred_username";
     public static final String JWT_CLAIM_REALM_ACCESS = "realm_access";

@@ -67,6 +67,9 @@ public abstract class AggregateRoot {
     }
 
     protected AggregateRoot(String id, PlatformActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
         if (!isPlatformObject()) {
             throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not a platform level class.");
         }
@@ -75,6 +78,10 @@ public abstract class AggregateRoot {
     }
 
     protected AggregateRoot(String id, String orgId, PlatformActor actor) {
+        requireNonBlank(id, "id must not be blank.");
+        requireNonBlank(orgId, "orgId must not be blank.");
+        requireNonNull(actor, "actor must not be null.");
+
         if (isPlatformObject()) {
             throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not an org level class.");
         }

@@ -1,4 +1,4 @@
-package com.company.andy.common.security;
+package com.company.andy.common.security.platform;
 
 import com.company.andy.common.model.actor.PlatformActor;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,16 +10,16 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import java.util.UUID;
 
 import static com.company.andy.common.model.actor.Actor.createAnonymousActor;
-import static com.company.andy.common.model.actor.ActorOrigin.fromOrgApiCall;
+import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
 import static com.company.andy.common.utils.Constants.ANONYMOUS_ROLE;
 import static com.company.andy.common.utils.Constants.ROLE_PREFIX;
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
 @NullMarked
-public class AnonymousOrgActorAuthenticationTokenFilter extends AnonymousAuthenticationFilter {
+public class AnonymousPlatformActorAuthenticationTokenFilter extends AnonymousAuthenticationFilter {
     private final String theKey;
 
-    public AnonymousOrgActorAuthenticationTokenFilter() {
+    public AnonymousPlatformActorAuthenticationTokenFilter() {
         String key = UUID.randomUUID().toString();
         super(key);
         this.theKey = key;
@@ -27,7 +27,7 @@ public class AnonymousOrgActorAuthenticationTokenFilter extends AnonymousAuthent
 
     @Override
     protected Authentication createAuthentication(HttpServletRequest request) {
-        PlatformActor anonymousActor = createAnonymousActor(fromOrgApiCall(request));
+        PlatformActor anonymousActor = createAnonymousActor(fromPlatformApiCall(request));
         return new AnonymousAuthenticationToken(this.theKey, anonymousActor, createAuthorityList(ROLE_PREFIX + ANONYMOUS_ROLE));
     }
 }

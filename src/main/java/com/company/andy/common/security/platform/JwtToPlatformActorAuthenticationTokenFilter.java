@@ -1,7 +1,8 @@
-package com.company.andy.common.security;
+package com.company.andy.common.security.platform;
 
 import com.company.andy.common.configuration.property.CommonProperties;
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.security.ActorAuthenticationToken;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

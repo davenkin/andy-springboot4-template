@@ -16,6 +16,7 @@ import lombok.experimental.FieldNameConstants;
 
 import java.time.Instant;
 
+import static com.company.andy.common.utils.Constants.THIS_SERVICE_NAME;
 import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PROTECTED;
@@ -41,7 +42,7 @@ import static lombok.AccessLevel.PROTECTED;
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class DomainEvent {
-    private String sourceSystem;
+    private String source;
     private String id;
     private String arId;
     private String arOrgId;
@@ -54,7 +55,7 @@ public abstract class DomainEvent {
         requireNonNull(ar, "ar must not be null.");
         requireNonNull(raisedBy, "actor must not be null.");
 
-        this.sourceSystem = "andy-springboot4-template";
+        this.source = THIS_SERVICE_NAME;
         this.id = newEventId();
         this.arId = ar.getId();
         this.arOrgId = ar.getOrgId();

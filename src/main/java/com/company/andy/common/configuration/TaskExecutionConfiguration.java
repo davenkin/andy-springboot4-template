@@ -18,13 +18,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import static com.company.andy.common.utils.Constants.APPLICATION_TASK_EXECUTOR;
+import static com.company.andy.common.utils.Constants.THREAD_POOL_TASK_EXECUTOR;
+
 @Slf4j
 @EnableAsync
 @Configuration
 public class TaskExecutionConfiguration implements AsyncConfigurer {
 
     @Primary
-    @Bean(name = "applicationTaskExecutor") // Default task executor uses virtual threads
+    @Bean(name = APPLICATION_TASK_EXECUTOR) // Default task executor uses virtual threads
     public TaskExecutor applicationTaskExecutor() {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setVirtualThreads(true);
@@ -34,7 +37,7 @@ public class TaskExecutionConfiguration implements AsyncConfigurer {
         return executor;
     }
 
-    @Bean("threadPoolTaskExecutor")
+    @Bean(THREAD_POOL_TASK_EXECUTOR)
     public TaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);

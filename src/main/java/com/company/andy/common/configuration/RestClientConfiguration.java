@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestClient;
 
-import static com.company.andy.common.utils.Constants.KEYCLOAK_SERVICE_ACCOUNT;
+import static com.company.andy.common.utils.Constants.*;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -21,13 +21,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class RestClientConfiguration {
 
     // RestClient that relays current actor's JWT token to call external APIs
-    @Bean("jwtRelayRestClient")
+    @Bean(JWT_RELAY_REST_CLIENT)
     public RestClient jwtRelayRestClient(RestClient.Builder builder, JwtRelayInterceptor jwtRelayInterceptor) {
         return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(jwtRelayInterceptor).build();
     }
 
     // RestClient that represents the application itself with JWT token being obtained automatically by Spring using Oauth2 client_credentials grant type
-    @Bean("serviceAccountRestClient")
+    @Bean(SERVICE_ACCOUNT_REST_CLIENT)
     public RestClient serviceAccountRestClient(RestClient.Builder builder, OAuth2AuthorizedClientManager authorizedClientManager) {
         OAuth2ClientHttpRequestInterceptor interceptor = new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
         interceptor.setClientRegistrationIdResolver(_ -> KEYCLOAK_SERVICE_ACCOUNT);
