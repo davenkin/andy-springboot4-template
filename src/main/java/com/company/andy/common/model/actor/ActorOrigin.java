@@ -36,10 +36,10 @@ public record ActorOrigin(ActorOriginChannel type, String originId) {
         return new ActorOrigin(EVENT, "%s[%s]".formatted(eventClass, eventId));
     }
 
-    public static ActorOrigin fromInitialization(String name) {
+    public static ActorOrigin fromRobot(String name) {
         requireNonBlank(name, "name must not be blank.");
 
-        return new ActorOrigin(INITIALIZATION, name);
+        return new ActorOrigin(ROBOT, name);
     }
 
     @Override

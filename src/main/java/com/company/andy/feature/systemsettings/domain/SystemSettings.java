@@ -25,7 +25,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class SystemSettings extends AggregateRoot {
     public final static String SYSTEM_SETTINGS_COLLECTION = "system_settings";
-    public static final String SYSTEM_SETTINGS_ID = "THE_ONLY_ONE_SYSTEM_SETTINGS";
+    public static final String SYSTEM_SETTINGS_ID = "SYSTEM_SETTINGS";
 
     private BaseSettings baseSettings;
 

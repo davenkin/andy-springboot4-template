@@ -9,9 +9,8 @@ import lombok.experimental.FieldNameConstants;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static com.company.andy.common.model.actor.ActorOrigin.fromRobot;
 import static com.company.andy.common.model.actor.ActorOrigin.fromScheduledJob;
-import static com.company.andy.common.model.actor.ActorType.ORG_ACTOR;
-import static com.company.andy.common.model.actor.ActorType.PLATFORM_ACTOR;
 import static com.company.andy.common.model.actor.PrincipalType.*;
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static java.util.Objects.requireNonNull;
@@ -58,10 +57,10 @@ public abstract class Actor {
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(roles, "roles must not be null.");
         requireNonNull(origin, "origin must not be null.");
-        return new OrgActor(memberId, name, ORG_ACTOR, memberId, orgId, roles, MEMBER, origin);
+        return new OrgActor(memberId, name, memberId, orgId, roles, MEMBER, origin);
     }
 
-    public static OrgActor createOrgSupervisorActor(String supervisorId,
+    public static OrgActor createSupervisedOrgActor(String supervisorId,
                                                     String name,
                                                     String orgId,
                                                     ActorOrigin origin) {
@@ -69,7 +68,7 @@ public abstract class Actor {
         requireNonBlank(name, "name must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new OrgActor(supervisorId, name, ORG_ACTOR, null, orgId, Set.of(), SUPERVISOR, origin);
+        return new OrgActor(supervisorId, name, null, orgId, Set.of(), SUPERVISOR, origin);
     }
 
     public static OrgActor createOrgServiceClientActor(String clientId,
@@ -78,16 +77,16 @@ public abstract class Actor {
         requireNonBlank(clientId, "clientId must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new OrgActor(clientId, null, ORG_ACTOR, null, orgId, Set.of(), ORG_SERVICE_CLIENT, origin);
+        return new OrgActor(clientId, null, null, orgId, Set.of(), ORG_SERVICE_CLIENT, origin);
     }
 
-    public static OrgActor createOrgPlatformServiceClientActor(String clientId,
+    public static OrgActor createPlatformServiceClientOrgActor(String clientId,
                                                                String orgId,
                                                                ActorOrigin origin) {
         requireNonBlank(clientId, "clientId must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new OrgActor(clientId, null, ORG_ACTOR, null, orgId, Set.of(), PLATFORM_SERVICE_CLIENT, origin);
+        return new OrgActor(clientId, null, null, orgId, Set.of(), PLATFORM_SERVICE_CLIENT, origin);
     }
 
     public static PlatformActor createSupervisorActor(String supervisorId, String name, Set<PlatformRole> roles, ActorOrigin origin) {
@@ -95,35 +94,34 @@ public abstract class Actor {
         requireNonBlank(name, "name must not be blank.");
         requireNonNull(roles, "roles must not be null.");
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(supervisorId, name, PLATFORM_ACTOR, supervisorId, roles, SUPERVISOR, origin);
+        return new PlatformActor(supervisorId, name, supervisorId, roles, SUPERVISOR, origin);
     }
 
     public static PlatformActor createPlatformServiceClientActor(String serviceClientId, ActorOrigin origin) {
         requireNonBlank(serviceClientId, "serviceClientId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(serviceClientId, null, PLATFORM_ACTOR, null, Set.of(), PLATFORM_SERVICE_CLIENT, origin);
+        return new PlatformActor(serviceClientId, null, null, Set.of(), PLATFORM_SERVICE_CLIENT, origin);
     }
 
     public static PlatformActor createScheduledJobActor(String jobName) {
         requireNonBlank(jobName, "jobName must not be blank.");
-        return new PlatformActor(jobName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, fromScheduledJob(jobName));
+        return new PlatformActor(jobName, null, null, Set.of(), ROBOT, fromScheduledJob(jobName));
     }
 
     public static PlatformActor createEventHandlerActor(String handlerName, ActorOrigin origin) {
         requireNonBlank(handlerName, "handlerName must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(handlerName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, origin);
+        return new PlatformActor(handlerName, null, null, Set.of(), ROBOT, origin);
     }
 
-    public static PlatformActor createInternalRobotActor(String robotName, ActorOrigin origin) {
+    public static PlatformActor createRobotActor(String robotName) {
         requireNonBlank(robotName, "robotName must not be blank.");
-        requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(robotName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, origin);
+        return new PlatformActor(robotName, null, null, Set.of(), ROBOT, fromRobot(robotName));
     }
 
     public static PlatformActor createAnonymousActor(ActorOrigin origin) {
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(ANONYMOUS.name(), null, PLATFORM_ACTOR, null, Set.of(), ANONYMOUS, origin);
+        return new PlatformActor(ANONYMOUS.name(), null, null, Set.of(), ANONYMOUS, origin);
     }
 
     public void ifOrgActor(Consumer<OrgActor> orgActorConsumer) {

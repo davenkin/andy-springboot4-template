@@ -2,13 +2,13 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <springProfile name="local | it | it-local">
+    <springProfile name="local | it-embedded | it-local">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
-    <springProfile name="!local &amp; !it &amp; !it-local">
+    <springProfile name="!local &amp; !it-embedded &amp; !it-local">
         <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <fieldNames>

@@ -8,6 +8,7 @@ import lombok.experimental.FieldNameConstants;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.company.andy.common.model.actor.ActorType.ORG_ACTOR;
 import static lombok.AccessLevel.PRIVATE;
 
 // Actor representing an organization actor with the following scenarios:
@@ -29,13 +30,12 @@ public class OrgActor extends Actor {
 
     public OrgActor(String id,
                     String name,
-                    ActorType type,
                     String memberId,
                     String orgId,
                     Set<OrgRole> roles,
                     PrincipalType principalType,
                     ActorOrigin origin) {
-        super(id, name, type, principalType, origin);
+        super(id, name, ORG_ACTOR, principalType, origin);
         this.memberId = memberId;
         this.orgId = orgId;
         this.roles = roles;

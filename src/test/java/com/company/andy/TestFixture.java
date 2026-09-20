@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class TestFixture {
-    public static ActorOrigin RANDOM_ACTOR_ORIGIN = ActorOrigin.fromInitialization("some-fake-origin");
+    public static ActorOrigin RANDOM_ACTOR_ORIGIN = ActorOrigin.fromRobot("some-fake-origin");
 
     public static String randomDescription() {
         return RandomStringUtils.secure().nextAscii(20);

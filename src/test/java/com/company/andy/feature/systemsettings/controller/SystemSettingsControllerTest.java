@@ -49,8 +49,6 @@ class SystemSettingsControllerTest extends IntegrationTest {
                 .baseSettings(BaseSettings.builder().demoReservationNotificationEmails(List.of(randomEmail())).build())
                 .build();
 
-        String[] activeProfiles = environment.getActiveProfiles();
-
         // Execute
         restTestClient.put()
                 .uri("/platform/system-settings/base-settings").headers(authHeaderOf(actor))

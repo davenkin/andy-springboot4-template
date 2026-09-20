@@ -5,6 +5,6 @@ public enum ActorOriginChannel {
     PLATFORM_API,
     SCHEDULED_JOB,
     EVENT,
-    WEBHOOK,
-    INITIALIZATION,
+    ROBOT,
+    WEBHOOK
 }

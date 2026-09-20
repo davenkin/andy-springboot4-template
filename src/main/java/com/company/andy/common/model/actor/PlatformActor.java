@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.company.andy.common.model.actor.ActorType.PLATFORM_ACTOR;
 import static lombok.AccessLevel.PRIVATE;
 
-// Actor representing an supervisor
+// All actors other than OrgActor is represented by PlatformActor
 
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
 public class PlatformActor extends Actor {
@@ -20,12 +21,11 @@ public class PlatformActor extends Actor {
 
     public PlatformActor(String id,
                          String name,
-                         ActorType type,
                          String supervisorId,
                          Set<PlatformRole> roles,
                          PrincipalType principalType,
                          ActorOrigin origin) {
-        super(id, name, type, principalType, origin);
+        super(id, name, PLATFORM_ACTOR, principalType, origin);
         this.supervisorId = supervisorId;
         this.roles = roles;
     }

@@ -23,7 +23,7 @@ Example of using `@Cacheable` and `@CacheEvict`:
 @RequiredArgsConstructor
 public class SystemSettingsRepository extends AbstractMongoRepository<SystemSettings> {
    
-    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'THE_ONLY_ONE_SYSTEM_SETTINGS'")
+    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'SYSTEM_SETTINGS'")
     public SystemSettings cachedSystemSettings() {
         return super.byIdOptional(SYSTEM_SETTINGS_ID).orElse(null);
     }
@@ -80,7 +80,7 @@ public record CachedOrgEquipmentSummaries(List<EquipmentSummary> summaries) {
 
 5. In the Repository, create standalone methods for retrieving the cache:
 ```java
-    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'THE_ONLY_ONE_SYSTEM_SETTINGS'")
+    @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'SYSTEM_SETTINGS'")
     public SystemSettings cachedSystemSettings() {
         return super.byIdOptional(SYSTEM_SETTINGS_ID).orElse(null);
     }

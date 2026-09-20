@@ -118,7 +118,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         String principalType = getJwtPrincipalType(jwt);
 
         if (Objects.equals(principalType, SUPERVISOR.name())) {
-            return new ActorAuthenticationToken(Actor.createOrgSupervisorActor(
+            return new ActorAuthenticationToken(Actor.createSupervisedOrgActor(
                     jwt.getSubject(),
                     getJwtUserName(jwt),
                     getOrgIdFromHeader(request),
@@ -127,7 +127,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
         }
 
         if (Objects.equals(principalType, PLATFORM_SERVICE_CLIENT.name())) {
-            return new ActorAuthenticationToken(Actor.createOrgPlatformServiceClientActor(
+            return new ActorAuthenticationToken(Actor.createPlatformServiceClientOrgActor(
                     jwt.getSubject(),
                     getOrgIdFromHeader(request),
                     fromOrgApiCall(request)
