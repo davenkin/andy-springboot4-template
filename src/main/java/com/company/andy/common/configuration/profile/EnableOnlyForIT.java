@@ -9,5 +9,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 // Enable for integration tests, both "it-embedded" and "it-local" profiles are for integration tests
 @Retention(RUNTIME)
 @Profile("it-embedded | it-local")
-public @interface EnableForIT {
+public @interface EnableOnlyForIT {
 }

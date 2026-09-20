@@ -133,6 +133,16 @@ For both profiles:
   DomainEvents will firstly be stored into database before publishing, you may use `IntegrationTest.latestEventFor()` to
   verify the existence of domain events.
 
+#### TestIdContext
+todo: impl
+
+#### Fake authentication
+todo: impl, TestingActorJwtDecoder and authHeaderOf, authenticationManagerResolver()
+
+Reason:
+- Don't want to talk to actual public key as that introduces dependencies on network 
+- Simulates the real HTTP API calling process, other than just calling controller/service method directly
+
 #### Testing Controllers
 
 1. Prepared data

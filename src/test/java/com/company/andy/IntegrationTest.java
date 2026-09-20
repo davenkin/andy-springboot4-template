@@ -74,6 +74,7 @@ public abstract class IntegrationTest {
         return domainEvent == null ? null : eventClass.cast(domainEvent.getEvent());
     }
 
+    // put the actor json as fake JWT bearer header to ensure end-to-end HTTP integration testing
     protected Consumer<HttpHeaders> authHeaderOf(Actor actor) {
         return headers -> headers.setBearerAuth(getEncoder().encodeToString(objectMapper.writeValueAsString(actor).getBytes()));
     }

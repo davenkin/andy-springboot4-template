@@ -1,6 +1,8 @@
 # Explicitly pass through actor context
 
 // todo: update doc
+- 扮演时，principal type不会变，subjectid不会变
+- jwt的字段定义，以及一个表格规定不同类型的principal应该有哪些jwt字段
 
 ## Context
 

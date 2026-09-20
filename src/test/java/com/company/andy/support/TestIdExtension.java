@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.UUID;
 
+// Injects a random testId into every test method and make it globally accessible in the testing thread,
+// testId can be used to track the test execution and support verification for stub object
 public class TestIdExtension implements BeforeEachCallback, AfterEachCallback {
 
     @Override

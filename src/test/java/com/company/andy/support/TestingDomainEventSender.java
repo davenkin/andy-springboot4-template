@@ -1,6 +1,6 @@
 package com.company.andy.support;
 
-import com.company.andy.common.configuration.profile.EnableForIT;
+import com.company.andy.common.configuration.profile.EnableOnlyForIT;
 import com.company.andy.common.event.publish.DomainEventSender;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Getter
 @Component
-@EnableForIT
+@EnableOnlyForIT
 @RequiredArgsConstructor
 public class TestingDomainEventSender implements DomainEventSender {
     private final Map<String, PublishingDomainEvent> events = new ConcurrentHashMap<>();

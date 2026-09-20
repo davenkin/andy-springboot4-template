@@ -1,6 +1,6 @@
 package com.company.andy.support;
 
-import com.company.andy.common.configuration.profile.EnableForIT;
+import com.company.andy.common.configuration.profile.EnableOnlyForIT;
 import com.company.andy.common.configuration.property.CommonProperties;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.OrgActor;
@@ -16,16 +16,17 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Map;
 
+import static com.company.andy.common.model.actor.PrincipalType.*;
 import static com.company.andy.common.utils.Constants.*;
 import static java.util.Base64.getDecoder;
 
 // This bean automatically replaces the default JwtDecoder for integration tests,
 // enabling integration tests to pass an actor json string as the Authorization header,
-// which eliminates the need to retrieve the issuer's public key(security.oauth2.resourceserver.jwt.issuer-uri) for authentication
+// which eliminates the need to retrieve the issuer's actual public key for authentication
 
 @Slf4j
 @Component
-@EnableForIT
+@EnableOnlyForIT
 @RequiredArgsConstructor
 public class TestingActorJwtDecoder implements JwtDecoder {
     private final ObjectMapper objectMapper;
@@ -43,10 +44,14 @@ public class TestingActorJwtDecoder implements JwtDecoder {
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(600));
         if (actor instanceof OrgActor orgActor) {
-            builder.claim(JWT_CLAIM_ORG_ID, orgActor.getOrgId())
-                    .claim(JWT_CLAIM_REALM_ACCESS, Map.of(JWT_CLAIM_REALM_ACCESS_ROLES, orgActor.getRoles().stream().map(Enum::name).toList()))
-                    .issuer(commonProperties.orgJwtIssuer());
-        } else if (actor instanceof PlatformActor platformActor) {
+            builder.claim(JWT_CLAIM_ORG_ID, orgActor.getOrgId());
+            if (actor.getPrincipalType() == MEMBER || actor.getPrincipalType() == ORG_SERVICE_CLIENT) {
+                builder.claim(JWT_CLAIM_REALM_ACCESS, Map.of(JWT_CLAIM_REALM_ACCESS_ROLES, orgActor.getRoles().stream().map(Enum::name).toList()))
+                        .issuer(commonProperties.orgJwtIssuer());
+            } else {
+                builder.issuer(commonProperties.platformJwtIssuer());
+            }
+        } else if (actor instanceof PlatformActor platformActor && (actor.getPrincipalType() == SUPERVISOR || actor.getPrincipalType() == PLATFORM_SERVICE_CLIENT)) {
             builder.claim(JWT_CLAIM_REALM_ACCESS, Map.of(JWT_CLAIM_REALM_ACCESS_ROLES, platformActor.getRoles().stream().map(Enum::name).toList()))
                     .issuer(commonProperties.platformJwtIssuer());
         }

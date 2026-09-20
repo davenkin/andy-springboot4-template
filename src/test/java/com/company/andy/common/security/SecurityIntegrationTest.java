@@ -63,6 +63,21 @@ public class SecurityIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void platform_service_client_should_impersonate_org_actor_for_org_api() {
+        PlatformActor actor = randomPlatformServiceClientActor();
+        String orgId = randomOrgId();
+
+        String equipmentId = restTestClient.post()
+                .uri("/equipments")
+                .headers(authHeaderOf(actor)).header(ORG_ID_HEADER, orgId)
+                .body(randomCreateEquipmentCommand())
+                .exchange().expectStatus().isCreated()
+                .expectBody(ResponseId.class).returnResult().getResponseBody().id();
+
+        assertEquals(orgId, equipmentRepository.byId(equipmentId).getOrgId());
+    }
+
+    @Test
     void supervisor_should_get_401_error_if_both_jwt_org_id_and_org_id_header_missing_for_org_api() {
         PlatformActor supervisorActor = randomSupervisorActor();
 

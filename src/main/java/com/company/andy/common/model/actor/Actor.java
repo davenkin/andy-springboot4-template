@@ -60,6 +60,15 @@ public abstract class Actor {
         return new OrgActor(memberId, name, memberId, orgId, roles, MEMBER, origin);
     }
 
+    public static OrgActor createOrgServiceClientActor(String clientId,
+                                                       String orgId,
+                                                       ActorOrigin origin) {
+        requireNonBlank(clientId, "clientId must not be blank.");
+        requireNonBlank(orgId, "orgId must not be blank.");
+        requireNonNull(origin, "origin must not be null.");
+        return new OrgActor(clientId, null, null, orgId, Set.of(), ORG_SERVICE_CLIENT, origin);
+    }
+
     public static OrgActor createSupervisedOrgActor(String supervisorId,
                                                     String name,
                                                     String orgId,
@@ -69,15 +78,6 @@ public abstract class Actor {
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
         return new OrgActor(supervisorId, name, null, orgId, Set.of(), SUPERVISOR, origin);
-    }
-
-    public static OrgActor createOrgServiceClientActor(String clientId,
-                                                       String orgId,
-                                                       ActorOrigin origin) {
-        requireNonBlank(clientId, "clientId must not be blank.");
-        requireNonBlank(orgId, "orgId must not be blank.");
-        requireNonNull(origin, "origin must not be null.");
-        return new OrgActor(clientId, null, null, orgId, Set.of(), ORG_SERVICE_CLIENT, origin);
     }
 
     public static OrgActor createPlatformServiceClientOrgActor(String clientId,

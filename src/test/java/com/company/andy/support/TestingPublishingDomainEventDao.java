@@ -1,6 +1,6 @@
 package com.company.andy.support;
 
-import com.company.andy.common.configuration.profile.EnableForIT;
+import com.company.andy.common.configuration.profile.EnableOnlyForIT;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.publish.PublishingDomainEventDao;
 import com.company.andy.common.tracing.TracingService;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Component
-@EnableForIT
+@EnableOnlyForIT
 public class TestingPublishingDomainEventDao extends PublishingDomainEventDao {
     private final static Set<String> serializationTestedDomainEvents = new HashSet<>();
     private final ObjectMapper objectMapper;
@@ -31,10 +31,11 @@ public class TestingPublishingDomainEventDao extends PublishingDomainEventDao {
     @Override
     public void stage(List<DomainEvent> events) {
         super.stage(events);
-        events.forEach(this::testForJsonSerialization);
+        events.forEach(this::testJsonSerializationAndDeserialization);
     }
 
-    private void testForJsonSerialization(DomainEvent domainEvent) {
+    // ensure every DomainEvent to be serializable and deserializable to/from JSON
+    private void testJsonSerializationAndDeserialization(DomainEvent domainEvent) {
         String name = domainEvent.getClass().getName();
         if (!serializationTestedDomainEvents.contains(name)) {
             serializationTestedDomainEvents.add(name);

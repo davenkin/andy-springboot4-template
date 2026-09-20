@@ -14,7 +14,6 @@ import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class TestFixture {
     public static final String X_TEST_ID = "x-test-id";
-
     public static ActorOrigin RANDOM_ACTOR_ORIGIN = ActorOrigin.fromRobot("some-fake-origin");
 
     public static String randomDescription() {
@@ -25,16 +24,20 @@ public class TestFixture {
         return "MBR" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
+    public static String randomServiceClientId() {
+        return "SCL" + RandomStringUtils.secure().nextAlphanumeric(10);
+    }
+
     public static String randomSupervisorId() {
-        return "SUP" + RandomStringUtils.secure().nextAlphanumeric(10);
+        return "SPV" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
     public static String randomUserName() {
-        return "USERNAME_" + RandomStringUtils.secure().nextAlphanumeric(5);
+        return "UNM" + RandomStringUtils.secure().nextAlphanumeric(5);
     }
 
     public static String randomOrgId() {
-        return "ORG_" + RandomStringUtils.secure().nextAlphanumeric(10);
+        return "ORG" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
     public static OrgActor randomMemberActor() {
@@ -43,6 +46,14 @@ public class TestFixture {
 
     public static PlatformActor randomSupervisorActor() {
         return Actor.createSupervisorActor(randomSupervisorId(), randomUserName(), Set.of(), RANDOM_ACTOR_ORIGIN);
+    }
+
+    public static OrgActor randomOrgServiceClientActor() {
+        return Actor.createOrgServiceClientActor(randomServiceClientId(), randomOrgId(), RANDOM_ACTOR_ORIGIN);
+    }
+
+    public static PlatformActor randomPlatformServiceClientActor() {
+        return Actor.createPlatformServiceClientActor(randomServiceClientId(), RANDOM_ACTOR_ORIGIN);
     }
 
     public static PlatformActor randomAnonymousActor() {

@@ -19,9 +19,6 @@ spring:
     bootstrap-servers: localhost:9125
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:7125/realms/test-realm
       client:
         registration:
           keycloak-service-account:
