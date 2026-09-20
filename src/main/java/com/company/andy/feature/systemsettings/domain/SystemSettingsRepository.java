@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.company.andy.common.model.actor.Actor.createRobotActor;
+import static com.company.andy.common.model.actor.Actor.createInternalRobotActor;
 import static com.company.andy.common.model.actor.ActorOrigin.fromInitialization;
 import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
@@ -39,7 +39,7 @@ public class SystemSettingsRepository extends AbstractMongoRepository<SystemSett
     @PostConstruct
     public void init() {
         if (!exists(SYSTEM_SETTINGS_ID)) {
-            PlatformActor actor = createRobotActor("SystemSettingsInitializer", fromInitialization(this.getClass().getSimpleName()));
+            PlatformActor actor = createInternalRobotActor("SystemSettingsInitializer", fromInitialization(this.getClass().getSimpleName()));
             SystemSettings initSystemSettings = systemSettingsFactory.createSystemSettings(actor);
             super.save(initSystemSettings);
         }

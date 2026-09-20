@@ -106,19 +106,19 @@ public abstract class Actor {
 
     public static PlatformActor createScheduledJobActor(String jobName) {
         requireNonBlank(jobName, "jobName must not be blank.");
-        return new PlatformActor(jobName, null, PLATFORM_ACTOR, null, Set.of(), ROBOT, fromScheduledJob(jobName));
+        return new PlatformActor(jobName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, fromScheduledJob(jobName));
     }
 
     public static PlatformActor createEventHandlerActor(String handlerName, ActorOrigin origin) {
         requireNonBlank(handlerName, "handlerName must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(handlerName, null, PLATFORM_ACTOR, null, Set.of(), ROBOT, origin);
+        return new PlatformActor(handlerName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, origin);
     }
 
-    public static PlatformActor createRobotActor(String robotName, ActorOrigin origin) {
+    public static PlatformActor createInternalRobotActor(String robotName, ActorOrigin origin) {
         requireNonBlank(robotName, "robotName must not be blank.");
         requireNonNull(origin, "origin must not be null.");
-        return new PlatformActor(robotName, null, PLATFORM_ACTOR, null, Set.of(), ROBOT, origin);
+        return new PlatformActor(robotName, null, PLATFORM_ACTOR, null, Set.of(), INTERNAL_ROBOT, origin);
     }
 
     public static PlatformActor createAnonymousActor(ActorOrigin origin) {

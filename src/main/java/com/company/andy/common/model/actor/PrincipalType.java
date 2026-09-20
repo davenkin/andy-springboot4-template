@@ -5,6 +5,7 @@ public enum PrincipalType {
     SUPERVISOR,
     ORG_SERVICE_CLIENT,
     PLATFORM_SERVICE_CLIENT,
-    ROBOT,
+    INTERNAL_ROBOT,
+    WEBHOOK_RECEIVER,
     ANONYMOUS
 }
