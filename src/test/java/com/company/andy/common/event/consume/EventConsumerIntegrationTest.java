@@ -71,9 +71,9 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         eventConsumer.consumeDomainEvent(createdEvent);
 
         assertEquals(1,
-                testingEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+                testingEquipmentCreatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
         assertEquals(0,
-                testingEquipmentStatusUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
+                testingEquipmentStatusUpdatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
                         .count());
         assertTrue(consumingEventDao.exists(createdEvent.getId(), testingEquipmentCreatedEventHandler));
     }
@@ -88,9 +88,9 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         eventConsumer.consumeDomainEvent(updatedEvent);
 
         assertEquals(1,
-                testingEquipmentUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(updatedEvent.getId())).count());
+                testingEquipmentUpdatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(updatedEvent.getId())).count());
         assertEquals(1,
-                testingEquipmentNameUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(updatedEvent.getId()))
+                testingEquipmentNameUpdatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(updatedEvent.getId()))
                         .count());
         assertTrue(consumingEventDao.exists(updatedEvent.getId(), testingEquipmentUpdatedEventHandler));
         assertTrue(consumingEventDao.exists(updatedEvent.getId(), testingEquipmentNameUpdatedEventHandler));
@@ -104,11 +104,11 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
         eventConsumer.consumeDomainEvent(createdEvent);
 
-        Instant urgentHandledAt = testingUrgentEquipmentCreatedEventHandler.handledEvents.stream()
+        Instant urgentHandledAt = testingUrgentEquipmentCreatedEventHandler.getHandledEvents().stream()
                 .filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
-        Instant secondHandledAt = testingEquipmentCreatedEventHandler.handledEvents.stream()
+        Instant secondHandledAt = testingEquipmentCreatedEventHandler.getHandledEvents().stream()
                 .filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
-        Instant thirdHandledAt = testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream()
+        Instant thirdHandledAt = testingIdempotentEquipmentCreatedEventHandler.getHandledEvents().stream()
                 .filter(it -> it.event().getId().equals(createdEvent.getId())).findFirst().get().handledAt();
         assertTrue(urgentHandledAt.isBefore(secondHandledAt));
         assertTrue(secondHandledAt.isBefore(thirdHandledAt));
@@ -151,11 +151,11 @@ class EventConsumerIntegrationTest extends IntegrationTest {
         assertThrows(RuntimeException.class, () -> eventConsumer.consumeDomainEvent(holderUpdatedEvent));
 
         assertEquals(1,
-                testingEquipmentHolderUpdatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(holderUpdatedEvent.getId()))
+                testingEquipmentHolderUpdatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(holderUpdatedEvent.getId()))
                         .count());
-        assertEquals(1, testingErrorNonTxEquipmentHolderUpdatedEventHandler.handledEvents.stream()
+        assertEquals(1, testingErrorNonTxEquipmentHolderUpdatedEventHandler.getHandledEvents().stream()
                 .filter(it -> it.event().getId().equals(holderUpdatedEvent.getId())).count());
-        assertEquals(1, testingErrorTxEquipmentHolderUpdatedEventHandler.handledEvents.stream()
+        assertEquals(1, testingErrorTxEquipmentHolderUpdatedEventHandler.getHandledEvents().stream()
                 .filter(it -> it.event().getId().equals(holderUpdatedEvent.getId())).count());
     }
 
@@ -167,12 +167,12 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
         eventConsumer.consumeDomainEvent(createdEvent);
         assertEquals(1,
-                testingEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+                testingEquipmentCreatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
 
         // consume again
         eventConsumer.consumeDomainEvent(createdEvent);
         assertEquals(1,
-                testingEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
+                testingEquipmentCreatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId())).count());
     }
 
     @Test
@@ -183,13 +183,13 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
         eventConsumer.consumeDomainEvent(createdEvent);
         assertEquals(1,
-                testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
+                testingIdempotentEquipmentCreatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
                         .count());
 
         // consume again
         eventConsumer.consumeDomainEvent(createdEvent);
         assertEquals(2,
-                testingIdempotentEquipmentCreatedEventHandler.handledEvents.stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
+                testingIdempotentEquipmentCreatedEventHandler.getHandledEvents().stream().filter(it -> it.event().getId().equals(createdEvent.getId()))
                         .count());
     }
 

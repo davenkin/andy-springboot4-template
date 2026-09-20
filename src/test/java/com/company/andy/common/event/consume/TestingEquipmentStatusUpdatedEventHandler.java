@@ -2,6 +2,7 @@ package com.company.andy.common.event.consume;
 
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentStatusUpdatedEvent;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Getter
 @Component
 @RequiredArgsConstructor
 public class TestingEquipmentStatusUpdatedEventHandler extends AbstractDomainEventHandler<EquipmentStatusUpdatedEvent> {
-    public List<HandledEvent> handledEvents = new ArrayList<>();
+    private List<HandledEvent> handledEvents = new ArrayList<>();
 
     @Override
     protected void handle(EquipmentStatusUpdatedEvent event, PlatformActor actor) {

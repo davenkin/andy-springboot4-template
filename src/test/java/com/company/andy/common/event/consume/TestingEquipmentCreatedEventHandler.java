@@ -2,6 +2,7 @@ package com.company.andy.common.event.consume;
 
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -12,11 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Getter
 @Order(1)
 @Component
 @RequiredArgsConstructor
 public class TestingEquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
-    public List<HandledEvent> handledEvents = new ArrayList<>();
+    private List<HandledEvent> handledEvents = new ArrayList<>();
 
     @Override
     protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
