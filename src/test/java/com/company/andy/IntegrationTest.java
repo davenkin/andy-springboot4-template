@@ -5,7 +5,9 @@ import com.company.andy.common.event.DomainEventType;
 import com.company.andy.common.event.consume.EventConsumer;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.support.TestIdExtension;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +37,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @ActiveProfiles("it-embedded")
 //@ActiveProfiles("it-local")
 @AutoConfigureRestTestClient
+@ExtendWith(TestIdExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
 

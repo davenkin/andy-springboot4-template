@@ -13,6 +13,8 @@ import java.util.UUID;
 import static org.apache.commons.lang3.RandomUtils.secure;
 
 public class TestFixture {
+    public static final String X_TEST_ID = "x-test-id";
+
     public static ActorOrigin RANDOM_ACTOR_ORIGIN = ActorOrigin.fromRobot("some-fake-origin");
 
     public static String randomDescription() {

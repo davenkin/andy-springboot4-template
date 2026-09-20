@@ -1,12 +1,15 @@
 package com.company.andy;
 
+import com.company.andy.support.TestIdContext;
 import de.flapdoodle.embed.mongo.commands.MongodArguments;
 import de.flapdoodle.embed.mongo.config.Storage;
 import org.springframework.boot.resttestclient.autoconfigure.RestTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 
+import static com.company.andy.TestFixture.X_TEST_ID;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -24,7 +27,19 @@ public class IntegrationTestConfiguration {
 
     @Bean
     RestTestClientBuilderCustomizer restTestClientBuilderCustomizer() {
-        return builder -> builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE);
+        return builder -> builder
+                .requestInterceptor(testIdInterceptor())
+                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE);
+    }
+
+    private static ClientHttpRequestInterceptor testIdInterceptor() {
+        return (request, body, execution) -> {
+            String testId = TestIdContext.getTestId();
+            if (testId != null) {
+                request.getHeaders().set(X_TEST_ID, testId);
+            }
+            return execution.execute(request, body);
+        };
     }
 
 }
