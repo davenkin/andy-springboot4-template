@@ -17,7 +17,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {
-    private final MaintenanceReminderJob maintenanceReminderJob;
+    private final MaintenanceReminderScheduledJob maintenanceReminderScheduledJob;
 
     @Scheduled(cron = "0 10 2 1 * ?")
     @SchedulerLock(name = "remindForEquipmentMaintenance")
@@ -25,6 +25,6 @@ public class EquipmentJobScheduler {
         assertLocked();
 
         PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderJob::run);
+        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderScheduledJob::run);
     }
 }

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
+class RemoveOldMaintenanceRecordsScheduledJobTest extends IntegrationTest {
     @Autowired
     private MaintenanceRecordCommandService maintenanceRecordCommandService;
 
@@ -32,7 +32,7 @@ class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
     private EquipmentCommandService equipmentCommandService;
 
     @Autowired
-    private RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
+    private RemoveOldMaintenanceRecordsScheduledJob removeOldMaintenanceRecordsScheduledJob;
 
     @Autowired
     private MaintenanceRecordRepository maintenanceRecordRepository;
@@ -51,7 +51,7 @@ class RemoveOldMaintenanceRecordsJobTest extends IntegrationTest {
         mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
         // Execute
-        removeOldMaintenanceRecordsJob.run();
+        removeOldMaintenanceRecordsScheduledJob.run();
 
         // Verify
         assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));

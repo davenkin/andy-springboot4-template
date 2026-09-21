@@ -20,7 +20,7 @@ import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
+class DomainEventHouseKeepingScheduledJobIntegrationTest extends IntegrationTest {
     @Autowired
     private ConsumingEventDao consumingEventDao;
 
@@ -28,7 +28,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
     private PublishingDomainEventDao publishingDomainEventDao;
 
     @Autowired
-    private DomainEventHouseKeepingJob domainEventHouseKeepingJob;
+    private DomainEventHouseKeepingScheduledJob domainEventHouseKeepingScheduledJob;
 
     @Autowired
     private EquipmentCreatedEventHandler equipmentCreatedEventHandler;
@@ -44,7 +44,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
         assertNotNull(publishingDomainEventDao.byId(event1.getId()));
         assertNotNull(publishingDomainEventDao.byId(event2.getId()));
 
-        domainEventHouseKeepingJob.removeOldPublishingDomainEvents(100);
+        domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(100);
 
         assertNull(publishingDomainEventDao.byId(event1.getId()));
         assertNotNull(publishingDomainEventDao.byId(event2.getId()));
@@ -64,7 +64,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
         assertTrue(consumingEventDao.exists(event1.getId(), equipmentCreatedEventHandler));
         assertTrue(consumingEventDao.exists(event2.getId(), equipmentCreatedEventHandler));
 
-        domainEventHouseKeepingJob.removeOldConsumingDomainEvents(100);
+        domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(100);
 
         assertFalse(consumingEventDao.exists(event1.getId(), equipmentCreatedEventHandler));
         assertTrue(consumingEventDao.exists(event2.getId(), equipmentCreatedEventHandler));

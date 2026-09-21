@@ -17,7 +17,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 @RequiredArgsConstructor
 public class DomainEventJobScheduler {
     private final DomainEventPublishJob domainEventPublishJob;
-    private final DomainEventHouseKeepingJob domainEventHouseKeepingJob;
+    private final DomainEventHouseKeepingScheduledJob domainEventHouseKeepingScheduledJob;
 
     // Runs every 5 minutes to publish staged domain events in case the real time publishing mechanism fails
     // This job should not use @SchedulerLock as DomainEventPublisher.publishStagedDomainEvents() already uses an internal distributed lock
@@ -37,13 +37,13 @@ public class DomainEventJobScheduler {
         PlatformActor actor = createScheduledJobActor("removeOldDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> {
             try {
-                domainEventHouseKeepingJob.removeOldPublishingDomainEvents(100);
+                domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(100);
             } catch (Throwable t) {
                 log.error("Failed remove old publishing domain events from mongo.", t);
             }
 
             try {
-                domainEventHouseKeepingJob.removeOldConsumingDomainEvents(100);
+                domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(100);
             } catch (Throwable t) {
                 log.error("Failed remove old consuming domain events from mongo.", t);
             }

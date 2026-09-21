@@ -17,7 +17,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class MaintenanceRecordJobScheduler {
-    private final RemoveOldMaintenanceRecordsJob removeOldMaintenanceRecordsJob;
+    private final RemoveOldMaintenanceRecordsScheduledJob removeOldMaintenanceRecordsScheduledJob;
 
     @Scheduled(cron = "0 0 2 1 * ?")
     @SchedulerLock(name = "removeOldMaintenanceRecords")
@@ -25,6 +25,6 @@ public class MaintenanceRecordJobScheduler {
         assertLocked();
 
         PlatformActor actor = createScheduledJobActor("removeOldMaintenanceRecords");
-        ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsJob::run);
+        ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsScheduledJob::run);
     }
 }

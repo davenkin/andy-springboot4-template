@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.company.andy.common.model.actor.Actor.createAnonymousActor;
-import static com.company.andy.common.model.actor.ActorOrigin.fromOrgApiCall;
+import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Profile("local | it-embedded | it-local")
@@ -38,7 +38,7 @@ public class DemoReservationController {
     public ResponseId createDemoReservation(
             @RequestBody @Valid CreateDemoReservationCommand command,
             HttpServletRequest request) {
-        PlatformActor actor = createAnonymousActor(fromOrgApiCall(request));
+        PlatformActor actor = createAnonymousActor(fromPlatformApiCall(request));
         return new ResponseId(this.demoReservationCommandService.createDemoReservation(command, actor));
     }
 

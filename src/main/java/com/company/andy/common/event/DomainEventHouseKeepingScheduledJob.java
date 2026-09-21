@@ -21,7 +21,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DomainEventHouseKeepingJob {
+public class DomainEventHouseKeepingScheduledJob {
     private final MongoTemplate mongoTemplate;
 
     @Retryable(multiplier = 3, maxRetries = 3)

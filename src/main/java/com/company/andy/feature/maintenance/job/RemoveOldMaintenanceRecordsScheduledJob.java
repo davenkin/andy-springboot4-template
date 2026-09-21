@@ -17,7 +17,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RemoveOldMaintenanceRecordsJob {
+public class RemoveOldMaintenanceRecordsScheduledJob {
     private static final int KEEP_DAYS = 180;
     private final MongoTemplate mongoTemplate;
 
