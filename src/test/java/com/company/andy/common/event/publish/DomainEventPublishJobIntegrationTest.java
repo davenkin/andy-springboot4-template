@@ -57,10 +57,10 @@ class DomainEventPublishJobIntegrationTest extends IntegrationTest {
         assertEquals(PUBLISH_SUCCEED, publishingDomainEventDao.byId(event3.getId()).getStatus());
         assertEquals(PUBLISH_SUCCEED, publishingDomainEventDao.byId(event4.getId()).getStatus());
 
-        assertTrue(domainEventSender.getEvents().containsKey(event1.getId()));
-        assertTrue(domainEventSender.getEvents().containsKey(event2.getId()));
-        assertTrue(domainEventSender.getEvents().containsKey(event3.getId()));
-        assertTrue(domainEventSender.getEvents().containsKey(event4.getId()));
+        assertTrue(domainEventSender.hasEvent(event1.getId()));
+        assertTrue(domainEventSender.hasEvent(event2.getId()));
+        assertTrue(domainEventSender.hasEvent(event3.getId()));
+        assertTrue(domainEventSender.hasEvent(event4.getId()));
     }
 
     @Test
