@@ -1,5 +1,11 @@
 package com.company.andy.common.event.consume;
 
+import static java.util.Collections.synchronizedList;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import lombok.Getter;
@@ -8,20 +14,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 @Slf4j
 @Getter
 @Order(1)
 @Component
 @RequiredArgsConstructor
 public class TestingEquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
-    private List<HandledEvent> handledEvents = new ArrayList<>();
+  private final List<HandledEvent> handledEvents = synchronizedList(new ArrayList<>());
 
-    @Override
-    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
-        this.handledEvents.add(new HandledEvent(event, Instant.now()));
+  @Override
+  protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+    synchronized (this.handledEvents) {
+      this.handledEvents.add(new HandledEvent(event, Instant.now()));
     }
+  }
 }
