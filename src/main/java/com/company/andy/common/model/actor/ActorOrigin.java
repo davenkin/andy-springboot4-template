@@ -19,7 +19,6 @@ public record ActorOrigin(ActorOriginChannel type, String originId) {
 
     public static ActorOrigin fromPlatformApiCall(HttpServletRequest request) {
         requireNonNull(request, "request must not be null.");
-
         String httpMethod = request.getMethod();
         String path = request.getRequestURI();
         return new ActorOrigin(PLATFORM_API, "%s[%s]".formatted(httpMethod, path));
@@ -38,7 +37,6 @@ public record ActorOrigin(ActorOriginChannel type, String originId) {
 
     public static ActorOrigin fromRobot(String name) {
         requireNonBlank(name, "name must not be blank.");
-
         return new ActorOrigin(ROBOT, name);
     }
 

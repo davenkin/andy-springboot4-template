@@ -44,7 +44,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
         assertNotNull(publishingDomainEventDao.byId(event1.getId()));
         assertNotNull(publishingDomainEventDao.byId(event2.getId()));
 
-        domainEventHouseKeepingJob.removeOldPublishingDomainEventsFromMongo(100);
+        domainEventHouseKeepingJob.removeOldPublishingDomainEvents(100);
 
         assertNull(publishingDomainEventDao.byId(event1.getId()));
         assertNotNull(publishingDomainEventDao.byId(event2.getId()));
@@ -64,7 +64,7 @@ class DomainEventHouseKeepingJobIntegrationTest extends IntegrationTest {
         assertTrue(consumingEventDao.exists(event1.getId(), equipmentCreatedEventHandler));
         assertTrue(consumingEventDao.exists(event2.getId(), equipmentCreatedEventHandler));
 
-        domainEventHouseKeepingJob.removeOldConsumingDomainEventsFromMongo(100);
+        domainEventHouseKeepingJob.removeOldConsumingDomainEvents(100);
 
         assertFalse(consumingEventDao.exists(event1.getId(), equipmentCreatedEventHandler));
         assertTrue(consumingEventDao.exists(event2.getId(), equipmentCreatedEventHandler));

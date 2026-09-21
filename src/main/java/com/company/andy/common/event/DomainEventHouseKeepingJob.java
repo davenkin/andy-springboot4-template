@@ -25,18 +25,18 @@ public class DomainEventHouseKeepingJob {
     private final MongoTemplate mongoTemplate;
 
     @Retryable(multiplier = 3, maxRetries = 3)
-    public void removeOldPublishingDomainEventsFromMongo(int days) {
+    public void removeOldPublishingDomainEvents(int olderThanDays) {
         log.info("Start remove old publishing domain events from mongodb.");
-        Query query = Query.query(where(raisedAt).lt(now().minus(days, DAYS)));
+        Query query = Query.query(where(raisedAt).lt(now().minus(olderThanDays, DAYS)));
         DeleteResult result = mongoTemplate.remove(query, PUBLISHING_EVENT_COLLECTION);
-        log.info("Removed {} old publishing domain events from mongodb which are more than {} days old.", result.getDeletedCount(), days);
+        log.info("Removed {} old publishing domain events which are more than {} days old.", result.getDeletedCount(), olderThanDays);
     }
 
     @Retryable(multiplier = 3, maxRetries = 3)
-    public void removeOldConsumingDomainEventsFromMongo(int days) {
+    public void removeOldConsumingDomainEvents(int olderThanDays) {
         log.info("Start remove old consuming domain events from mongodb.");
-        Query query = Query.query(where(consumedAt).lt(now().minus(days, DAYS)));
+        Query query = Query.query(where(consumedAt).lt(now().minus(olderThanDays, DAYS)));
         DeleteResult result = mongoTemplate.remove(query, CONSUMING_EVENT_COLLECTION);
-        log.info("Removed {} old consuming domain events from mongodb which are more than {} days old.", result.getDeletedCount(), days);
+        log.info("Removed {} old consuming domain events which are more than {} days old.", result.getDeletedCount(), olderThanDays);
     }
 }

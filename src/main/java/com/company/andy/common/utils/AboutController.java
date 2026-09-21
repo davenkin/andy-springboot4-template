@@ -19,7 +19,6 @@ public class AboutController {
 
     @GetMapping(value = "/about")
     public AboutInfo about() {
-        log.info("About controller accessed.");
         return new AboutInfo("Running! Started at " + DEPLOYED_TIME, Instant.now().toString());
     }
 

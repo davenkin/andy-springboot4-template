@@ -16,7 +16,7 @@ import java.io.IOException;
 @NullMarked
 @RequiredArgsConstructor
 public class AddTraceIdToResponseHeaderFilter extends OncePerRequestFilter {
-    private static final String TRACE_ID_HEADER = "X-Trace-Id";
+    private static final String TRACE_ID_HEADER = "x-trace-id";
     private final TracingService tracingService;
 
     @Override

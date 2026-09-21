@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @Component
 @NullMarked
-public class JwtRelayInterceptor implements ClientHttpRequestInterceptor {
+public class JwtRelayRestClientRequestInterceptor implements ClientHttpRequestInterceptor {
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request,
