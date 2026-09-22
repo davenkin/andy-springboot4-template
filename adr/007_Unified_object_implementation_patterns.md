@@ -1,4 +1,4 @@
-# Object implementation patterns
+# Unified object implementation patterns
 
 ## Context
 

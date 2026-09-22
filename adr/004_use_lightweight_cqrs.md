@@ -36,7 +36,7 @@ fulfil its job.
 Based on the above, the **lightweight CQRS** approach meets our needs and is our way to go. Meanwhile, you can still
 firstly fetch domain models using `Repository` and then convert to query models.
 
-![cqrs](../ADRs/asset/cqrs.png)
+![cqrs](/asset/cqrs.png)
 
 ## Implementation
 

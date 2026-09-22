@@ -28,7 +28,7 @@ like Kafka.
 
 One caveat with the Transactional Outbox pattern is that it might result in duplicated messages, which requires the
 consumer to be idempotent. But don't worry about this as we have solutions for such case, please
-refer to [event consuming](./009_event_consuming.md) for more detail.
+refer to [event consuming](011_event_consuming.md) for more detail.
 
 ## Implementation
 
@@ -49,11 +49,11 @@ After the entity is saved into MongoDB, the event infrastructure will take care 
 automatically.
 
 More details on creating domain events please refer
-to [DomainEvent section of object implementation patterns](./007_object_implementation_patterns.md#domainevent).
+to [DomainEvent section of object implementation patterns](007_Unified_object_implementation_patterns.md#domainevent).
 
 #### Domain event publishing architecture
 
-![domain event publishing](../ADRs/asset/domain-event-publishing.png)
+![domain event publishing](/asset/domain-event-publishing.png)
 
 The following steps are already been implemented for you, but for illustration let's walk them through.
 

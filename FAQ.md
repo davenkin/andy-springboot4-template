@@ -1,3 +1,4 @@
+- todo: move contents to other places
 ### How Kafka is disabled in integration tests?
 
 - In `application-it-embedded.yaml` or `application-it-local.yaml`, the KafkaAutoConfiguration is excluded which disables the consuming side:

@@ -77,7 +77,7 @@ events with type `EquipmentCreatedEvent`.
 
 ## Event consuming infrastructure
 
-![event consuming](../ADRs/asset/event-consuming.png)
+![event consuming](/asset/event-consuming.png)
 
 The below section explains how the event consuming infrastructure works.
 

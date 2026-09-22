@@ -5,23 +5,23 @@ This is a template Spring Boot 4 project with the following features:
 - Data persistence using MongoDB
 - Messaging using Kafka
 - Caching using Redis
-- API documentation using [Springdoc](./ADRs/011_api_documentation.md)
+- API documentation using [Springdoc](adr/018_api_documentation.md)
 - Data migration using [Mongock](https://mongock.io/)
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
 - Distributed lock for scheduled jobs using [Shedlock](https://github.com/lukas-krecan/ShedLock)
-- Standardized [folder structure](./ADRs/005_project_structure.md) with business first approach
+- Standardized [folder structure](adr/002_project_structure.md) with business first approach
 - Standardized pagination implementation with [PageQuery](src/main/java/com/company/andy/common/utils/PageQuery.java)
   and [PagedResponse](src/main/java/com/company/andy/common/utils/PagedResponse.java)
 - Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java)
 - [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java) as first class citizen
-- [Domain event publishing](./ADRs/008_domain_event_publishing.md)
+- [Domain event publishing](adr/010_domain_event_publishing.md)
   using [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern
-- [Event consuming](./ADRs/009_event_consuming.md) mechanism with idempotency support
-- Standardized [exception handling](./ADRs/012_exception_handling.md)
-- Lightweight [Command Query Responsibility Segregation (CQRS)](./ADRs/004_use_lightweight_cqrs.md) implementation
-- Domain modeling using [Domain Driven Design (DDD)](./ADRs/003_use_ddd.md)
-- Standardized [request process flow](./ADRs/006_request_process_flow.md)
-- Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
+- [Event consuming](adr/011_event_consuming.md) mechanism with idempotency support
+- Standardized [exception handling](adr/012_exception_handling.md)
+- Lightweight [Command Query Responsibility Segregation (CQRS)](adr/004_use_lightweight_cqrs.md) implementation
+- Domain modeling using [Domain Driven Design (DDD)](adr/003_use_ddd.md)
+- Standardized [request process flow](adr/005_unified_request_process_flow.md)
+- Standardized [object implementation pattern](adr/007_Unified_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
 - [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceClientRestClient`) client and JWT token relay client(`jwtRelayRestClient`).
@@ -40,7 +40,7 @@ This is a template Spring Boot 4 project with the following features:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default settings:
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default settings:（todo：用表格）
         - Keycloak Admin user for managing Keycloak server:
             - Username: `admin`
             - Password:`admin`
@@ -56,17 +56,20 @@ This is a template Spring Boot 4 project with the following features:
             - Username: `test-org-admin`
             - Password: `11111111`
             - Role: `org_admin`
+        - Org service client:
+            - todo:
         - Supervisor:
-            - Realm: `test-realm`
+            - Realm: `platform`
             - Client: `test-client`
             - Username: `test-supervisor`
             - Password: `11111111`
             - Role: `supervisor`
-        - Service account:
-            - Realm: `test-realm`
-            - Client: `test-service-account-client`
-            - Client secret: `pEuTKGJU2WicZFaEMsAKuwPBKhSChRKd`
+        - Platform service client:
+            - Realm: `platform`
+            - Client: `todo`
+            - Client secret: `todo`
         - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
+        - Toto: claim field of `principal_type`
     - `Redis`: localhost:6125
 - Run the application locally in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
@@ -84,20 +87,19 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to run tests
 
-- We do both integration testing and unit testing with a preference on integration testing
+- We do both integration testing and unit testing with a preference on integration testing。
 - To run tests, locate them inside IDE and run them directly from there.
-- We have a [testing strategy](./ADRs/010_testing_strategy.md), please read it before writing any tests
+- We have a [testing strategy](adr/014_testing_strategy.md), please read it before writing any tests
 - There is no need to start docker-compose for running integration tests, as they do not use dockerized MongoDB or Redis
   but their embedded versions.
 
 ## Architecture Decision Records (ADRs)
 
 This project uses [Architecture Decision Records (ADRs)](https://adr.github.io/) to document important architectural
-decisions. ADRs are stored in the `ADRs` directory and follow a [specific format](ADRs/000_what_is_adr.md). You should go through all the ADRs before you start implementing any code, as they contain important information about the architecture and coding practices of this project.
+decisions. ADRs are stored in the `adr` directory and follow a [specific format](adr/000_what_is_adr.md). You should go through all the ADRs before you start implementing any code, as they contain important information about the architecture and coding practices of this project.
 
-// todo: 添加如何导出keycloak的配置
 
-## Sample implementation code
+## Sample feature code
 
 There are four sample Aggregate Roots which serve as reference implementations:
 - [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs to be managed under an org, such as a computer. 
@@ -107,6 +109,12 @@ There are four sample Aggregate Roots which serve as reference implementations:
 
 The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.
 
-## What's left for you?
-- Authorization & Roles, todo: add doc
+## What's not demonstrated in this template project?
+- Authorization & Roles, 
+- org_id 和 principal_type claim field in JWT token,没有实现，需要自己实现
+
+
+## TODO
+- todo: add doc
 - todo: rename task to action
+- todo: 说明如何使用drawio导出可再次编辑的svg，以及如何使用plantuml
