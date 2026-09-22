@@ -271,7 +271,7 @@ public class DemoReservationCommandService {
 - Use [RestClient](../src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for calling
   external APIs. There are two RestClients which vary on how JWT token is obtained:
     - `jwtRelayRestClient`: relays current actor's JWT token to call external APIs
-    - `serviceAccountRestClient`: represents the application itself with JWT token being obtained automatically by
+    - `serviceClientRestClient`: represents the application itself with JWT token being obtained automatically by
       Spring using Oauth2 client_credentials grant type
 - [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
   and [SpringKafkaDomainEventSender](../src/main/java/com/company/andy/common/event/publish/infrastructure/SpringKafkaDomainEventSender.java)

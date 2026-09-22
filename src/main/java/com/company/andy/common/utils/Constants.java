@@ -11,7 +11,7 @@ public class Constants {
     public static final String ORG_ID_HEADER = "x-org-id";
     public static final String KEYCLOAK_SERVICE_ACCOUNT = "keycloak-service-account";
     public static final String JWT_RELAY_REST_CLIENT = "jwtRelayRestClient";
-    public static final String SERVICE_ACCOUNT_REST_CLIENT = "serviceAccountRestClient";
+    public static final String SERVICE_CLIENT_REST_CLIENT = "serviceClientRestClient";
     public static final String APPLICATION_TASK_EXECUTOR = "applicationTaskExecutor";
     public static final String THREAD_POOL_TASK_EXECUTOR = "threadPoolTaskExecutor";
 

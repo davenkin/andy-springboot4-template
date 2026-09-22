@@ -24,7 +24,7 @@ This is a template Spring Boot 4 project with the following features:
 - Standardized [object implementation pattern](./ADRs/007_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
-- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceAccountRestClient`) client and JWT token relay client(`jwtRelayRestClient`).
+- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceClientRestClient`) client and JWT token relay client(`jwtRelayRestClient`).
 
 ## Tech stack
 
@@ -69,7 +69,7 @@ This is a template Spring Boot 4 project with the following features:
         - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
     - `Redis`: localhost:6125
 - Run the application locally in one of the following ways:
-    - `./run.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
+    - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
       running.
     - Run `main()` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
     - By default, the `local` profile(`application-local.yaml`) is used for all the above methods.
