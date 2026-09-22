@@ -21,7 +21,7 @@ This is a template Spring Boot 4 project with the following features:
 - Lightweight [Command Query Responsibility Segregation (CQRS)](adr/004_use_lightweight_cqrs.md) implementation
 - Domain modeling using [Domain Driven Design (DDD)](adr/003_use_ddd.md)
 - Standardized [request process flow](adr/005_unified_request_process_flow.md)
-- Standardized [object implementation pattern](adr/007_Unified_object_implementation_patterns.md)
+- Standardized [object implementation pattern](adr/007_unified_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
 - [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceClientRestClient`) client and JWT token relay client(`jwtRelayRestClient`).

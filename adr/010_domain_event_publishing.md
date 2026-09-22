@@ -49,7 +49,7 @@ After the entity is saved into MongoDB, the event infrastructure will take care 
 automatically.
 
 More details on creating domain events please refer
-to [DomainEvent section of object implementation patterns](007_Unified_object_implementation_patterns.md#domainevent).
+to [DomainEvent section of object implementation patterns](007_unified_object_implementation_patterns.md#domainevent).
 
 #### Domain event publishing architecture
 
