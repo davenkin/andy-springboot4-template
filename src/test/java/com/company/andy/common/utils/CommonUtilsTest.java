@@ -47,7 +47,7 @@ class CommonUtilsTest {
             singleParameterizedArgumentClassOf(theObject.getClass());
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
-        assertTrue(exception.getDetailMessage().contains("Expecting exactly one parameterized type argument"));
+        assertTrue(exception.toDetailMessage().contains("Expecting exactly one parameterized type argument"));
     }
 
     @Test
@@ -57,8 +57,8 @@ class CommonUtilsTest {
             singleParameterizedArgumentClassOf(theObject.getClass());
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
-        assertTrue(exception.getDetailMessage().contains("The argument type"));
-        assertTrue(exception.getDetailMessage().contains("is not of Class type"));
+        assertTrue(exception.toDetailMessage().contains("The argument type"));
+        assertTrue(exception.toDetailMessage().contains("is not of Class type"));
     }
 
     @Test
@@ -67,8 +67,8 @@ class CommonUtilsTest {
             singleParameterizedArgumentClassOf(String.class);
         });
         assertEquals(SYSTEM_ERROR, exception.getCode());
-        assertTrue(exception.getDetailMessage().contains("The super class of"));
-        assertTrue(exception.getDetailMessage().contains("is not of parameterized type."));
+        assertTrue(exception.toDetailMessage().contains("The super class of"));
+        assertTrue(exception.toDetailMessage().contains("is not of parameterized type."));
     }
 
     @Test

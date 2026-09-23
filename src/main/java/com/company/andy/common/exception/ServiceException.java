@@ -1,227 +1,193 @@
 package com.company.andy.common.exception;
 
-import static java.util.Objects.requireNonNull;
-
-import static com.company.andy.common.exception.ErrorCode.ACCESS_DENIED;
-import static com.company.andy.common.exception.ErrorCode.AUTHENTICATION_FAILED;
-import static com.company.andy.common.exception.ErrorCode.SYSTEM_ERROR;
-import static org.apache.commons.collections4.MapUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Getter;
+import static com.company.andy.common.exception.ErrorCode.SYSTEM_ERROR;
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.collections4.MapUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 // This is the only exception that you should throw as we follow a flat exception model
 // When thrown, pass in an ErrorCode that categorize the error
 @Getter
 public final class ServiceException extends RuntimeException {
-  private final ErrorCode code;
-  private Map<String, Object> data;
-  private final String message;
-  private final String detailMessage;
+    private final ErrorCode code;
+    private Map<String, Object> data;
 
-  public ServiceException(ErrorCode code, String message) {
-    this.code = code;
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(ErrorCode code, String message, Throwable cause) {
-    super(cause);
-    this.code = code;
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key, Object value) {
-    this.code = code;
-    addData(key, value);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key, Object value,
-      Throwable cause) {
-    super(cause);
-    this.code = code;
-    addData(key, value);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2) {
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      Throwable cause) {
-    super(cause);
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3) {
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3,
-      Throwable cause) {
-    super(cause);
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3,
-      String key4, Object value4) {
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    addData(key4, value4);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3,
-      String key4, Object value4,
-      Throwable cause) {
-    super(cause);
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    addData(key4, value4);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3,
-      String key4, Object value4,
-      String key5, Object value5) {
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    addData(key4, value4);
-    addData(key5, value5);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(
-      ErrorCode code, String message,
-      String key1, Object value1,
-      String key2, Object value2,
-      String key3, Object value3,
-      String key4, Object value4,
-      String key5, Object value5,
-      Throwable cause) {
-    super(cause);
-    this.code = code;
-    addData(key1, value1);
-    addData(key2, value2);
-    addData(key3, value3);
-    addData(key4, value4);
-    addData(key5, value5);
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(ErrorCode code, String message, Map<String, Object> data) {
-    this.code = code;
-    this.data = data;
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public ServiceException(ErrorCode code, String message, Map<String, Object> data, Throwable cause) {
-    super(cause);
-    this.code = code;
-    this.data = data;
-    this.message = message;
-    this.detailMessage = toDetailMessage(message);
-  }
-
-  public static ServiceException accessDeniedException() {
-    return new ServiceException(ACCESS_DENIED, "Access Denied.");
-  }
-
-  public static ServiceException authenticationException() {
-    return new ServiceException(AUTHENTICATION_FAILED, "Authentication failed.");
-  }
-
-  public static ServiceException systemException(Throwable ex) {
-    return new ServiceException(SYSTEM_ERROR, "System error.", ex);
-  }
-
-  private String toDetailMessage(String message) {
-    StringBuilder stringBuilder = new StringBuilder().append("[").append(this.code.toString()).append("]");
-
-    if (isNotBlank(message)) {
-      stringBuilder.append(message);
+    public ServiceException(ErrorCode code, String message) {
+        super(message);
+        this.code = code;
     }
 
-    if (isNotEmpty(this.data)) {
-      stringBuilder.append("|Data: ").append(this.data);
+    public ServiceException(ErrorCode code, String message, Throwable cause) {
+        super(message, cause);
+        this.code = code;
     }
 
-    return stringBuilder.toString();
-  }
-
-  public void addData(String key, Object value) {
-    requireNonNull(key, "key should not be null");
-
-    if (this.data == null) {
-      this.data = new HashMap<>();
+    public ServiceException(
+            ErrorCode code, String message,
+            String key, Object value) {
+        super(message);
+        this.code = code;
+        addData(key, value);
     }
-    this.data.put(key, value);
-  }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key, Object value,
+            Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        addData(key, value);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2) {
+        super(message);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3) {
+        super(message);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3,
+            Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3,
+            String key4, Object value4) {
+        super(message);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+        addData(key4, value4);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3,
+            String key4, Object value4,
+            Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+        addData(key4, value4);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3,
+            String key4, Object value4,
+            String key5, Object value5) {
+        super(message);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+        addData(key4, value4);
+        addData(key5, value5);
+    }
+
+    public ServiceException(
+            ErrorCode code, String message,
+            String key1, Object value1,
+            String key2, Object value2,
+            String key3, Object value3,
+            String key4, Object value4,
+            String key5, Object value5,
+            Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        addData(key1, value1);
+        addData(key2, value2);
+        addData(key3, value3);
+        addData(key4, value4);
+        addData(key5, value5);
+    }
+
+    public ServiceException(ErrorCode code, String message, Map<String, Object> data) {
+        super(message);
+        this.code = code;
+        this.data = data;
+    }
+
+    public ServiceException(ErrorCode code, String message, Map<String, Object> data, Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        this.data = data;
+    }
+
+    public static ServiceException systemException(Throwable ex) {
+        return new ServiceException(SYSTEM_ERROR, "System error.", ex);
+    }
+
+    public String toDetailMessage() {
+        StringBuilder stringBuilder = new StringBuilder().append("[").append(this.code.toString()).append("]");
+
+        if (isNotBlank(this.getMessage())) {
+            stringBuilder.append(this.getMessage());
+        }
+
+        if (isNotEmpty(this.data)) {
+            stringBuilder.append("|Data: ").append(this.data);
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public void addData(String key, Object value) {
+        requireNonNull(key, "key should not be null");
+
+        if (this.data == null) {
+            this.data = new HashMap<>();
+        }
+        this.data.put(key, value);
+    }
 }
