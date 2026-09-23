@@ -141,7 +141,7 @@ log.info("Created Equipment[{}].", equipment.getId());
   not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
   `SecurityContextHolder` is essentially thread scoped global variable, it makes the code implicit and also makes
   testing harder.
-- There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutionConfiguration.java)
+- There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutorConfiguration.java)
   in the application, choose them wisely:
     - `applicationTaskExecutor`: this is the primary one, it uses virtual threads, generally you should use this one,
       especially for I/O intensive tasks.
