@@ -19,8 +19,8 @@ import static com.company.andy.feature.equipment.domain.Equipment.EQUIPMENT_COLL
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-// Query services are used for querying data, which represent the "Q" of CQRS,
-// query services can call repositories or directly use MongoTemplate to query database
+// QueryService is used for querying data, which represent the "Q" of CQRS,
+// QueryService can call repositories or directly use MongoTemplate to query database.
 
 @Component
 @RequiredArgsConstructor

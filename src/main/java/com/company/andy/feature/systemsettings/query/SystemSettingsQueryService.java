@@ -1,8 +1,8 @@
 package com.company.andy.feature.systemsettings.query;
 
 
-// Query services are used for querying data, which represent the "Q" of CQRS,
-// query services can call repositories or directly use MongoTemplate to query database
+// QueryService is used for querying data, which represent the "Q" of CQRS,
+// QueryService can call repositories or directly use MongoTemplate to query database.
 
 import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import com.company.andy.feature.systemsettings.domain.SystemSettingsRepository;

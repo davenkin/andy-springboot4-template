@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import static lombok.AccessLevel.PRIVATE;
 
-// All pagination queries should extends from PageQuery
+// All pagination queries should extends from PageQuery.
 
 @Getter
 @SuperBuilder

@@ -21,6 +21,8 @@ import static com.company.andy.feature.equipment.domain.Equipment.EQUIPMENT_COLL
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+// All aggregate root objects should extend from AggregateRoot.
+
 @Slf4j
 @Getter
 @FieldNameConstants // For accessing field names

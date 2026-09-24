@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+// Demonstrates deletion events which results in related resources to be cleaned up.
+// After Equipment gets deleted, all MaintenanceRecords under it will also be deleted.
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

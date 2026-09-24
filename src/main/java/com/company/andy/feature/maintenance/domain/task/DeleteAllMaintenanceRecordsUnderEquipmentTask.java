@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+// Tasks are one-time operation which operates on single or multiple objects.
+// Task can use either Repository or MongoTemplate to access database.
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

@@ -22,6 +22,12 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+// Controller should be thin and calls into CommandService and QueryService.
+// Controller should pass through the Actor to CommandService and QueryService.
+// Actor should be either OrgActor or PlatformActor according to which API plane you are handling.
+// Here MaintenanceRecordController belongs to the Org API plane so OrgActor should be used.
+
+
 @Profile("local | it-embedded | it-local")
 @Tag(name = "MaintenanceRecordController", description = "Equipments' maintenance record APIs")
 @Validated

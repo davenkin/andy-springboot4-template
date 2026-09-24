@@ -17,6 +17,8 @@ import java.util.Objects;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_COLLECTION;
 import static lombok.AccessLevel.PRIVATE;
 
+// All aggregate root objects should extend from AggregateRoot.
+
 @Slf4j
 @Getter
 @FieldNameConstants
@@ -46,6 +48,6 @@ public class SystemSettings extends AggregateRoot {
 
     @Override
     protected boolean isPlatformObject() {
-        return true;
+        return true; // This is a platform level object
     }
 }

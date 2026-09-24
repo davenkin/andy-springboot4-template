@@ -15,8 +15,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-// This controller is not for org level actors,
-// it's for system admins to manage the system level resources
+// Controller should be thin and calls into CommandService and QueryService.
+// Controller should pass through the Actor to CommandService and QueryService.
+// Actor should be either OrgActor or PlatformActor according to which API plane you are handling.
+// Here SystemSettingsController belongs to the Platform API plane so PlatformActor should be used.
 
 @Profile("local | it-embedded | it-local")
 @Tag(name = "SystemSettingsController", description = "System settings APIs")

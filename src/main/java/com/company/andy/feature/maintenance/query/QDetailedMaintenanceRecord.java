@@ -5,6 +5,8 @@ import lombok.Builder;
 
 import java.time.Instant;
 
+// Query response object's name should start with "Q".
+
 @Builder
 public record QDetailedMaintenanceRecord(
         String id,

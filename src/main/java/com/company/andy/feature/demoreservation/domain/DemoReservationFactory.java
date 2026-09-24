@@ -3,8 +3,8 @@ package com.company.andy.feature.demoreservation.domain;
 import com.company.andy.common.model.actor.PlatformActor;
 import org.springframework.stereotype.Component;
 
-// Always use factories to create Aggregate Root objects,
-// which makes the creation process of Aggregate Roots more explicit
+// Always use factories to create AggregateRoot,
+// which makes the creation process of AggregateRoot more explicit.
 
 @Component
 public class DemoReservationFactory {

@@ -7,7 +7,7 @@ import lombok.experimental.FieldNameConstants;
 
 import static lombok.AccessLevel.PRIVATE;
 
-// EquipmentEngine is an entity under the Equipment Aggregate Root
+// EquipmentEngine demonstrates an entity under the Equipment AggregateRoot
 
 @Getter
 @FieldNameConstants // For accessing field names

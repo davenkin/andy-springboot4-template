@@ -19,6 +19,9 @@ import static org.springframework.data.domain.Sort.by;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+// Only AggregateRoot objects have corresponding Repository.
+// All repositories should extend AbstractMongoRepository.
+
 @Repository
 @RequiredArgsConstructor
 public class EquipmentRepository extends AbstractMongoRepository<Equipment> {

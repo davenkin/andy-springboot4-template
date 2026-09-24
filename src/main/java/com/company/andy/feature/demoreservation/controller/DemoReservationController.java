@@ -21,6 +21,12 @@ import static com.company.andy.common.model.actor.Actor.createAnonymousActor;
 import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
 import static org.springframework.http.HttpStatus.CREATED;
 
+// Controller should be thin and calls into CommandService and QueryService.
+// Controller should pass through the Actor to CommandService and QueryService.
+// Actor should be either OrgActor or PlatformActor according to which API plane you are handling.
+// Here DemoReservationController belongs to the Platform API plane so PlatformActor should be used.
+
+
 @Profile("local | it-embedded | it-local")
 @Tag(name = "DemoReservationController", description = "Demo reservation APIs")
 @Validated

@@ -12,6 +12,9 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.common.event.DomainEventType.SYSTEM_BASE_SETTINGS_UPDATED_EVENT;
 import static lombok.AccessLevel.PRIVATE;
 
+// All domain events should extend from DomainEvent, directly or indirectly.
+
+
 @Getter
 @TypeAlias("SYSTEM_BASE_SETTINGS_UPDATED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)

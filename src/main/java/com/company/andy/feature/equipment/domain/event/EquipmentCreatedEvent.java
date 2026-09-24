@@ -11,6 +11,8 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_CREATED_EVENT;
 import static lombok.AccessLevel.PRIVATE;
 
+// All domain events should extend from DomainEvent, directly or indirectly.
+
 @Getter
 @TypeAlias("EQUIPMENT_CREATED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)

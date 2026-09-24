@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+// All domain event handlers should extend from AbstractDomainEventHandler.
+
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

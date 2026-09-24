@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PROTECTED;
 
-// Parent class for all equipment update events
+// Demonstrates an intermediate class inheriting from DomainEvent,
+// which itself serves as the parent for other domain event classes.
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

@@ -10,6 +10,9 @@ import java.util.Optional;
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
+// Only AggregateRoot objects have corresponding Repository.
+// All repositories should extend AbstractMongoRepository.
+
 @Repository
 @RequiredArgsConstructor
 public class MaintenanceRecordRepository extends AbstractMongoRepository<MaintenanceRecord> {

@@ -11,6 +11,9 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.common.event.DomainEventType.MAINTENANCE_RECORD_DELETED_EVENT;
 import static lombok.AccessLevel.PRIVATE;
 
+// All domain events should extend from DomainEvent, directly or indirectly..
+
+
 @Getter
 @TypeAlias("MAINTENANCE_RECORD_DELETED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)

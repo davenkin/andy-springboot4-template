@@ -13,6 +13,9 @@ import static com.company.andy.common.model.actor.Actor.createRobotActor;
 import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
 
+// Only AggregateRoot objects have corresponding Repository.
+// All repositories should extend AbstractMongoRepository.
+
 @Repository
 @RequiredArgsConstructor
 public class SystemSettingsRepository extends AbstractMongoRepository<SystemSettings> {

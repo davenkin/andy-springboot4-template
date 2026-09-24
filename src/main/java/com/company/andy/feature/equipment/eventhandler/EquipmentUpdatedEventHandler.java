@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+// Demonstrates handlers for handling parent events which covers all children events.
+// Here EquipmentUpdatedEvent is the parent of EquipmentHolderUpdatedEvent and EquipmentNameUpdatedEvent.
+// All children events will result in parent's handler to be called.
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
