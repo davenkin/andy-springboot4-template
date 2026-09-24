@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Stop docker compose and delete all data volume
+# Stop docker compose and delete all data volumes
 docker compose down -v
 
 
