@@ -41,7 +41,7 @@ firstly fetch domain models using `Repository` and then convert to query models.
 ## Implementation
 
 - For the command side, use CommandService orchestrate the writing process, normally Repository is used for access
-  Aggregate Roots, and the Aggregate Roots contains the domain logic.
+  AggregateRoots, and the AggregateRoots contains the domain logic.
 
 ```java
     @Transactional

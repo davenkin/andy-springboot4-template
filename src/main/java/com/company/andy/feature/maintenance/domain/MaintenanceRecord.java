@@ -24,7 +24,7 @@ import static com.company.andy.feature.maintenance.domain.MaintenanceRecordChann
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
-// All aggregate root objects should extend from AggregateRoot.
+// All AggregateRoot objects should extend from AggregateRoot.
 
 @Slf4j
 @Getter

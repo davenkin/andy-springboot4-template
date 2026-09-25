@@ -17,7 +17,7 @@ import java.util.Objects;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_COLLECTION;
 import static lombok.AccessLevel.PRIVATE;
 
-// All aggregate root objects should extend from AggregateRoot.
+// All AggregateRoot objects should extend from AggregateRoot.
 
 @Slf4j
 @Getter

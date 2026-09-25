@@ -15,7 +15,7 @@ import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static com.company.andy.feature.demoreservation.domain.DemoReservation.DEMO_RESERVATION_COLLECTION;
 import static lombok.AccessLevel.PRIVATE;
 
-// All aggregate root objects should extend from AggregateRoot.
+// All AggregateRoot objects should extend from AggregateRoot.
 // Demonstrates platform level objects.
 // Platform level objects are those without an orgId hence does not belong to any org.
 

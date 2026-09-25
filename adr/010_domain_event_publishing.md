@@ -32,7 +32,7 @@ refer to [event consuming](011_event_consuming.md) for more detail.
 
 ## Implementation
 
-- For sending a Domain Event, the only action that you need is calling `raiseEvent()` from an Aggregate Root:
+- For sending a Domain Event, the only action that you need is calling `raiseEvent()` from an AggregateRoot:
 
 ```java
     public void updateName(String newName, Actor actor) {
@@ -57,11 +57,11 @@ to [DomainEvent section of object implementation patterns](007_unified_object_im
 
 The following steps are already been implemented for you, but for illustration let's walk them through.
 
-- After `AggregateRoot.raiseEvent()` is called, the event is stored inside the Aggregate Root object temporarily:
+- After `AggregateRoot.raiseEvent()` is called, the event is stored inside the AggregateRoot object temporarily:
 
 ```java
-    // raiseEvent() only stores events in Aggregate Root temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the Aggregate Root object
-    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob
+    // raiseEvent() only stores events in AggregateRoot temporarily, the events will then be persisted into DB by Repository within the same transaction that saves the AggregateRoot object
+    // The actual sending of events to messaging middleware is handled by DomainEventPublisher
     protected final void raiseEvent(DomainEvent event) {
         requireNonNull(event, "event must not be null.");
         requireNonNull(event.getType(), "event's type must not be null.");
@@ -71,7 +71,7 @@ The following steps are already been implemented for you, but for illustration l
     }
 ```
 
-- Then when you save the Aggregate Root object by calling `AbstractMongoRepository.save()`, the event will be
+- Then when you save the AggregateRoot object by calling `AbstractMongoRepository.save()`, the event will be
   staged(saved) into a MongoDB collection named `publishing-event`:
 
 ```java
@@ -111,7 +111,7 @@ public void stage(List<DomainEvent> events) {
 }
 ```
 
-As the Domain Event is saved into the database along with Aggregate Root in the same database transaction, we ensure
+As the Domain Event is saved into the database along with AggregateRoot in the same database transaction, we ensure
 that they either be saved together
 or rollback together.
 
@@ -125,7 +125,7 @@ or rollback together.
 MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
     MongoTemplate mongoTemplate,
     TaskExecutor taskExecutor,
-    DomainEventPublishJob domainEventPublisher) {
+    DomainEventPublisher domainEventPublisher) {
   MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
   // Get notification on DomainEvent insertion in MongoDB, then publish staged Domain Events to messaging middleware such as Kafka
@@ -143,10 +143,10 @@ MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
 
 Upon receiving MongoDB Change Streams on event insertion, we are not sending the currently inserted event into Kafka
 directly, instead we
-treat this change merely as a trigger, which calls `DomainEventPublishJob.publishStagedDomainEvents()` to start the
+treat this change merely as a trigger, which calls `DomainEventPublisher.publishStagedDomainEvents()` to start the
 publishing of Domain Events to Kafka.
 
-- The `DomainEventPublishJob.publishStagedDomainEvents()` method loads all un-published events from the
+- The `DomainEventPublisher.publishStagedDomainEvents()` method loads all un-published events from the
   `publishing-event`
   collection and send them to Kafka in the order they are created:
 

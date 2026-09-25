@@ -7,6 +7,7 @@ import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.company.andy.common.tracing.TracingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import static com.company.andy.common.utils.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 // This is the only place where event publishing touches Kafka, hence the coupling to Kafka is minimized
 @Slf4j
 @Component
+@NullMarked
 @DisableForIT
 @RequiredArgsConstructor
 public class SpringKafkaDomainEventSender implements DomainEventSender {

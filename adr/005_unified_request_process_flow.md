@@ -2,8 +2,8 @@
 
 ## Context
 
-Aggregate Root is the most important concepts in domain model. Nearly all operations in the software are centered around
-Aggregate Roots. Different types of operations might have their own process flows.
+AggregateRoot is the most important concepts in domain model. Nearly all operations in the software are centered around
+AggregateRoots. Different types of operations might have their own process flows.
 
 ## Decision
 
@@ -25,14 +25,14 @@ For HTTP requests, they can be further split into multiple sub-categories.
 
 Given above, we have the following process flows:
 
-- [HTTP request for creating Aggregate Root](#http-request-for-creating-aggregate-root)
-- [HTTP request for updating Aggregate Root](#http-request-for-updating-aggregate-root)
-- [HTTP request for deleting Aggregate Root](#http-request-for-deleting-aggregate-root)
-- [HTTP request for querying Aggregate Root](#http-request-for-querying-aggregate-root)
+- [HTTP request for creating AggregateRoot](#http-request-for-creating-aggregate-root)
+- [HTTP request for updating AggregateRoot](#http-request-for-updating-aggregate-root)
+- [HTTP request for deleting AggregateRoot](#http-request-for-deleting-aggregate-root)
+- [HTTP request for querying AggregateRoot](#http-request-for-querying-aggregate-root)
 - [Scheduled jobs triggered by timers](#scheduled-jobs-triggered-by-timers)
 - [Consuming events from Kafka](#consuming-events-from-kafka)
 
-### HTTP request for creating Aggregate Root
+### HTTP request for creating AggregateRoot
 
 Creating data involves 2 major steps: Create and Save. Take "Creating an equipment" as an example, the request process
 flow is:
@@ -63,7 +63,7 @@ flow is:
 ```
 
 3. `EquipmentFactory` creates the `Equipment` object. Remember, for code consistency, always use factory to create
-   Aggregate Roots:
+   AggregateRoots:
 
 ```java
     public Equipment create(String name, OrgActor actor) {
@@ -101,9 +101,9 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
 
 6. Return the ID of the newly created `Equipment` object to the caller.
 
-### HTTP request for updating Aggregate Root
+### HTTP request for updating AggregateRoot
 
-Updating data has 3 major steps: (1)Load the Aggregate Root; (2)Call Aggregate Root's business method; (3) Save it back
+Updating data has 3 major steps: (1)Load the AggregateRoot; (2)Call AggregateRoot's business method; (3) Save it back
 to database. Take "updating `Equipment`'s holder" as an example.
 
 ![http-request-for-updating-aggregate-root](/asset/http-request-for-updating-aggregate-root.png)
@@ -162,7 +162,7 @@ equipmentRepository.save(equipment);
 
 6. No need to return anything from `EquipmentCommandService.updateEquipmentHolder()`.
 
-Sometimes, the whole business logic is not suitable to be put inside Aggregate Root like `Equipment.updateHolder()`. For
+Sometimes, the whole business logic is not suitable to be put inside AggregateRoot like `Equipment.updateHolder()`. For
 such cases, we can use DomainServices. For example, when updating `Equipment`'s name, we need to check if the name is
 already been occupied, which cannot be fulfilled by `Equipment` itself. Instead of calling `Equipment.updateName()`
 directly from `EquipmentCommandService`, domain service `EquipmentDomainService.updateEquipmentName()` is called from
@@ -198,9 +198,9 @@ update `Equipment`'s name:
     }
 ```
 
-### HTTP request for deleting Aggregate Root
+### HTTP request for deleting AggregateRoot
 
-For deleting data, first load the Aggregate Root and then delete it. For example, for deleting an `Equipment`:
+For deleting data, first load the AggregateRoot and then delete it. For example, for deleting an `Equipment`:
 
 ![http-request-for-deleting-aggregate-root](/asset/http-request-for-deleting-aggregate-root.png)
 
@@ -246,7 +246,7 @@ Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
    before deletion, there might be some validations that need to happen, and also it might raise Domain Events. So, in
    order to ensure such possibilities, the whole `Equipment` object is loaded into the memory.
 
-### HTTP request for querying Aggregate Root
+### HTTP request for querying AggregateRoot
 
 There are two ways to query data:
 

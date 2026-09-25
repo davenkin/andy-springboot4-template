@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-// Base class for all aggregate root objects.
+// Base class for all AggregateRoot objects.
 
 @Getter
 @FieldNameConstants
@@ -99,9 +99,9 @@ public abstract class AggregateRoot {
     }
 
 
-    // raiseEvent() only stores events in Aggregate Root temporarily,
-    // the events will then be persisted into DB by Repository within the same transaction that saves the Aggregate Root object.
-    // The actual sending of events to messaging middleware is handled by DomainEventPublishJob.
+    // raiseEvent() only stores events in AggregateRoot temporarily,
+    // the events will then be persisted into DB by Repository within the same transaction that saves the AggregateRoot object.
+    // The actual sending of events to messaging middleware is handled by DomainEventPublisher.
     protected final void raiseEvent(DomainEvent event) {
         requireNonNull(event, "event must not be null.");
         requireNonNull(event.getType(), "event's type must not be null.");
@@ -123,7 +123,7 @@ public abstract class AggregateRoot {
     }
 
     protected boolean isPlatformObject() {
-        // An aggregate root object is either a platform object or an org object.
+        // An AggregateRoot object is either a platform object or an org object.
         // Platform object has no orgId, org object has orgId.
         // Default to false which means it's an org object.
         // Platform object should override this and return true.

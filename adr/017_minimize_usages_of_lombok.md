@@ -12,12 +12,12 @@ We choose to minimize the usages of Lombok in our codebase and use it only where
 
 ## Implementation
 
-### Aggregate Roots
+### AggregateRoots
 
-- Aggregate Roots are business objects, it's constructors normally contain business logic such as validation and
-  initialization. Therefore, it's not recommended to use Lombok's `@Builder` for Aggregate Roots, as it will bypass the
+- AggregateRoots are business objects, it's constructors normally contain business logic such as validation and
+  initialization. Therefore, it's not recommended to use Lombok's `@Builder` for AggregateRoots, as it will bypass the
   constructor and might lead to invalid objects being created. Instead, you should provide explicit constructors for
-  Aggregate Roots. All Aggregate Roots classes
+  AggregateRoots. All AggregateRoots classes
   extend [AggregateRoot](../src/main/java/com/company/andy/common/model/AggregateRoot.java), when deserializing from
   MongoDB and Json, we need to provide a no-args constructor.
   Example [Equipment](../src/main/java/com/company/andy/feature/equipment/domain/Equipment.java):
@@ -32,12 +32,12 @@ We choose to minimize the usages of Lombok in our codebase and use it only where
 public class Equipment extends AggregateRoot {}
 ```
 
-As you can see, there is no `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Aggregate Roots, stick with
+As you can see, there is no `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the AggregateRoots, stick with
 this in your own code.
 
-### Entities under Aggregate Roots
+### Entities under AggregateRoots
 
-- Like Aggregate Roots, Entities are also mutable and usually have their own business constructors as well. Therefore,
+- Like AggregateRoots, Entities are also mutable and usually have their own business constructors as well. Therefore,
   it's not recommended to use Lombok's @Builder for Entities. A no-arg constructor should be used for deserializing
   from MongoDB and Json.
   Example [EquipmentEngine](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentEngine.java):

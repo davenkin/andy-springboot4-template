@@ -25,7 +25,7 @@ We write integration tests for:
 
 We write unit tests for:
 
-- Aggregate Roots, e.g. [EquipmentTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentTest.java)
+- AggregateRoots, e.g. [EquipmentTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentTest.java)
 - Other domain models under `domain` package,
   e.g. [EquipmentDomainServiceTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentDomainServiceTest.java)
 

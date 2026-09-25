@@ -88,7 +88,7 @@ architecture and coding practices of this project.
 
 ## Sample feature code
 
-There are four sample Aggregate Roots which serve as reference implementations:
+There are four sample AggregateRoots which serve as reference implementations:
 
 - [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs
   to be managed under an org, such as a computer.

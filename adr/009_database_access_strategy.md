@@ -1,4 +1,4 @@
 - repository, query service, task are the most common places where MongoTemplate is used, all other places should not use MongoTemplate directly unless agreed by the team.
-- do not use MongoTemplate to partially update an aggregate root, use repository to update the whole aggregate root instead
+- do not use MongoTemplate to partially update an AggregateRoot, use repository to update the whole AggregateRoot instead
 - do not use Spring Data MongoRepository, it is not flexible enough and does not fit our needs
 - use @Transactional for CommandService

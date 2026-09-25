@@ -8,6 +8,7 @@ import com.mongodb.client.model.changestream.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.bson.Document;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.boot.kafka.autoconfigure.DefaultKafkaConsumerFactoryCustomizer;
 import org.springframework.boot.kafka.autoconfigure.DefaultKafkaProducerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,7 @@ import tools.jackson.databind.json.JsonMapper;
 import static com.company.andy.common.utils.Constants.PUBLISHING_EVENT_COLLECTION;
 
 @Slf4j
+@NullMarked
 @DisableForIT
 @Configuration(proxyBeanMethods = false)
 public class EventConfiguration {
