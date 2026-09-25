@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.job;
+package com.company.andy.feature.equipment.scheduledjob;
 
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.tracing.ActorMdcSupport;

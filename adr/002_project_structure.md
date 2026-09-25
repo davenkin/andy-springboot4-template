@@ -15,7 +15,7 @@ code by business entities([Aggregate Root](https://martinfowler.com/bliki/DDD_Ag
 technical layers.
 
 This approach is more intuitive and easier to understand, as it allows developers to focus on the business first.
-Developers can easily get an overall idea of what this application does by a simple glimpse at the business packages.
+Developers can easily get an overall idea of what this application does by a simple glimpse at the top level business packages.
 
 ## Implementation
 
@@ -48,9 +48,9 @@ The `1` in `(class:1)` indicates there can be only one class, `(class:N)` for mu
     - `eventhandler`(folder:1): Contains all the event handler classes
         - `XxxEventHandler`(class:N): Event handler
     - `infrastructure`(folder:1): Contains infrastructure classes
-    - `job`(folder:1): Contains background jobs that are related to the Aggregate Root
-        - `XxxScheduler`(class:N): Scheduling configuration for the jobs
-        - `XxxJob`(class:N): A single background job
+    - `scheduledjob`(folder:1): Contains background scheduled jobs that are related to the AggregateRoot
+        - `XxxScheduler`(class:N): Scheduling configuration for the scheduled jobs
+        - `XxxScheduledJob`(class:N): A single background scheduled job
     - `query`(folder:1): Contains query related classes
         - `XxxQueryService`(class:N): Query services
         - `XxxQuery`(class:N): Query request classes
@@ -99,18 +99,18 @@ More detailed explanation:
               Example: [EquipmentCreatedEvent](../src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentCreatedEvent.java).
         - `task`(folder:1): Contains various tasks.
             - `XxxTask`(class:N): A task represents a standalone operation, should end with "Task". Tasks are usually
-              called from jobs and event handlers.
+              called from scheduled jobs and event handlers.
               Example: [CountMaintenanceRecordsForEquipmentTask](../src/main/java/com/company/andy/feature/equipment/domain/task/CountMaintenanceRecordsForEquipmentTask.java).
     - `eventhandler`(folder:1): Contains all the event handler classes.
         - `XxxEventHandler`(class:N): Event handler class, should end with "EventHandler". Example:
           [EquipmentCreatedEventHandler](../src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedEventHandler.java).
     - `infrastructure`(folder:1): Contains the infrastructure code that is related to the Aggregate Root.
-    - `job`(folder:1):Contains background jobs that are related to the Aggregate Root.
-        - `XxxJobScheduler`(class:N): Scheduling configuration, should end with "Scheduler".
-          Example: [EquipmentJobScheduler](../src/main/java/com/company/andy/feature/equipment/job/EquipmentJobScheduler.java).
-        - `XxxJob`(class:N): Represents a background job, should end with "Job". A job might run multiple tasks.
+    - `scheduledjob`(folder:1):Contains background scheduled jobs that are related to the Aggregate Root.
+        - `XxxScheduledJobScheduler`(class:N): Scheduling configuration, should end with "Scheduler".
+          Example: [EquipmentJobScheduler](../src/main/java/com/company/andy/feature/equipment/scheduledjob/EquipmentJobScheduler.java).
+        - `XxxScheduledJob`(class:N): Represents a background scheduled job, should end with "ScheduledJob". A scheduled job might run multiple tasks.
           Example:
-          [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java).
+          [RemoveOldMaintenanceRecordsScheduledJob](../src/main/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsScheduledJob.java).
     - `query`(folder:1): For querying data, "query" represents the "Q"
       in [CQRS](https://microservices.io/patterns/data/cqrs.html). Queries can bypass the domain model and hit database
       directly using what ever means that suit you.

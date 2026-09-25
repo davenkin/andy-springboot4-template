@@ -29,11 +29,11 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
                     "..com.company.andy.feature..infrastructure..",
-                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             )
             .because(
-                    "We use the following packages to house all business classes: command, controller, domain, eventhandler, infrastructure, job, query.");
+                    "We use the following packages to house all business classes: command, controller, domain, eventhandler, infrastructure, scheduledjob, query.");
 
     @ArchTest
     static final ArchRule domain_classes_should_not_depend_on_outer_packages = noClasses()
@@ -45,7 +45,7 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..eventhandler..",
                     "..com.company.andy.feature..infrastructure..",
-                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query..")
             .because(
                     "Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and should not depend on other outer packages.");
@@ -72,7 +72,7 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
-                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             )
             .should()
@@ -99,7 +99,7 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
-                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             )
             .should()
@@ -128,7 +128,7 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
-                    "..com.company.andy.feature..job..",
+                    "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             ).should()
             .dependOnClassesThat()

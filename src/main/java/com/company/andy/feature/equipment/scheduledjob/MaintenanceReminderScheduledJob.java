@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.job;
+package com.company.andy.feature.equipment.scheduledjob;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

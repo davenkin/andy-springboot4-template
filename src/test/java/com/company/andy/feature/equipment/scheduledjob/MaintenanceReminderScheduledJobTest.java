@@ -1,4 +1,4 @@
-package com.company.andy.feature.equipment.job;
+package com.company.andy.feature.equipment.scheduledjob;
 
 import com.company.andy.IntegrationTest;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,7 @@
 # Testing strategy
 
+todo: add TestId
+
 ## Context
 
 Backend developers usually write both unit tests and integration tests. According
@@ -19,7 +21,7 @@ We write integration tests for:
   e.g. [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java)
 - Event handlers, both internal domain events and external events, e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
 - Jobs,
-  e.g. [RemoveOldMaintenanceRecordsJobTest](../src/test/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJobTest.java)
+  e.g. [RemoveOldMaintenanceRecordsJobTest](../src/test/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsJobTest.java)
 
 We write unit tests for:
 

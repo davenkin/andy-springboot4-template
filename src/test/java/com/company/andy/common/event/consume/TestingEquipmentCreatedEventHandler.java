@@ -1,9 +1,5 @@
 package com.company.andy.common.event.consume;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import lombok.Getter;
@@ -12,16 +8,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 @Slf4j
 @Getter
 @Order(1)
 @Component
 @RequiredArgsConstructor
 public class TestingEquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
-  private final List<HandledEvent> handledEvents = new CopyOnWriteArrayList<>();
+    private final List<HandledEvent> handledEvents = new CopyOnWriteArrayList<>();
 
-  @Override
-  protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
-    this.handledEvents.add(new HandledEvent(event, Instant.now()));
-  }
+    @Override
+    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+        this.handledEvents.add(new HandledEvent(event, Instant.now()));
+    }
 }

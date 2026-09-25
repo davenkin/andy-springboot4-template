@@ -1,4 +1,4 @@
-package com.company.andy.feature.maintenance.job;
+package com.company.andy.feature.maintenance.scheduledjob;
 
 import com.company.andy.common.model.AggregateRoot;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;

@@ -1,7 +1,7 @@
 package com.company.andy.common.event;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
-import com.company.andy.common.event.publish.DomainEventPublishJob;
+import com.company.andy.common.event.publish.DomainEventPublisher;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import com.mongodb.client.model.changestream.OperationType;
@@ -41,13 +41,13 @@ public class EventConfiguration {
     MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
             MongoTemplate mongoTemplate,
             TaskExecutor taskExecutor,
-            DomainEventPublishJob domainEventPublishJob) {
+            DomainEventPublisher domainEventPublisher) {
         MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
         // Get notified on DomainEvent insertion in MongoDB, then publish staged domain events to messaging middleware
         container.register(ChangeStreamRequest.builder(
                         (MessageListener<ChangeStreamDocument<Document>, PublishingDomainEvent>) message -> {
-                            domainEventPublishJob.publishStagedDomainEvents(100);
+                            domainEventPublisher.publishStagedDomainEvents(100);
                         })
                 .collection(PUBLISHING_EVENT_COLLECTION)
                 .filter(new Document("$match", new Document("operationType", OperationType.INSERT.getValue())))

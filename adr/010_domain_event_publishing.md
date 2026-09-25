@@ -125,13 +125,13 @@ or rollback together.
 MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
     MongoTemplate mongoTemplate,
     TaskExecutor taskExecutor,
-    DomainEventPublishJob domainEventPublishJob) {
+    DomainEventPublishJob domainEventPublisher) {
   MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
   // Get notification on DomainEvent insertion in MongoDB, then publish staged Domain Events to messaging middleware such as Kafka
   container.register(ChangeStreamRequest.builder(
           (MessageListener<ChangeStreamDocument<Document>, PublishingDomainEvent>) message -> {
-            domainEventPublishJob.publishStagedDomainEvents(100);
+            domainEventPublisher.publishStagedDomainEvents(100);
           })
       .collection(PUBLISHING_EVENT_COLLECTION)
       .filter(new Document("$match", new Document("operationType", OperationType.INSERT.getValue())))

@@ -41,13 +41,23 @@ This is a template Spring Boot 4 project with the following features:
 - [Junit 5](https://junit.org/junit5/)
 - [ArchUnit](https://www.archunit.org/)
 
+## Editing tools
+
+- We use [draw.io](https://www.drawio.com/) for diagrams and export the diagrams into SVG file containing the original
+  draw.io diagram data which allows for future editing. You can do this by enabling the `Include a copy of my diagram`
+  option in the export dialog.
+- We use [PlantUML](https://plantuml.com/) for UML diagrams in various documentation files. You will need to install
+  PlantUML plugin in your IDE to view the UML diagrams. For example, in IntelliJ IDEA you can install
+  the [plantuml4java](https://plugins.jetbrains.com/plugin/7017-plantuml4idea) plugin.
+
 ## How to run locally
 
 - First run `./start-docker-compose.sh` to start the following middlewares using Docker:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125), login with username `admin` and password `admin`, more local user accounts refer to [keycloak-data/README.md](keycloak-data/README.md)
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125), login with username `admin` and password `admin`, more
+      local user accounts refer to [keycloak-data/README.md](keycloak-data/README.md)
     - `Redis`: localhost:6125, password: `aredissecret`
 - Run the application locally in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming docker-compose is already up
@@ -95,13 +105,6 @@ reference them.
 
 ## What's not demonstrated in this template project?
 
-- Authorization & Roles,
+- You will need to design the authorization/role architecture by yourself, as authorization is highly dependent on the
+  business requirements.
 
-## TODO
-
-- todo: add doc
-- todo: rename task to action
-- todo: 说明如何使用drawio导出可再次编辑的svg，以及如何使用plantuml
-- todo: 文档for：:
-    - A OAuth2 `client_credentials` client (`SERVICE_CLIENT_REST_CLIENT`) for and JWT token relay client(
-      `JWT_RELAY_REST_CLIENT`).

@@ -24,7 +24,7 @@ For the same type of objects, we follow the same implementation patterns.
 - [EventHandler](#eventhandler')
 - [Factory](#factory)
 - [Task](#task)
-- [Job](#job)
+- [ScheduledJob](#scheduledjob)
 - [QueryService](#queryservice)
 - [Query](#query)
 - [API response objects](#api-response-objects)
@@ -487,14 +487,14 @@ public class SyncEquipmentNameToMaintenanceRecordsTask {
 }
 ```
 
-### Job
+### ScheduledJob
 
-- A job represents a background operation triggered by a timer
-- Jobs are quite similar to tasks, the difference is that a job is relatively heavyweight and addresses a systematic
+- A ScheduledJob represents a background operation triggered by a timer
+- ScheduledJobs are quite similar to tasks, the difference is that a ScheduledJob is relatively heavyweight and addresses a systematic
   problem, yet a task handle a single specific problem
 
 Example
-job [RemoveOldMaintenanceRecordsJob](../src/main/java/com/company/andy/feature/maintenance/job/RemoveOldMaintenanceRecordsJob.java):
+ScheduledJob [RemoveOldMaintenanceRecordsScheduledJob](../src/main/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsScheduledJob.java):
 
 ```java
 @Slf4j

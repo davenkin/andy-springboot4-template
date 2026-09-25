@@ -1,6 +1,6 @@
 package com.company.andy.common.event;
 
-import com.company.andy.common.event.publish.DomainEventPublishJob;
+import com.company.andy.common.event.publish.DomainEventPublisher;
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.tracing.ActorMdcSupport;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 @Component
 @RequiredArgsConstructor
 public class DomainEventJobScheduler {
-    private final DomainEventPublishJob domainEventPublishJob;
+    private final DomainEventPublisher domainEventPublisher;
     private final DomainEventHouseKeepingScheduledJob domainEventHouseKeepingScheduledJob;
 
     // Runs every 5 minutes to publish staged domain events in case the real time publishing mechanism fails
@@ -25,7 +25,7 @@ public class DomainEventJobScheduler {
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish domain events.");
         PlatformActor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
-        ActorMdcSupport.runWithMdc(actor, () -> domainEventPublishJob.publishStagedDomainEvents(100));
+        ActorMdcSupport.runWithMdc(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
     }
 
     // PublishingDomainEvent and ConsumingEvent are temporary and should be removed regularly

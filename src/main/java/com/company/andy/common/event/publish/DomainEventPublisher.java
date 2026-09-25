@@ -25,7 +25,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DomainEventPublishJob {
+public class DomainEventPublisher {
     private static final String MIN_START_EVENT_ID = "EVT00000000000000001";
     private static final int MAX_BATCH_SIZE = 500;
     private static final int MAX_FETCH_SIZE = 10000;
