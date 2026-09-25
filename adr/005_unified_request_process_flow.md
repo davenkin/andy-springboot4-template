@@ -37,7 +37,21 @@ Given above, we have the following process flows:
 Creating data involves 2 major steps: Create and Save. Take "Creating an equipment" as an example, the request process
 flow is:
 
-![http-request-for-creating-aggregate-root](./asset/http-request-for-creating-aggregate-root.png)
+```plantuml
+@startuml
+Actor -> Controller: createEquipment(command,actor)
+Controller -> CommandService: createEquipment(command,actor)
+CommandService -> Factory: create(command.name(), actor)
+Factory -> AggregateRoot: new Equipment(name, actor)
+AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentCreatedEvent())
+AggregateRoot --> Factory: created equipment
+Factory --> CommandService: created equipment
+CommandService -> Repository: save(equipment)
+Repository --> CommandService: saved
+CommandService --> Controller: equipment ID
+Controller --> Actor: equipment ID
+@enduml
+```
 
 1. `EquipmentController` receives the request:
 
@@ -103,10 +117,24 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
 
 ### HTTP request for updating AggregateRoot
 
-Updating data has 3 major steps: (1)Load the AggregateRoot; (2)Call AggregateRoot's business method; (3) Save it back
-to database. Take "updating `Equipment`'s holder" as an example.
+Updating data has 3 major steps: (1)Load the AggregateRoot; (2)Call AggregateRoot's business method; (3) Save it back to
+database. Take "updating `Equipment`'s holder" as an example.
 
-![http-request-for-updating-aggregate-root](./asset/http-request-for-updating-aggregate-root.png)
+```plantuml
+@startuml
+Actor -> Controller: updateEquipmentHolder(equipmentId, command, actor)
+Controller -> CommandService: updateEquipmentHolder(equipmentId, command, actor)
+CommandService -> Repository: byId(id, actor.orgId())
+Repository --> CommandService: fetched equipment
+CommandService -> AggregateRoot: equipment.updateHolder(command.name(), actor)
+AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentHolderUpdatedEvent())
+AggregateRoot --> CommandService: success
+CommandService -> Repository: save(equipment)
+Repository --> CommandService: success
+CommandService --> Controller: success
+Controller --> Actor: success
+@enduml
+```
 
 1. `EquipmentController` receives the request:
 
@@ -168,8 +196,24 @@ already been occupied, which cannot be fulfilled by `Equipment` itself. Instead 
 directly from `EquipmentCommandService`, DomainService `EquipmentDomainService.updateEquipmentName()` is called from
 `EquipmentCommandService`:
 
-![http-request-for-updating-aggregate-root-domain-service](./asset/http-request-for-updating-aggregate-root-domain-service.png)
-
+```plantuml
+@startuml
+Actor -> Controller: updateEquipmentName(equipmentId, command, actor)
+Controller -> CommandService: updateEquipmentName(equipmentId, command, actor)
+CommandService -> Repository: byId(id, actor.orgId())
+Repository --> CommandService: fetched equipment
+CommandService -> DomainService: updateEquipmentName(equipment, command.name(), actor)
+DomainService -> DomainService: apply business logic
+DomainService -> AggregateRoot: equipment.updateName(newName, actor);
+AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentNameUpdatedEvent())
+AggregateRoot --> DomainService: success
+DomainService --> CommandService: success
+CommandService -> Repository: save(equipment)
+Repository --> CommandService: success
+CommandService --> Controller: success
+Controller --> Actor: success
+@enduml
+```
 
 ```java
     @Transactional
@@ -202,8 +246,21 @@ update `Equipment`'s name:
 
 For deleting data, first load the AggregateRoot and then delete it. For example, for deleting an `Equipment`:
 
-![http-request-for-deleting-aggregate-root](./asset/http-request-for-deleting-aggregate-root.png)
-
+```plantuml
+@startuml
+Actor -> Controller: deleteEquipment(equipmentId, actor)
+Controller -> CommandService: deleteEquipment(equipmentId, actor)
+CommandService -> Repository: byId(equipmentId, actor.orgId())
+Repository --> CommandService: fetched equipment
+CommandService -> AggregateRoot: equipment.onDelete(actor)
+AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentDeletedEvent())
+AggregateRoot --> CommandService: success
+CommandService -> Repository: delete(equipment)
+Repository --> CommandService: success
+CommandService --> Controller: success
+Controller --> Actor: success
+@enduml
+```
 
 1. `EquipmentController` receives the request:
 
@@ -258,8 +315,16 @@ There are two ways to query data:
 For using [CQRS](./004_use_lightweight_cqrs.md), querying data can bypass the domain models and talk to database
 directly. For example, when querying a list of `Equipment`s:
 
-![http-request-for-querying-aggregate-root](./asset/http-request-for-querying-aggregate-root.png)
-
+```plantuml
+@startuml
+Actor -> Controller: pageEquipments(query, actor)
+Controller -> QueryService: pageEquipments(query, actor)
+QueryService -> MongoTemplate: find()
+MongoTemplate --> QueryService: fetched equipments
+QueryService --> Controller: fetched equipments
+Controller --> Actor: fetched equipments
+@enduml
+```
 
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
 
@@ -290,7 +355,18 @@ directly. For example, when querying a list of `Equipment`s:
 
 ### Scheduled jobs triggered by timers
 
-![scheduled-jobs-triggered-by-timers](./asset/scheduled-jobs-triggered-by-timers.png)
+```plantuml
+@startuml
+Timer -> Scheduler: remindForEquipmentMaintenance()
+Scheduler -> Actor: createScheduledJobActor()
+Actor --> Scheduler: actor
+Scheduler -> ActorMdcSupport: runWithMdc()
+ActorMdcSupport -> ScheduledJob: run()
+ScheduledJob --> ActorMdcSupport: success
+ActorMdcSupport --> Scheduler:success
+Scheduler --> Timer: success
+@enduml
+```
 
 1. First create a scheduler in the `scheduledjob` package:
 
@@ -306,7 +382,7 @@ public class EquipmentJobScheduler {
     public void remindForEquipmentMaintenance() {
         assertLocked();
 
-        SystemActor actor = createJobSystemActor("remindForEquipmentMaintenance");
+        PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
         ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderScheduledJob::run);
     }
 }
@@ -339,8 +415,16 @@ The job class serves the same purpose as `CommandService`, which orchestrates va
 
 The Kafka event consuming infrastructure is already set up for you. You only need to do 2 things for consuming events.
 
-![consuming-events-from-kafka](./asset/consuming-events-from-kafka.png)
-
+```plantuml
+@startuml
+ListenerContainer -> SpringKafkaEventListener: listenDomainEvent(event)
+SpringKafkaEventListener -> EventConsumer: consumeDomainEvent(event)
+EventConsumer -> EventHandler: handle(event, actor)
+EventHandler -> EventConsumer: success
+EventConsumer -> SpringKafkaEventListener: success
+SpringKafkaEventListener -> ListenerContainer: success
+@enduml
+```
 
 1. Make sure the topic is subscribed in `SpringKafkaEventListener` by configuring
    `topics = {KAFKA_DOMAIN_EVENT_TOPIC},`:
@@ -378,7 +462,7 @@ You may add more `@KafkaListener` methods for consuming different topics if need
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
     @Override
-    protected void handle(EquipmentCreatedEvent event, SystemActor actor) {
+    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }

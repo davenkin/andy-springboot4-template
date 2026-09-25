@@ -179,7 +179,7 @@ log.info("Created Equipment[{}].", equipment.getId());
 ```java
 public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
-    protected void handle(EquipmentCreatedEvent event, SystemActor actor) {
+    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }

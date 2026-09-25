@@ -34,12 +34,11 @@ designing/thinking/understanding/debugging rather than typing.
 three concrete subclasses:
 
 - `OrgActor`: represents an organization actor, it always carries an `orgId`;
-- `SystemActor`: represents the system itself, and also can impersonate an `OrgActor`;
-- `AnonymousActor`: represents an anonymous actor.
+- `PlatformActor`: represents an non-organization actor;
 
 As a general programming rule, your code should use the base class `Actor` as much as possible, only when you need
 specific data from a specific type of actor (e.g. `orgId` from `OrgActor`) or need to check for a specific type of
-actor (e.g. check if the current actor is `SystemActor`), then you can use the more specific actor type.
+actor (e.g. check if the current actor is `PlatformActor`), then you can use the more specific actor type.
 
 Normally you don't need to create these actor object by yourself, the framework will create the appropriate type of actor object
 for you and pass it to your code as a parameter. For example:
@@ -54,13 +53,13 @@ for you and pass it to your code as a parameter. For example:
 ```
 
 Normally, for org level resources, the controller method should declare `OrgActor` type, for system level resources, the
-controller method should declare `SystemActor` type, and for public resources you should just use `Actor` type. Incorrect declaration of actor type might cause `NullPointerException`.
+controller method should declare `PlatformActor` type, and for public resources you should just use `Actor` type. Incorrect declaration of actor type might cause `NullPointerException`.
 
-- In event handlers, a `SystemActor` object is created by the framework and passed to the `handle()` method which you will implement. For example:
+- In event handlers, a `PlatformActor` object is created by the framework and passed to the `handle()` method which you will implement. For example:
 
 ```java
     @Override
-    protected void handle(EquipmentCreatedEvent event, SystemActor actor) {
+    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 ```
