@@ -5,6 +5,7 @@ import com.company.andy.common.tracing.TracingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import static com.company.andy.common.exception.ErrorCode.AUTHENTICATION_FAILED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
+@Slf4j
 @NullMarked
 @Component
 @RequiredArgsConstructor
@@ -27,7 +29,8 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final TracingService tracingService;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException {
+        log.error("Authentication failed.", ex);
         SecurityContextHolder.clearContext();
         response.setStatus(401);
         response.setContentType(APPLICATION_JSON_VALUE);

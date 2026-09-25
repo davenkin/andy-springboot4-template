@@ -25,8 +25,7 @@ import java.util.Set;
 import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
 import static com.company.andy.common.model.actor.PrincipalType.PLATFORM_SERVICE_CLIENT;
 import static com.company.andy.common.model.actor.PrincipalType.SUPERVISOR;
-import static com.company.andy.common.security.SecurityUtils.getJwtPrincipalType;
-import static com.company.andy.common.security.SecurityUtils.getJwtUserName;
+import static com.company.andy.common.security.SecurityUtils.*;
 import static java.util.Objects.requireNonNull;
 
 // Convert JWT into PlatformActor
@@ -59,7 +58,6 @@ public class JwtToPlatformActorAuthenticationTokenFilter extends OncePerRequestF
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            log.debug("Authentication failed:", ex);
             SecurityContextHolder.clearContext();
             authenticationEntryPoint.commence(request, response, new AuthenticationServiceException("Authentication failed", ex));
         } finally {
@@ -77,7 +75,7 @@ public class JwtToPlatformActorAuthenticationTokenFilter extends OncePerRequestF
         String principalType = getJwtPrincipalType(jwt);
         if (Objects.equals(principalType, SUPERVISOR.name())) {
             return new ActorAuthenticationToken(Actor.createSupervisorActor(
-                    jwt.getSubject(),
+                    getJwtSupervisorId(jwt),
                     getJwtUserName(jwt),
                     Set.of(),
                     fromPlatformApiCall(request)
@@ -86,7 +84,7 @@ public class JwtToPlatformActorAuthenticationTokenFilter extends OncePerRequestF
 
         if (Objects.equals(principalType, PLATFORM_SERVICE_CLIENT.name())) {
             return new ActorAuthenticationToken(Actor.createPlatformServiceClientActor(
-                    jwt.getSubject(),
+                    getJwtClient(jwt),
                     fromPlatformApiCall(request)
             ), Set.of(), jwt);
         }

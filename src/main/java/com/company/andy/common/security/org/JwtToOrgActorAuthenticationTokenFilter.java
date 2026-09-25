@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,9 +25,7 @@ import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorOrigin.fromOrgApiCall;
 import static com.company.andy.common.model.actor.PrincipalType.*;
-import static com.company.andy.common.security.SecurityUtils.getJwtPrincipalType;
-import static com.company.andy.common.security.SecurityUtils.getJwtUserName;
-import static com.company.andy.common.utils.Constants.JWT_CLAIM_ORG_ID;
+import static com.company.andy.common.security.SecurityUtils.*;
 import static com.company.andy.common.utils.Constants.ORG_ID_HEADER;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -35,6 +34,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 // Controllers can use "@AuthenticationPrincipal @NotNull OrgActor actor" to obtain the current actor
 
 @Slf4j
+@NullMarked
 public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final CommonProperties commonProperties;
@@ -61,7 +61,6 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            log.debug("Authentication failed:", ex);
             SecurityContextHolder.clearContext();
             authenticationEntryPoint.commence(request, response, new AuthenticationServiceException("Authentication failed", ex));
         } finally {
@@ -96,9 +95,9 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
 
         if (Objects.equals(principalType, MEMBER.name())) {
             return new ActorAuthenticationToken(Actor.createMemberActor(
-                    jwt.getSubject(),
+                    getJwtMemberId(jwt),
                     getJwtUserName(jwt),
-                    getOrgIdFromJwt(jwt),
+                    getJwtOrgId(jwt),
                     Set.of(),
                     fromOrgApiCall(request)
             ), Set.of(), jwt);
@@ -106,8 +105,8 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
 
         if (Objects.equals(principalType, ORG_SERVICE_CLIENT.name())) {
             return new ActorAuthenticationToken(Actor.createOrgServiceClientActor(
-                    jwt.getSubject(),
-                    getOrgIdFromJwt(jwt),
+                    getJwtClient(jwt),
+                    getJwtOrgId(jwt),
                     fromOrgApiCall(request)
             ), Set.of(), jwt);
         }
@@ -119,7 +118,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
 
         if (Objects.equals(principalType, SUPERVISOR.name())) {
             return new ActorAuthenticationToken(Actor.createSupervisedOrgActor(
-                    jwt.getSubject(),
+                    getJwtSupervisorId(jwt),
                     getJwtUserName(jwt),
                     getOrgIdFromHeader(request),
                     fromOrgApiCall(request)
@@ -128,20 +127,12 @@ public class JwtToOrgActorAuthenticationTokenFilter extends OncePerRequestFilter
 
         if (Objects.equals(principalType, PLATFORM_SERVICE_CLIENT.name())) {
             return new ActorAuthenticationToken(Actor.createPlatformServiceClientOrgActor(
-                    jwt.getSubject(),
+                    getJwtClient(jwt),
                     getOrgIdFromHeader(request),
                     fromOrgApiCall(request)
             ), Set.of(), jwt);
         }
         throw new InvalidBearerTokenException("Invalid JWT principal type: " + principalType + " for platform issuer, expected: " + SUPERVISOR.name() + " or " + PLATFORM_SERVICE_CLIENT.name());
-    }
-
-    private String getOrgIdFromJwt(Jwt jwt) {
-        String orgId = jwt.getClaimAsString(JWT_CLAIM_ORG_ID);
-        if (isBlank(orgId)) {
-            throw new InvalidBearerTokenException("Cannot obtain an orgId from JWT.");
-        }
-        return orgId;
     }
 
     private String getOrgIdFromHeader(HttpServletRequest request) {

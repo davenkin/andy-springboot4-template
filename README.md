@@ -24,7 +24,8 @@ This is a template Spring Boot 4 project with the following features:
 - Standardized [object implementation pattern](adr/007_unified_object_implementation_patterns.md)
 - Distributed tracing with [Micrometer tracing](https://docs.micrometer.io/tracing/reference/)
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
-- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API calls with both OAuth2 `client_credentials`(`serviceClientRestClient`) client and JWT token relay client(`jwtRelayRestClient`).
+- [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API
+  calls
 
 ## Tech stack
 
@@ -40,81 +41,62 @@ This is a template Spring Boot 4 project with the following features:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125), with the following default settings:（todo：用表格）
-        - Keycloak Admin user for managing Keycloak server:
-            - Username: `admin`
-            - Password:`admin`
-        - Org IT admin:
-            - Realm: `test-realm`
-            - Client: `test-client`
-            - Username: `test-org-it-admin`
-            - Password: `11111111`
-            - Role: `org_it_admin`
-        - Org admin:
-            - Realm: `test-realm`
-            - Client: `test-client`
-            - Username: `test-org-admin`
-            - Password: `11111111`
-            - Role: `org_admin`
-        - Org service client:
-            - todo:
-        - Supervisor:
-            - Realm: `platform`
-            - Client: `test-client`
-            - Username: `test-supervisor`
-            - Password: `11111111`
-            - Role: `supervisor`
-        - Platform service client:
-            - Realm: `platform`
-            - Client: `todo`
-            - Client secret: `todo`
-        - A claim field named `org_id` with hardcoded value of `12345678` is added to the access token to simulate an org.
-        - Toto: claim field of `principal_type`
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125)
     - `Redis`: localhost:6125
 - Run the application locally in one of the following ways:
-    - `./run-local.sh`: this starts the application with debug port on 5005, assuming that docker-compose is already up
-      running.
-    - Run `main()` in  `SpringBootWebApplication`, assuming that docker-compose is already up running.
-    - By default, the `local` profile(`application-local.yaml`) is used for all the above methods.
-- Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully.
+    - `./run-local.sh`: this starts the application with debug port on 5005, assuming docker-compose is already up
+      running
+    - Run `main()` in  `SpringBootWebApplication`, assuming docker-compose is already up running
+
+- Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully
 - Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
 - Actuator endpoints: [http://localhost:5125/actuator](http://localhost:5125/actuator)
-- To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`.
+- To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`
 
 ## How to build
 
-- Run `./build.sh` to build the project locally.
+- Run `./build.sh` to build the project locally
 
 ## How to run tests
 
-- We do both integration testing and unit testing with a preference on integration testing。
+- We do both unit testing and integration testing.
 - To run tests, locate them inside IDE and run them directly from there.
-- We have a [testing strategy](adr/014_testing_strategy.md), please read it before writing any tests
-- There is no need to start docker-compose for running integration tests, as they do not use dockerized MongoDB or Redis
-  but their embedded versions.
+- We have a [testing strategy](adr/014_testing_strategy.md), please read it before writing any tests.
 
 ## Architecture Decision Records (ADRs)
 
 This project uses [Architecture Decision Records (ADRs)](https://adr.github.io/) to document important architectural
-decisions. ADRs are stored in the `adr` directory and follow a [specific format](adr/000_what_is_adr.md). You should go through all the ADRs before you start implementing any code, as they contain important information about the architecture and coding practices of this project.
-
+decisions. ADRs are stored in the `adr` directory and follow a [specific format](adr/000_what_is_adr.md). You should go
+through all the ADRs before you start implementing any code, as they contain important information about the
+architecture and coding practices of this project.
 
 ## Sample feature code
 
 There are four sample Aggregate Roots which serve as reference implementations:
-- [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs to be managed under an org, such as a computer. 
-- [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a maintenance record created for an `Equipment`, it's also an org level object.
-- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a system level object that are not related to any org and should only be accessed by supervisor.
-- [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that a public user has requested a demo of the product.  
 
-The APIs for these sample Aggregate Roots are only exposed in local and testing environment. You may keep them in your real project as implementation references. If you choose to delete them, make sure you also update the ADRs that reference them.
+- [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs
+  to be managed under an org, such as a computer.
+- [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a
+  maintenance record created for an `Equipment`, it's also an org level object.
+- [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a
+  system level object that are not related to any org and should only be accessed by supervisor.
+- [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that
+  a public user has requested a demo of the product.
+
+The APIs for these sample AggregateRoots are only exposed in local and testing environment. You may keep them in your
+real project as implementation references. If you choose to delete them, make sure you also update the ADRs that
+reference them.
 
 ## What's not demonstrated in this template project?
-- Authorization & Roles, 
+
+- Authorization & Roles,
 - org_id 和 principal_type claim field in JWT token,没有实现，需要自己实现
 
-
 ## TODO
+
 - todo: add doc
 - todo: rename task to action
 - todo: 说明如何使用drawio导出可再次编辑的svg，以及如何使用plantuml
+- todo: 文档for：:
+    - A OAuth2 `client_credentials` client (`SERVICE_CLIENT_REST_CLIENT`) for and JWT token relay client(
+      `JWT_RELAY_REST_CLIENT`).

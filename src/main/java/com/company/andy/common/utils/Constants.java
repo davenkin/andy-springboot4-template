@@ -26,12 +26,14 @@ public class Constants {
     public static final String SYSTEM_SETTINGS_CACHE = "SYSTEM_SETTINGS";
 
     // JWT
-    // todo: jwt的各个字段的含义需要文档化
     public static final String JWT_CLAIM_PREFERRED_USERNAME = "preferred_username";
     public static final String JWT_CLAIM_REALM_ACCESS = "realm_access";
     public static final String JWT_CLAIM_REALM_ACCESS_ROLES = "roles";
-    public static final String JWT_CLAIM_ORG_ID = "org_id";
+    public static final String JWT_CLAIM_AZP = "azp";
+    public static final String JWT_CLAIM_SUPERVISOR_ID = "supervisor_id";
     public static final String JWT_CLAIM_PRINCIPAL_TYPE = "principal_type";
+    public static final String JWT_CLAIM_ORG_ID = "org_id";
+    public static final String JWT_CLAIM_MEMBER_ID = "member_id";
 
     // Regex
     public static final String MOBILE_NUMBER_REGEX = "^[1]([3-9])[0-9]{9}$";
