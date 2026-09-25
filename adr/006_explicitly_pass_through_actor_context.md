@@ -1,11 +1,5 @@
 # Explicitly pass through actor context
 
-// todo: API plane
-
-// todo: update doc
-- 扮演时，principal type不会变，subjectid不会变
-- jwt的字段定义，以及一个表格规定不同类型的principal应该有哪些jwt字段
-
 ## Context
 
 In software, the "Current User Context" refers to the information about the user who is currently interacting with the
@@ -17,7 +11,7 @@ In multithreaded applications, when retrieving the current user context, there a
 
 - Store the user context in a ThreadLocal variable, such as Spring Security's `SecurityContextHolder`. This has the
   advantage of being easily accessible from anywhere in the code without needing to pass it explicitly. However, it
-  makes the code implicit and hence increase the cognitive load of the software, also it makes testing harder.
+  makes the code implicit and hence increase the cognitive load of the code, also it makes testing harder.
 - Pass the user context explicitly as a parameter down to all layers. This approach is more explicit and makes it clear
   where the user context is being used, but it requires more boilerplate code to pass the context through multiple
   layers.
@@ -31,17 +25,19 @@ designing/thinking/understanding/debugging rather than typing.
 ## Implementation
 
 [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is used to represent the user context. Is has
-three concrete subclasses:
+two concrete subclasses:
 
 - `OrgActor`: represents an organization actor, it always carries an `orgId`;
 - `PlatformActor`: represents an non-organization actor;
 
-As a general programming rule, your code should use the base class `Actor` as much as possible, only when you need
-specific data from a specific type of actor (e.g. `orgId` from `OrgActor`) or need to check for a specific type of
-actor (e.g. check if the current actor is `PlatformActor`), then you can use the more specific actor type.
+As a general programming rule, your code should use the base class `Actor` as much as possible, this often happens in
+your domain objects.
 
-Normally you don't need to create these actor object by yourself, the framework will create the appropriate type of actor object
-for you and pass it to your code as a parameter. For example:
+You should use the more specific types only when you need specific data from the actor (e.g. get `orgId` from
+`OrgActor`). This often happens in Controller, EventHandler, CommandService and QueryService etc.
+
+Normally you don't need to create these actor object by yourself, the framework already creates them for you. For
+example:
 
 - In Spring MVC controllers, the actor object is created by Spring Security, you can declare your controller method with
   `@AuthenticationPrincipal` to get the actor object:
@@ -52,10 +48,8 @@ for you and pass it to your code as a parameter. For example:
     }
 ```
 
-Normally, for org level resources, the controller method should declare `OrgActor` type, for system level resources, the
-controller method should declare `PlatformActor` type, and for public resources you should just use `Actor` type. Incorrect declaration of actor type might cause `NullPointerException`.
-
-- In event handlers, a `PlatformActor` object is created by the framework and passed to the `handle()` method which you will implement. For example:
+- In event handlers, a `PlatformActor` object is created by the framework and passed to the `handle()` method which you
+  will implement. For example:
 
 ```java
     @Override
@@ -63,3 +57,17 @@ controller method should declare `PlatformActor` type, and for public resources 
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 ```
+
+### Two API planes
+
+In multitenant applications, normally there are two API planes:
+
+- The **org API plane** for manipulating org level resources, requires an `OrgActor` to access with the following cases:
+    - An org member
+    - An org service client
+    - An supervisor acting as an `OrgActor` for a specific org
+    - A platform service client acting as an `OrgActor` for a specific org
+- The **platform API plane** for manipulating platform level resources, requires a `PlatformActor` to access with the
+  following cases:
+    - A supervisor
+    - A platform service client
