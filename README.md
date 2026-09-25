@@ -47,8 +47,8 @@ This is a template Spring Boot 4 project with the following features:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
-    - `Keycloak`: [http://localhost:7125](http://localhost:7125)
-    - `Redis`: localhost:6125
+    - `Keycloak`: [http://localhost:7125](http://localhost:7125), login with username `admin` and password `admin`, more local user accounts refer to [keycloak-data/README.md](keycloak-data/README.md)
+    - `Redis`: localhost:6125, password: `aredissecret`
 - Run the application locally in one of the following ways:
     - `./run-local.sh`: this starts the application with debug port on 5005, assuming docker-compose is already up
       running
@@ -96,7 +96,6 @@ reference them.
 ## What's not demonstrated in this template project?
 
 - Authorization & Roles,
-- org_id 和 principal_type claim field in JWT token,没有实现，需要自己实现
 
 ## TODO
 
