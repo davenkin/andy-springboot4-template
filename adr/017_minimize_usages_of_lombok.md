@@ -52,11 +52,11 @@ public class EquipmentEngine {}
 As you can see, there is no `@Data`, `@Setter`, `@Builder` or `@AllArgsConstructor` for the Entities under Aggregate
 Roots, stick with this in your own code.
 
-### Value objects
+### ValueObjects
 
-- Value objects are immutable, this means you should never use Lombok's `@Data` or `@Setter`.
+- ValueObjects are immutable, this means you should never use Lombok's `@Data` or `@Setter`.
 
-- Prefer using Java's `Record` for value objects, which eliminates all usages of Lombok.
+- Prefer using Java's `Record` for ValueObjects, which eliminates all usages of Lombok.
   Example: [CreateDemoReservationCommand](../src/main/java/com/company/andy/feature/demoreservation/command/CreateDemoReservationCommand.java):
 
 ```java
@@ -78,7 +78,7 @@ public record CreateEquipmentCommand(
 }
 ```
 
-- If `Record` is not you choice, stick to the following Lombok annotations for value objects:
+- If `Record` is not you choice, stick to the following Lombok annotations for ValueObjects:
     - `@Value` makes the class immutable and generates equals, hashCode, toString, getters, etc.
     - `@Builder` generates a builder for the class, which is useful for testing and also
     - `@AllArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)` generates a private all-args constructor
@@ -86,7 +86,7 @@ public record CreateEquipmentCommand(
       generate an all-args constructor, and we want to hide it from public API while still allowing Jackson to use it
       for deserialization. Also, Spring Data MongoDB will by default use this all-args constructor to reconstruct the
       object from the database.
-    - No `@Data` or `@Getter` or `@Setter` or `@NoArgsConstructor` etc. should be used for value objects, as they are
+    - No `@Data` or `@Getter` or `@Setter` or `@NoArgsConstructor` etc. should be used for ValueObjects, as they are
       not needed and might cause confusion.
 
 ```java
@@ -100,7 +100,7 @@ public class CreateEquipmentCommand {
 }
 ```
 
-- For value objects with class hierarchy, Java `Record` is not an option anymore, please refer
+- For ValueObjects with class hierarchy, Java `Record` is not an option anymore, please refer
   to [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) as an example:
     - `@Getter` for getting data
     - `@SuperBuilder` for builder

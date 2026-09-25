@@ -11,7 +11,7 @@
     }
 ```
 
-- Prefer using Java Record over Lombok for value objects. Reason: Records are Java's built-in support, they are more
+- Prefer using Java Record over Lombok for ValueObjects. Reason: Records are Java's built-in support, they are more
   concise and embodies common best practices like immutability. Example:
 
 ```java
@@ -177,7 +177,7 @@ log.info("Created Equipment[{}].", equipment.getId());
   extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java). More details on this please refer to [011_event_consuming.md](./011_event_consuming.md). Example:
 
 ```java
-public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
+public class EquipmentCreatedAnotherEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
     @Override
     protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());

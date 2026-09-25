@@ -453,13 +453,13 @@ public class SpringKafkaEventListener {
 
 You may add more `@KafkaListener` methods for consuming different topics if needed.
 
-2. Create an EventHandler class that extends `AbstractEventHandler`:
+2. Create an EventHandler class that extends `AbstractEventHandler` or its abstract subclasses like `AbstractDomainEventHandler`:
 
 ```java
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
+public class EquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
 
     @Override
     protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {

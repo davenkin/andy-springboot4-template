@@ -14,7 +14,7 @@ For the same type of objects, we follow the same implementation patterns.
 
 - [AggregateRoot](#aggregateroot)
 - [Entity under AggregateRoot](#entity-under-aggregateroot)
-- [Value object](#value-object)
+- [ValueObject](#valueobject)
 - [Repository](#repository)
 - [Controller](#controller)
 - [CommandService](#commandservice)
@@ -76,7 +76,7 @@ public class Equipment extends AggregateRoot {
     private String holder;
     private long maintenanceRecordCount;
 
-    public Equipment(String name, Actor actor) { // Explict business contructors
+    public Equipment(String name, OrgActor actor) { // Explict business contructors
         super(newEquipmentId(), actor);
         this.name = name;
         this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
@@ -129,26 +129,26 @@ public class EquipmentEngine {
 }
 ```
 
-### Value object
+### ValueObject
 
-- Value objects are immutable objects that represents a value, they don't have their own identity, and they are usually
+- ValueObjects are immutable objects that represents a value, they don't have their own identity, and they are usually
   used as fields in AggregateRoots or entities.
-- Value objects should mainly be implemented as Java `Record`, and they can have multiple constructors if needed
-- Value objects can optionally use builders(such as lombok `@Builder`) for creation, but this is not recommended as it
+- ValueObjects should mainly be implemented as Java `Record`, and they can have multiple constructors if needed
+- ValueObjects can optionally use builders(such as lombok `@Builder`) for creation, but this is not recommended as it
   can easily result in invalid objects
-- As `Record` is used, value objects should not be annotated with lombok's `@Getter`, `@Setter`,  `@Data`, `@Value` or
+- As `Record` is used, ValueObjects should not be annotated with lombok's `@Getter`, `@Setter`,  `@Data`, `@Value` or
   `@AllArgsConstructor`
 
-Example value objects [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java):
+Example ValueObjects [BaseSettings](../src/main/java/com/company/andy/feature/systemsettings/domain/BaseSettings.java):
 
 ```java
-public record Actor(String id,
-                    String name,
-                    Set<Role> roles,
-                    String orgId,
-                    ActorType type,
-                    String initiator,
-                    Instant createdAt) {
+@Builder
+public record BaseSettings(
+        @Valid
+        @NotNull
+        @NoBlankString
+        @Size(max = 100)
+        List<@NotBlank String> demoReservationNotificationEmails) {
 }
 ```
 
@@ -395,7 +395,7 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
 ### EventHandler
 
 - All even handlers should
-  extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java)
+  extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java) or its abstract subclasses like [AbstractDomainEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractDomainEventHandler.java)
 - An event can be handled by multiple event handlers, and they operate independently to each other
 - You may choose to override `AbstractEventHandler`'s `isIdempotent()`, `isTransactional()` and `priority()` for
   specific purposes, where:
@@ -419,11 +419,11 @@ handler [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/fe
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
+public class EquipmentDeletedEventEventHandler extends AbstractDomainEventHandler<EquipmentDeletedEvent> {
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
     @Override
-    public void handle(EquipmentDeletedEvent event, Actor actor) {
+    public void handle(EquipmentDeletedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 }
@@ -449,7 +449,7 @@ public class MaintenanceRecordFactory {
     public MaintenanceRecord create(Equipment equipment,
                                     EquipmentStatus status,
                                     String description,
-                                    Actor actor) {
+                                    OrgActor actor) {
         return new MaintenanceRecord(equipment.getId(), equipment.getName(), status, description, actor);
     }
 }
@@ -533,7 +533,7 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
         Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
         
         // code omitted

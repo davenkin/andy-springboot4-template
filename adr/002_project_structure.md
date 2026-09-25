@@ -37,7 +37,7 @@ The `1` in `(class:1)` indicates there can be only one class under a feature pac
     - `controller`(folder:1)
         - `XxxController`(class:1): Spring MVC controller
     - `domain`(folder:1)
-        - `Xxx`(class:N): Domain objects such as AggregateRoots, entities and value objects, they hold business logic.
+        - `Xxx`(class:N): Domain objects such as AggregateRoots, entities and ValueObjects, they hold business logic.
         - `XxxRepository`(class:1): Repository for the AggregateRoot
         - `XxxFactory`(class:1): Factory for creating the AggregateRoot
         - `XxxDomainService`(class:N): DomainService for holding business logic that is not suitable for residing in

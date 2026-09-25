@@ -31,10 +31,10 @@ two concrete subclasses:
 - `PlatformActor`: represents an non-organization actor;
 
 As a general programming rule, your code should use the base class `Actor` as much as possible, this often happens in
-your domain objects.
+your AggregateRoots, DomainServices and DomainEvents.
 
 You should use the more specific types only when you need specific data from the actor (e.g. get `orgId` from
-`OrgActor`). This often happens in Controller, EventHandler, CommandService and QueryService etc.
+`OrgActor`). This often happens in Controllers, EventHandlers, CommandServices and QueryServices etc.
 
 Normally you don't need to create these actor object by yourself, the framework already creates them for you. For
 example:
