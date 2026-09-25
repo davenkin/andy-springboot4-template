@@ -2,10 +2,10 @@
 
 This is a template Spring Boot 4 project with the following features:
 
-- Data persistence using MongoDB
-- Messaging using Kafka
-- Caching using Redis
-- API documentation using [Springdoc](adr/018_api_documentation.md)
+- Data persistence using [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb/)
+- Messaging using [Spring for Apache Kafka](https://spring.io/projects/spring-kafka)
+- Caching using [Spring Data Redis](https://spring.io/projects/spring-data-redis)
+- API documentation using [springdoc-openapi](adr/018_api_documentation.md)
 - Data migration using [Mongock](https://mongock.io/)
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
 - Distributed lock for scheduled jobs using [Shedlock](https://github.com/lukas-krecan/ShedLock)
@@ -29,11 +29,17 @@ This is a template Spring Boot 4 project with the following features:
 
 ## Tech stack
 
-- Java 25
-- Spring Boot 4
-- Spring Data MongoDB
-- Spring Data Redis
-- Spring for Apache Kafka
+- [Java 25](https://www.oracle.com/java/technologies/javase/jdk25-archive-downloads.html)
+- [Spring Boot 4](https://docs.spring.io/spring-boot/index.html)
+- [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb/)
+- [Spring Data Redis](https://spring.io/projects/spring-data-redis/)
+- [Spring for Apache Kafka](https://spring.io/projects/spring-kafka/)
+- [Mongock](https://mongock.io/)
+- [Shedlock](https://github.com/lukas-krecan/ShedLock)
+- [springdoc-openapi](https://springdoc.org/)
+- [OpenTelemetry](https://opentelemetry.io/)
+- [Junit 5](https://junit.org/junit5/)
+- [ArchUnit](https://www.archunit.org/)
 
 ## How to run locally
 
