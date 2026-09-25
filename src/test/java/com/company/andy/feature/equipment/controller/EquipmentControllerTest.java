@@ -67,7 +67,7 @@ class EquipmentControllerTest extends IntegrationTest {
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
-        // Verify domain events
+        // Verify DomainEvents
         EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
@@ -90,7 +90,7 @@ class EquipmentControllerTest extends IntegrationTest {
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(updateEquipmentNameCommand.name(), equipment.getName());
 
-        // Verify domain events
+        // Verify DomainEvents
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
         assertEquals(equipmentId, equipmentNameUpdatedEvent.getEquipmentId());
@@ -117,7 +117,7 @@ class EquipmentControllerTest extends IntegrationTest {
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
 
-        // Test domain events
+        // Test DomainEvents
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }

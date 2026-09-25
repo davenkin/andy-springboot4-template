@@ -74,7 +74,7 @@ public class Equipment extends AggregateRoot {
             return;
         }
         this.name = newName;
-        // call raiseEvent() for publishing domain events
+        // call raiseEvent() for publishing DomainEvents
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 

@@ -36,7 +36,7 @@ public class EventConsumer {
         this.transactionTemplate.setPropagationBehavior(PROPAGATION_REQUIRES_NEW);
     }
 
-    // Entry point for consuming domain events
+    // Entry point for consuming DomainEvents
     public void consumeDomainEvent(DomainEvent event) {
         this.consume(new ConsumingEvent(event.getId(), event));
     }

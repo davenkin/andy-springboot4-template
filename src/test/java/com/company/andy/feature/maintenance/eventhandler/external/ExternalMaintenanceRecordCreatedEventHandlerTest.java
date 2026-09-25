@@ -59,7 +59,7 @@ class ExternalMaintenanceRecordCreatedEventHandlerTest extends IntegrationTest {
         assertEquals(externalEvent.getEquipmentStatus(), record.getStatus());
         assertEquals(equipment.getName(), record.getEquipmentName());
 
-        // Verify domain event
+        // Verify DomainEvent
         MaintenanceRecordCreatedEvent internalEvent = latestDomainEventFor(record.getId(),
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);

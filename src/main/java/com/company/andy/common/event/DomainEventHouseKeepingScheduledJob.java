@@ -16,7 +16,7 @@ import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
-// This house keeping job removes old domain events in DB both for publishing and consuming side, freeing more spaces for new events
+// This house keeping job removes old DomainEvents in DB both for publishing and consuming side, freeing more spaces for new events
 
 @Slf4j
 @Component
@@ -26,17 +26,17 @@ public class DomainEventHouseKeepingScheduledJob {
 
     @Retryable(multiplier = 3, maxRetries = 3)
     public void removeOldPublishingDomainEvents(int olderThanDays) {
-        log.info("Start remove old publishing domain events from mongodb.");
+        log.info("Start remove old publishing DomainEvents from mongodb.");
         Query query = Query.query(where(raisedAt).lt(now().minus(olderThanDays, DAYS)));
         DeleteResult result = mongoTemplate.remove(query, PUBLISHING_EVENT_COLLECTION);
-        log.info("Removed {} old publishing domain events which are more than {} days old.", result.getDeletedCount(), olderThanDays);
+        log.info("Removed {} old publishing DomainEvents which are more than {} days old.", result.getDeletedCount(), olderThanDays);
     }
 
     @Retryable(multiplier = 3, maxRetries = 3)
     public void removeOldConsumingDomainEvents(int olderThanDays) {
-        log.info("Start remove old consuming domain events from mongodb.");
+        log.info("Start remove old consuming DomainEvents from mongodb.");
         Query query = Query.query(where(consumedAt).lt(now().minus(olderThanDays, DAYS)));
         DeleteResult result = mongoTemplate.remove(query, CONSUMING_EVENT_COLLECTION);
-        log.info("Removed {} old consuming domain events which are more than {} days old.", result.getDeletedCount(), olderThanDays);
+        log.info("Removed {} old consuming DomainEvents which are more than {} days old.", result.getDeletedCount(), olderThanDays);
     }
 }

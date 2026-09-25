@@ -20,7 +20,7 @@ import static com.company.andy.common.utils.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 public class SpringKafkaEventListener {
     private final EventConsumer eventConsumer;
 
-    // Listen to domain events which are published by ourselves
+    // Listen to DomainEvents which are published by ourselves
     @KafkaListener(id = "domain-event-listener",
             groupId = "domain-event-listener",
             topics = {KAFKA_DOMAIN_EVENT_TOPIC},

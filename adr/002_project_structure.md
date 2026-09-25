@@ -52,7 +52,7 @@ The `1` in `(class:1)` indicates there can be only one class under a feature pac
         - `XxxScheduler`(class:N): Scheduling configuration for the scheduled jobs
         - `XxxScheduledJob`(class:N): A single background scheduled job
     - `query`(folder:1): Contains query related classes
-        - `XxxQueryService`(class:N): Query services
+        - `XxxQueryService`(class:N): QueryServices
         - `XxxQuery`(class:N): Query request classes
         - `QXxx`(class:N): Query response classes
 
@@ -88,13 +88,13 @@ More detailed explanation:
           of AggregateRoots should be explicit, so always use factories to create them. Normally the factory firstly do
           some business validations and then call AggregateRoot's constructor to create the object. Example:
           [EquipmentFactory](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentFactory.java).
-        - `XxxDomainService`(class:N): A [domain service](https://ddd-practitioners.com/home/glossary/domain-service/)
+        - `XxxDomainService`(class:N): A [DomainService](https://ddd-practitioners.com/home/glossary/domain-service/)
           class, like other domain objects, holds business logic. But, it should be your last resort when business logic
-          cannot fit into other domain objects. Domain services usually end with "DomainService", but you can use other
+          cannot fit into other domain objects. DomainServices usually end with "DomainService", but you can use other
           meaningful suffixes as well such as "XxxChecker" or "XxxProvider".
           Example: [EquipmentDomainService](../src/main/java/com/company/andy/feature/equipment/domain/EquipmentDomainService.java).
-        - `event`(folder:1): This folder contains all the domain event classes that are raised by the AggregateRoots.
-            - XxxEvent(class:N): Domain event class, should end with "Event", it represents a significant change in
+        - `event`(folder:1): This folder contains all the DomainEvent classes that are raised by the AggregateRoots.
+            - XxxEvent(class:N): DomainEvent class, should end with "Event", it represents a significant change in
               AggregateRoot. The naming convention is `[name of AggregateRoot] + [passive form of verbs] + Event`.
               Example: [EquipmentCreatedEvent](../src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentCreatedEvent.java).
         - `task`(folder:1): Contains various tasks.

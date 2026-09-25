@@ -37,8 +37,8 @@ import static com.company.andy.common.utils.Constants.PUBLISHING_EVENT_COLLECTIO
 public class EventConfiguration {
     private static final String dltSuffix = "-dlt";
 
-    // Automatically triggered on domain event insertion in MongoDB,
-    // then publish staged domain events to messaging middleware
+    // Automatically triggered on DomainEvent insertion in MongoDB,
+    // then publish staged DomainEvents to messaging middleware
     @Bean(destroyMethod = "stop")
     MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
             MongoTemplate mongoTemplate,
@@ -46,7 +46,7 @@ public class EventConfiguration {
             DomainEventPublisher domainEventPublisher) {
         MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
-        // Get notified on DomainEvent insertion in MongoDB, then publish staged domain events to messaging middleware
+        // Get notified on DomainEvent insertion in MongoDB, then publish staged DomainEvents to messaging middleware
         container.register(ChangeStreamRequest.builder(
                         (MessageListener<ChangeStreamDocument<Document>, PublishingDomainEvent>) message -> {
                             domainEventPublisher.publishStagedDomainEvents(100);

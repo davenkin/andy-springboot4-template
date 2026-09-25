@@ -13,7 +13,7 @@ We choose to follow a standard way to implement various **request process flows*
 
 ### Overall architecture
 
-![overall architecture](/asset/overall-architecture.png)
+![overall architecture](./asset/overall-architecture.png)
 
 There are mainly 3 ways to interact with the software:
 
@@ -37,7 +37,7 @@ Given above, we have the following process flows:
 Creating data involves 2 major steps: Create and Save. Take "Creating an equipment" as an example, the request process
 flow is:
 
-![http-request-for-creating-aggregate-root](/asset/http-request-for-creating-aggregate-root.png)
+![http-request-for-creating-aggregate-root](./asset/http-request-for-creating-aggregate-root.png)
 
 1. `EquipmentController` receives the request:
 
@@ -106,7 +106,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
 Updating data has 3 major steps: (1)Load the AggregateRoot; (2)Call AggregateRoot's business method; (3) Save it back
 to database. Take "updating `Equipment`'s holder" as an example.
 
-![http-request-for-updating-aggregate-root](/asset/http-request-for-updating-aggregate-root.png)
+![http-request-for-updating-aggregate-root](./asset/http-request-for-updating-aggregate-root.png)
 
 1. `EquipmentController` receives the request:
 
@@ -165,10 +165,10 @@ equipmentRepository.save(equipment);
 Sometimes, the whole business logic is not suitable to be put inside AggregateRoot like `Equipment.updateHolder()`. For
 such cases, we can use DomainServices. For example, when updating `Equipment`'s name, we need to check if the name is
 already been occupied, which cannot be fulfilled by `Equipment` itself. Instead of calling `Equipment.updateName()`
-directly from `EquipmentCommandService`, domain service `EquipmentDomainService.updateEquipmentName()` is called from
+directly from `EquipmentCommandService`, DomainService `EquipmentDomainService.updateEquipmentName()` is called from
 `EquipmentCommandService`:
 
-![http-request-for-updating-aggregate-root-domain-service](/asset/http-request-for-updating-aggregate-root-domain-service.png)
+![http-request-for-updating-aggregate-root-domain-service](./asset/http-request-for-updating-aggregate-root-domain-service.png)
 
 
 ```java
@@ -202,7 +202,7 @@ update `Equipment`'s name:
 
 For deleting data, first load the AggregateRoot and then delete it. For example, for deleting an `Equipment`:
 
-![http-request-for-deleting-aggregate-root](/asset/http-request-for-deleting-aggregate-root.png)
+![http-request-for-deleting-aggregate-root](./asset/http-request-for-deleting-aggregate-root.png)
 
 
 1. `EquipmentController` receives the request:
@@ -233,7 +233,7 @@ For deleting data, first load the AggregateRoot and then delete it. For example,
 Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
 ```
 
-4. `Equipment.onDelete()` is called to do some pre-deletion work such as raising domain events:
+4. `Equipment.onDelete()` is called to do some pre-deletion work such as raising DomainEvents:
 
 ```java
     public void onDelete(Actor actor) {
@@ -243,7 +243,7 @@ Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
 
 5. `EquipmentRepository` deletes the objects using `delete()`. You might be wondering why we need to first load the
    `Equipment` into memory then do the deletion. Will it be much simpler to directly delete by ID? The reason is that,
-   before deletion, there might be some validations that need to happen, and also it might raise Domain Events. So, in
+   before deletion, there might be some validations that need to happen, and also it might raise DomainEvents. So, in
    order to ensure such possibilities, the whole `Equipment` object is loaded into the memory.
 
 ### HTTP request for querying AggregateRoot
@@ -258,7 +258,7 @@ There are two ways to query data:
 For using [CQRS](./004_use_lightweight_cqrs.md), querying data can bypass the domain models and talk to database
 directly. For example, when querying a list of `Equipment`s:
 
-![http-request-for-querying-aggregate-root](/asset/http-request-for-querying-aggregate-root.png)
+![http-request-for-querying-aggregate-root](./asset/http-request-for-querying-aggregate-root.png)
 
 
 1. The request hits `EquipmentController`, which further calls `EquipmentQueryService.pageEquipments()`:
@@ -290,16 +290,16 @@ directly. For example, when querying a list of `Equipment`s:
 
 ### Scheduled jobs triggered by timers
 
-![scheduled-jobs-triggered-by-timers](/asset/scheduled-jobs-triggered-by-timers.png)
+![scheduled-jobs-triggered-by-timers](./asset/scheduled-jobs-triggered-by-timers.png)
 
-1. First create a scheduler in the `job` package:
+1. First create a scheduler in the `scheduledjob` package:
 
 ```java
 @Slf4j
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {
-    private final MaintenanceReminderJob maintenanceReminderJob;
+    private final MaintenanceReminderScheduledJob maintenanceReminderScheduledJob;
 
     @Scheduled(cron = "0 10 2 1 * ?")
     @SchedulerLock(name = "remindForEquipmentMaintenance")
@@ -307,27 +307,27 @@ public class EquipmentJobScheduler {
         assertLocked();
 
         SystemActor actor = createJobSystemActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderJob::run);
+        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderScheduledJob::run);
     }
 }
 ```
 
 The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into MDC.
 
-2. Then create a job class:
+2. Then create a scheduled job class:
 
 ```java
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MaintenanceReminderJob {
+public class MaintenanceReminderScheduledJob {
 
   public void run() {
-    log.info("MaintenanceReminderJob started.");
+    log.info("MaintenanceReminderScheduledJob started.");
 
     //do something
 
-    log.info("MaintenanceReminderJob ended.");
+    log.info("MaintenanceReminderScheduledJob ended.");
   }
 }
 ```
@@ -339,7 +339,7 @@ The job class serves the same purpose as `CommandService`, which orchestrates va
 
 The Kafka event consuming infrastructure is already set up for you. You only need to do 2 things for consuming events.
 
-![consuming-events-from-kafka](/asset/consuming-events-from-kafka.png)
+![consuming-events-from-kafka](./asset/consuming-events-from-kafka.png)
 
 
 1. Make sure the topic is subscribed in `SpringKafkaEventListener` by configuring
@@ -353,7 +353,7 @@ The Kafka event consuming infrastructure is already set up for you. You only nee
 public class SpringKafkaEventListener {
     private final EventConsumer eventConsumer;
 
-    // Listen to domain events which are published by ourselves
+    // Listen to DomainEvents which are published by ourselves
     @KafkaListener(id = "domain-event-listener",
             groupId = "domain-event-listener",
             topics = {KAFKA_DOMAIN_EVENT_TOPIC},

@@ -172,7 +172,7 @@ log.info("Created Equipment[{}].", equipment.getId());
 ```
 
 - For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the
-  central place where all kinds of events (internal domain events, external events etc.) are consumed. But you don't
+  central place where all kinds of events (internal DomainEvents, external events etc.) are consumed. But you don't
   need to touch it when implementing your own event consuming process, instead just create an event handler class that
   extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java). More details on this please refer to [011_event_consuming.md](./011_event_consuming.md). Example:
 
@@ -205,10 +205,10 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 ```
 
-- For domain event publishing, events are firstly staged(saved) in the database within the same database transaction with the business objects, and then published asynchronously triggered by
+- For DomainEvent publishing, events are firstly staged(saved) in the database within the same database transaction with the business objects, and then published asynchronously triggered by
   MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be
   found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish
-  your own domain event, you don't need to touch all of these, instead just call `raiseDomainEvent()` method from your
+  your own DomainEvent, you don't need to touch all of these, instead just call `raiseDomainEvent()` method from your
   AggregateRoot and everything else will be handled for you automatically. More details please refer to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
 
 ```java
@@ -217,7 +217,7 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
             return;
         }
         this.name = newName;
-        // Call raiseEvent() for publishing domain events
+        // Call raiseEvent() for publishing DomainEvents
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 ```

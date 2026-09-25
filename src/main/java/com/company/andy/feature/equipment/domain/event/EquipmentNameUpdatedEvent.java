@@ -10,7 +10,7 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.common.event.DomainEventType.EQUIPMENT_NAME_UPDATED_EVENT;
 import static lombok.AccessLevel.PRIVATE;
 
-// Demonstrates domain events that inherits from another domain event which further inherits from DomainEvent.
+// Demonstrates DomainEvents that inherits from another DomainEvent which further inherits from DomainEvent.
 
 @Getter
 @TypeAlias("EQUIPMENT_NAME_UPDATED_EVENT")

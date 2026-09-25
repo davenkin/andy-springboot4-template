@@ -29,7 +29,7 @@ public class PublishingDomainEvent {
     private Instant raisedAt;
 
     public PublishingDomainEvent(DomainEvent event, String traceparent) {
-        requireNonNull(event, "Domain event must not be null.");
+        requireNonNull(event, "DomainEvent must not be null.");
 
         this.id = event.getId();
         this.event = event;

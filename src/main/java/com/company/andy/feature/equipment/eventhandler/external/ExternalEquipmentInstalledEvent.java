@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import static lombok.AccessLevel.PRIVATE;
 
-// Demonstrates how to handle other event types other than domain events
+// Demonstrates how to handle other event types other than DomainEvents
 
 @Getter
 @SuperBuilder

@@ -77,7 +77,7 @@ events with type `EquipmentCreatedEvent`.
 
 ## Event consuming infrastructure
 
-![event consuming](/asset/event-consuming.png)
+![event consuming](./asset/event-consuming.png)
 
 The below section explains how the event consuming infrastructure works.
 
@@ -106,12 +106,12 @@ public class SpringKafkaEventListener {
   to [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java). `EventConsumer` is
   agnostic to
   messaging middlewares, and it manages all handlers. The below code uses `consumeDomainEvent(DomainEvent event)` to
-  handle Domain Events. If you are also consuming other types of events from other external systems, you may add more
+  handle DomainEvents. If you are also consuming other types of events from other external systems, you may add more
   methods in addition to `consumeDomainEvent()`, like `consumeExternalEvent(ExternalEvent event)`
 
 ```java
 
-    // Entry point for consuming domain events
+    // Entry point for consuming DomainEvents
     public void consumeDomainEvent(DomainEvent event) {
         this.consume(new ConsumingEvent(event.getId(), event));
     }

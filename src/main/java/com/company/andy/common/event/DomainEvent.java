@@ -37,7 +37,7 @@ import static lombok.AccessLevel.PROTECTED;
         @Type(value = SystemBaseSettingsUpdatedEvent.class, name = "SYSTEM_BASE_SETTINGS_UPDATED_EVENT"),
 })
 
-// Base class for all domain events
+// Base class for all DomainEvents
 @Getter
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)

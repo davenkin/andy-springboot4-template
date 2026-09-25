@@ -19,11 +19,11 @@ public class DomainEventJobScheduler {
     private final DomainEventPublisher domainEventPublisher;
     private final DomainEventHouseKeepingScheduledJob domainEventHouseKeepingScheduledJob;
 
-    // Runs every 5 minutes to publish staged domain events in case the real time publishing mechanism fails
+    // Runs every 5 minutes to publish staged DomainEvents in case the real time publishing mechanism fails
     // This job should not use @SchedulerLock as DomainEventPublisher.publishStagedDomainEvents() already uses an internal distributed lock
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
-        log.debug("Start house keep publish domain events.");
+        log.debug("Start house keep publish DomainEvents.");
         PlatformActor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
         ActorMdcSupport.runWithMdc(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
     }
@@ -39,13 +39,13 @@ public class DomainEventJobScheduler {
             try {
                 domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(100);
             } catch (Throwable t) {
-                log.error("Failed remove old publishing domain events from mongo.", t);
+                log.error("Failed remove old publishing DomainEvents from mongo.", t);
             }
 
             try {
                 domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(100);
             } catch (Throwable t) {
-                log.error("Failed remove old consuming domain events from mongo.", t);
+                log.error("Failed remove old consuming DomainEvents from mongo.", t);
             }
         });
     }

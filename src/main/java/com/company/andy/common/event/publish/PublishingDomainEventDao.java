@@ -21,7 +21,7 @@ import static org.springframework.data.domain.Sort.by;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-// DAO for publishing domain events
+// DAO for publishing DomainEvents
 
 @Slf4j
 @Component
@@ -35,7 +35,7 @@ public class PublishingDomainEventDao {
     // Before publishing to messaging middleware,
     // events are staged(saved) into database in the same transaction that handles business logic
     public void stage(List<DomainEvent> events) {
-        requireNonNull(events, "Domain events must not be null.");
+        requireNonNull(events, "DomainEvents must not be null.");
         String currentTraceParent = tracingService.currentTraceParent();
         List<PublishingDomainEvent> publishingDomainEvents = events.stream()
                 .map((DomainEvent it) -> new PublishingDomainEvent(it, currentTraceParent)).toList();
@@ -54,7 +54,7 @@ public class PublishingDomainEventDao {
     }
 
     public void successPublish(String eventId) {
-        requireNonBlank(eventId, "Domain event ID must not be blank.");
+        requireNonBlank(eventId, "DomainEvent ID must not be blank.");
         Query query = Query.query(where(MONGO_ID).is(eventId));
         Update update = new Update();
         update.set(PublishingDomainEvent.Fields.status, PUBLISH_SUCCEED.name()).inc(PublishingDomainEvent.Fields.publishedCount);
@@ -62,7 +62,7 @@ public class PublishingDomainEventDao {
     }
 
     public void failPublish(String eventId) {
-        requireNonBlank(eventId, "Domain event ID must not be blank.");
+        requireNonBlank(eventId, "DomainEvent ID must not be blank.");
         Query query = Query.query(where(MONGO_ID).is(eventId));
         Update update = new Update();
         update.set(PublishingDomainEvent.Fields.status, PUBLISH_FAILED.name()).inc(PublishingDomainEvent.Fields.publishedCount);

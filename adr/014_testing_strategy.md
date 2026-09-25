@@ -19,7 +19,7 @@ We write integration tests for:
 
 - Controller APIs,
   e.g. [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java)
-- Event handlers, both internal domain events and external events, e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
+- Event handlers, both internal DomainEvents and external events, e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
 - Jobs,
   e.g. [RemoveOldMaintenanceRecordsJobTest](../src/test/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsJobTest.java)
 
@@ -133,7 +133,7 @@ For both profiles:
 - As Kafka is disabled, you will need to call `EventConsumer.consumeXxxEvent()` explicitly for testing event consuming.
 - As [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern is used, the
   DomainEvents will firstly be stored into database before publishing, you may use `IntegrationTest.latestEventFor()` to
-  verify the existence of domain events.
+  verify the existence of DomainEvents.
 
 #### TestIdContext
 todo: impl
@@ -150,7 +150,7 @@ Reason:
 1. Prepared data
 2. Call API using `RestTestClient`
 3. Verify results
-4. If domain events are raised, you can verify it using `latestEventFor()`
+4. If DomainEvents are raised, you can verify it using `latestEventFor()`
 
 ```java
     @Test
@@ -172,7 +172,7 @@ Reason:
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
-        // Verify domain events
+        // Verify DomainEvents
         EquipmentCreatedEvent equipmentCreatedEvent = latestEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
@@ -181,12 +181,12 @@ Reason:
 
 #### Test internal DomainEvent handlers
 
-Usually DomainEvent handler testing is covered in Controller test file, as normally domain events are raised from Controller API calling.
+Usually DomainEvent handler testing is covered in Controller test file, as normally DomainEvents are raised from Controller API calling.
 
 1. Prepare data (usually by calling CommandService or Repository or RestTestClient)
 2. Execute the EventHandler using `EventConsumer.consumeDomainEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
 3. Verify results
-4. If other domain events are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
+4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
 
 ```java
     @Test
@@ -209,7 +209,7 @@ Usually DomainEvent handler testing is covered in Controller test file, as norma
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
         
-        // Test domain events
+        // Test DomainEvents
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
@@ -217,12 +217,12 @@ Usually DomainEvent handler testing is covered in Controller test file, as norma
 
 #### Test external event handlers
 
-Unlike domain event handler tests which can be covered in controller tests, external event handlers should be tested in their own test files, as they are not triggered by our own controller APIs but by external systems.
+Unlike DomainEvent handler tests which can be covered in controller tests, external event handlers should be tested in their own test files, as they are not triggered by our own controller APIs but by external systems.
 
 1. Prepare data (usually by calling CommandService or Repository)
 2. Execute the EventHandler using `EventConsumer.consumeExternalEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
 3. Verify results
-4. If other domain events are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
+4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using `latestEventFor()`
 
 ```java
    @Test
@@ -252,7 +252,7 @@ Unlike domain event handler tests which can be covered in controller tests, exte
         assertEquals(externalEvent.getEquipmentStatus(), record.getStatus());
         assertEquals(equipment.getName(), record.getEquipmentName());
 
-        // Verify domain event
+        // Verify DomainEvent
         MaintenanceRecordCreatedEvent internalEvent = latestEventFor(record.getId(),
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);

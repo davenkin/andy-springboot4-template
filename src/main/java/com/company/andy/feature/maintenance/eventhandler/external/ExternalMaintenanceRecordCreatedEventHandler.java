@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-// Demonstrates how to handle other event types other than domain events
+// Demonstrates how to handle other event types other than DomainEvents
 
 @Slf4j
 @Component

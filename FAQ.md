@@ -34,7 +34,7 @@ public class EventConfiguration {
     }
 ```
 
-### How to make multiple domain events inherit from the same base class (but not the DomainEvent base class)?
+### How to make multiple DomainEvents inherit from the same base class (but not the DomainEvent base class)?
 
 - Please refer
   to [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)

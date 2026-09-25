@@ -14,7 +14,7 @@ This is a template Spring Boot 4 project with the following features:
   and [PagedResponse](src/main/java/com/company/andy/common/utils/PagedResponse.java)
 - Builtin [Snowflake ID generator](src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java)
 - [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java) as first class citizen
-- [Domain event publishing](adr/010_domain_event_publishing.md)
+- [DomainEvent publishing](adr/010_domain_event_publishing.md)
   using [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern
 - [Event consuming](adr/011_event_consuming.md) mechanism with idempotency support
 - Standardized [exception handling](adr/012_exception_handling.md)

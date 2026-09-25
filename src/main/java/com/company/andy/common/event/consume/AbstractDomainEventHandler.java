@@ -5,7 +5,7 @@ import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.ActorOrigin;
 import com.company.andy.common.model.actor.PlatformActor;
 
-// Base class for all domain event handlers
+// Base class for all DomainEvent handlers
 
 public abstract class AbstractDomainEventHandler<T extends DomainEvent> extends AbstractEventHandler<T> {
 

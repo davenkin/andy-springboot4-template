@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 public class MaintenanceReminderScheduledJob {
 
     public void run() {
-        log.info("MaintenanceReminderJob started.");
+        log.info("MaintenanceReminderScheduledJob started.");
 
         //do something
 
-        log.info("MaintenanceReminderJob ended.");
+        log.info("MaintenanceReminderScheduledJob ended.");
     }
 }

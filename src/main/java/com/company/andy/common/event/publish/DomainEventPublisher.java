@@ -20,7 +20,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-// Publishes DB staged domain events to the messaging middleware
+// Publishes DB staged DomainEvents to the messaging middleware
 
 @Slf4j
 @Component
@@ -45,10 +45,10 @@ public class DomainEventPublisher {
                     new LockConfiguration(now(), "publish-domain-events", ofMinutes(1), ofMillis(1)));
             List<String> publishedEventIds = result.getResult();
             if (isNotEmpty(publishedEventIds)) {
-                log.debug("Published domain events {}.", publishedEventIds);
+                log.debug("Published DomainEvents {}.", publishedEventIds);
             }
         } catch (Throwable e) {
-            log.error("Error happened while publish domain events.", e);
+            log.error("Error happened while publish DomainEvents.", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class DomainEventPublisher {
                                 this.publishingDomainEventDao.successPublish(eventId);
                             } else {
                                 this.publishingDomainEventDao.failPublish(event.getId());
-                                log.error("Error publishing domain event [{}]:", eventId, ex);
+                                log.error("Error publishing DomainEvent [{}]:", eventId, ex);
                             }
                         }, taskExecutor);
                 futures.add(future);

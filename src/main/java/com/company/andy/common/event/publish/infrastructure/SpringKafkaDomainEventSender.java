@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.company.andy.common.utils.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 
-// Send domain events to Kafka
+// Send DomainEvents to Kafka
 // This is the only place where event publishing touches Kafka, hence the coupling to Kafka is minimized
 @Slf4j
 @Component

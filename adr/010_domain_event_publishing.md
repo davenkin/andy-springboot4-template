@@ -1,8 +1,8 @@
-# Domain event publishing
+# DomainEvent publishing
 
 ## Context
 
-Publishing Domain Events can be as easy as calling `kafkaTemplate.send()` whenever you need to. But doing so has a
+Publishing DomainEvents can be as easy as calling `kafkaTemplate.send()` whenever you need to. But doing so has a
 problem:
 
 - In normal use cases we will firstly write to database and then send events to Kafka, yet these two operations cannot
@@ -19,7 +19,7 @@ event table in database to convert a distributed transaction into a local databa
 
 ## Decision
 
-We choose to use the **Transactional Outbox** pattern for sending Domain Events to Kafka because it's proven to be
+We choose to use the **Transactional Outbox** pattern for sending DomainEvents to Kafka because it's proven to be
 working,
 and
 there is hardly another easy and doable way for distributed transactions that covers both databases and messaging
@@ -32,7 +32,7 @@ refer to [event consuming](011_event_consuming.md) for more detail.
 
 ## Implementation
 
-- For sending a Domain Event, the only action that you need is calling `raiseEvent()` from an AggregateRoot:
+- For sending a DomainEvent, the only action that you need is calling `raiseEvent()` from an AggregateRoot:
 
 ```java
     public void updateName(String newName, Actor actor) {
@@ -40,7 +40,7 @@ refer to [event consuming](011_event_consuming.md) for more detail.
             return;
         }
         this.name = newName;
-        // call raiseEvent() for publishing domain events
+        // call raiseEvent() for publishing DomainEvents
         raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
     }
 ```
@@ -48,12 +48,12 @@ refer to [event consuming](011_event_consuming.md) for more detail.
 After the entity is saved into MongoDB, the event infrastructure will take care of sending the raised event into Kafka
 automatically.
 
-More details on creating domain events please refer
+More details on creating DomainEvents please refer
 to [DomainEvent section of object implementation patterns](007_unified_object_implementation_patterns.md#domainevent).
 
-#### Domain event publishing architecture
+#### DomainEvent publishing architecture
 
-![domain event publishing](/asset/domain-event-publishing.png)
+![DomainEvent publishing](./asset/domain-event-publishing.png)
 
 The following steps are already been implemented for you, but for illustration let's walk them through.
 
@@ -105,13 +105,13 @@ later retrieve and publish.
 //PublishingDomainEventDao
 
 public void stage(List<DomainEvent> events) {
-  requireNonNull(events, "Domain events must not be null.");
+  requireNonNull(events, "DomainEvents must not be null.");
   List<PublishingDomainEvent> publishingDomainEvents = events.stream().map(PublishingDomainEvent::new).toList();
   mongoTemplate.insertAll(publishingDomainEvents);
 }
 ```
 
-As the Domain Event is saved into the database along with AggregateRoot in the same database transaction, we ensure
+As the DomainEvent is saved into the database along with AggregateRoot in the same database transaction, we ensure
 that they either be saved together
 or rollback together.
 
@@ -128,7 +128,7 @@ MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
     DomainEventPublisher domainEventPublisher) {
   MessageListenerContainer container = new DefaultMessageListenerContainer(mongoTemplate, taskExecutor);
 
-  // Get notification on DomainEvent insertion in MongoDB, then publish staged Domain Events to messaging middleware such as Kafka
+  // Get notification on DomainEvent insertion in MongoDB, then publish staged DomainEvents to messaging middleware such as Kafka
   container.register(ChangeStreamRequest.builder(
           (MessageListener<ChangeStreamDocument<Document>, PublishingDomainEvent>) message -> {
             domainEventPublisher.publishStagedDomainEvents(100);
@@ -144,7 +144,7 @@ MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
 Upon receiving MongoDB Change Streams on event insertion, we are not sending the currently inserted event into Kafka
 directly, instead we
 treat this change merely as a trigger, which calls `DomainEventPublisher.publishStagedDomainEvents()` to start the
-publishing of Domain Events to Kafka.
+publishing of DomainEvents to Kafka.
 
 - The `DomainEventPublisher.publishStagedDomainEvents()` method loads all un-published events from the
   `publishing-event`
@@ -162,10 +162,10 @@ public void publishStagedDomainEvents(int batchSize) {
         new LockConfiguration(now(), "publish-domain-events", ofMinutes(1), ofMillis(1)));
     List<String> publishedEventIds = result.getResult();
     if (isNotEmpty(publishedEventIds)) {
-      log.debug("Published domain events {}.", publishedEventIds);
+      log.debug("Published DomainEvents {}.", publishedEventIds);
     }
   } catch (Throwable e) {
-    log.error("Error happened while publish domain events.", e);
+    log.error("Error happened while publish DomainEvents.", e);
   }
 }
 ```

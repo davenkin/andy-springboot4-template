@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PROTECTED;
 
 // Demonstrates an intermediate class inheriting from DomainEvent,
-// which itself serves as the parent for other domain event classes.
+// which itself serves as the parent for other DomainEvent classes.
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

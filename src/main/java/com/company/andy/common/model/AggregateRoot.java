@@ -31,7 +31,7 @@ public abstract class AggregateRoot {
     // for platform level object, orgId must be null
     private String orgId;
 
-    // Domain events are stored temporarily in AggregateRoot.events for implementing "Transactional Outbox" pattern,
+    // DomainEvents are stored temporarily in AggregateRoot.events for implementing "Transactional Outbox" pattern,
     // refer to: https://microservices.io/patterns/data/transactional-outbox.html.
     // Here @Transient is very important for not persisting events within the AggregateRoot.
     @Transient

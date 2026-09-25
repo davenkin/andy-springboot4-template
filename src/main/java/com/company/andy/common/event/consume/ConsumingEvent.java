@@ -13,7 +13,7 @@ import static com.company.andy.common.utils.Constants.CONSUMING_EVENT_COLLECTION
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
-// Wrapper for all consumed events, it not only wraps domain events but also wraps all types of consumed events
+// Wrapper for all consumed events, it not only wraps DomainEvents but also wraps all types of consumed events
 // You may add more information(such as if the event is redelivered etc.) if required, but should not be coupled to a specific messaging middleware
 
 @Getter
