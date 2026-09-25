@@ -26,10 +26,13 @@ events:
 ## Implementation
 
 - When consuming an event, the only thing from your side is to create an event handler class that
-  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java) or its abstract subclasses like [AbstractDomainEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractDomainEventHandler.java), and
+  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java), or extends  [AbstractDomainEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractDomainEventHandler.java) for `DomainEvent`, and
   make
   sure the event's topic is subscribed to
   in [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
+
+![event handlers](./image/event-handlers.drawio.svg)
+
 - Example event handler:
 
 ```java
@@ -39,7 +42,7 @@ events:
 public class EquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
 
   @Override
-  public void handle(EquipmentCreatedEvent event, Actor actor) {
+  public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
   }
 }
 ```
@@ -77,7 +80,7 @@ events with type `EquipmentCreatedEvent`.
 
 ## Event consuming infrastructure
 
-![event consuming](./asset/event-consuming.png)
+![event consuming](./image/event-consuming.drawio.svg)
 
 The below section explains how the event consuming infrastructure works.
 

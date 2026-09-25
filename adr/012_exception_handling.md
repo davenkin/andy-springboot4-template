@@ -64,7 +64,7 @@ There are 2 places of configuration that enables unified API errors:
 - [RestErrorController](../src/main/java/com/company/andy/common/exception/RestErrorController.java): serves as a
   fallback for handling exceptions for the whole application
 
-![exception handling](./asset/exception-hanlding.png)
+![exception handling](./image/unified-error-response.drawio.svg)
 
 
 
