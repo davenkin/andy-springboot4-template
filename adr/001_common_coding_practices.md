@@ -11,6 +11,21 @@
     }
 ```
 
+- In domain objects, such as AggregateRoots/DomainServices, use the
+  generic [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) as much as possible, don't use
+  specific actor types such as `OrgActor` or `PlatformActor` unless really needed. Reason: This makes the domain objects
+  more generic and reusable, and also decouples the domain objects from specific actor types. Example:
+
+```java
+    public void updateName(String newName, Actor actor) {
+        if (Objects.equals(newName, this.name)) {
+            return;
+        }
+        this.name = newName;
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
+    }
+```
+
 - Prefer using Java Record over Lombok for ValueObjects. Reason: Records are Java's built-in support, they are more
   concise and embodies common best practices like immutability. Example:
 
@@ -30,7 +45,8 @@ public record QDetailedEquipment(
 
 - Always use [ServiceException](../src/main/java/com/company/andy/common/exception/ServiceException.java) for raising
   exceptions, don't create your own exception classes. Reason: The
-  `ServiceException` is a flat exception model that makes exception modeling much easier than hierarchical exceptions, as otherwise you end up creating a lot of exception classes that are hard to maintain. Example:
+  `ServiceException` is a flat exception model that makes exception modeling much easier than hierarchical exceptions,
+  as otherwise you end up creating a lot of exception classes that are hard to maintain. Example:
 
 ```java
 public void someMethod() {
@@ -142,21 +158,22 @@ log.info("Created Equipment[{}].", equipment.getId());
 - Use [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) to pass current user context around, do
   not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
   `SecurityContextHolder` is essentially thread scoped global variable, it makes the code implicit and also makes
-  testing harder. You can find more details on this in [006_explicitly_pass_through_actor_context.md](./006_explicitly_pass_through_actor_context.md).
+  testing harder. You can find more details on this
+  in [006_explicitly_pass_through_actor_context.md](./006_explicitly_pass_through_actor_context.md).
 
 - There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutorConfiguration.java)
   in the application, choose them wisely:
     - `APPLICATION_TASK_EXECUTOR`: this is the primary one, it uses virtual threads, generally you should use this one,
       especially for I/O intensive tasks.
-    - `THREAD_POOL_TASK_EXECUTOR`: this is a classic thread pool based executor, it should only be used for CPU intensive
-      tasks.
+    - `THREAD_POOL_TASK_EXECUTOR`: this is a classic thread pool based executor, it should only be used for CPU
+      intensive tasks.
 
 - Single item configuration fields should be put under `common` section in `application.yaml`
   and [CommonProperties](../src/main/java/com/company/andy/common/configuration/property/CommonProperties.java).
 
 - All caches should be configured
-  in [CacheConfiguration](../src/main/java/com/company/andy/common/cache/CacheConfiguration.java) with explict `JacksonJsonRedisSerializer` before use, as otherwise
-  the jackson serialization/deserialization may not work properly:
+  in [CacheConfiguration](../src/main/java/com/company/andy/common/cache/CacheConfiguration.java) with explict
+  `JacksonJsonRedisSerializer` before use, as otherwise the jackson serialization/deserialization may not work properly:
 
 ```java
   @Bean
@@ -172,9 +189,10 @@ log.info("Created Equipment[{}].", equipment.getId());
 ```
 
 - For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the
-  central place where all kinds of events (internal DomainEvents, external events etc.) are consumed. But you don't
-  need to touch it when implementing your own event consuming process, instead just create an event handler class that
-  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java). More details on this please refer to [011_event_consuming.md](./011_event_consuming.md). Example:
+  central place where all kinds of events (internal DomainEvents, external events etc.) are consumed. But you don't need
+  to touch it when implementing your own event consuming process, instead just create an event handler class that
+  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java). More
+  details on this please refer to [011_event_consuming.md](./011_event_consuming.md). Example:
 
 ```java
 public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
@@ -205,11 +223,13 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 ```
 
-- For DomainEvent publishing, events are firstly staged(saved) in the database within the same database transaction with the business objects, and then published asynchronously triggered by
+- For DomainEvent publishing, events are firstly staged(saved) in the database within the same database transaction with
+  the business objects, and then published asynchronously triggered by
   MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be
   found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish
   your own DomainEvent, you don't need to touch all of these, instead just call `raiseDomainEvent()` method from your
-  AggregateRoot and everything else will be handled for you automatically. More details please refer to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
+  AggregateRoot and everything else will be handled for you automatically. More details please refer
+  to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
 
 ```java
     public void updateName(String newName, Actor actor) {
@@ -222,8 +242,8 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 ```
 
-- For validating caches in integration tests, you can use `CacheManager` to retrieve the cache value
-  and do validation. For example:
+- For validating caches in integration tests, you can use `CacheManager` to retrieve the cache value and do validation.
+  For example:
 
 ```java
 assertNotNull(cacheManager.getCache(SYSTEM_SETTINGS_CACHE).get(SYSTEM_SETTINGS_ID));
