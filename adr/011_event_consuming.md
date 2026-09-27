@@ -25,15 +25,16 @@ events:
 
 ## Implementation
 
-- When consuming an event, the only thing from your side is to create an event handler class that
-  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java), and
-  make
-  sure the event's topic is subscribed to
-  in [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
+- When consuming an event, the only steps from your side are:
+  - ensure the event's topic is subscribed to
+     in [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
+  - implement an event handler that
+    extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java)
+   
 
 ![event handlers](./image/event-handlers.drawio.svg)
 
-- Example event handler:
+Example event handler:
 
 ```java
 @Slf4j

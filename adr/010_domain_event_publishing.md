@@ -53,7 +53,7 @@ to [DomainEvent section of object implementation patterns](007_unified_object_im
 
 #### DomainEvent publishing architecture
 
-![DomainEvent publishing](./asset/domain-event-publishing.png)
+![DomainEvent publishing](./image/publish-domain-event.drawio.svg)
 
 The following steps are already been implemented for you, but for illustration let's walk them through.
 

@@ -13,7 +13,7 @@ We choose to follow a standard way to implement various **request process flows*
 
 ### Overall architecture
 
-![overall architecture](./asset/overall-architecture.png)
+![overall architecture](./image/overall-architecture.drawio.svg)
 
 There are mainly 3 ways to interact with the software:
 
