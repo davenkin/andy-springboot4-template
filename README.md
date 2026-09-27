@@ -5,7 +5,7 @@ This is a template Spring Boot 4 project with the following features:
 - Data persistence using [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb/)
 - Messaging using [Spring for Apache Kafka](https://spring.io/projects/spring-kafka)
 - Caching using [Spring Data Redis](https://spring.io/projects/spring-data-redis)
-- API documentation using [springdoc-openapi](adr/018_api_documentation.md)
+- API documentation using [springdoc-openapi](https://springdoc.org/)
 - Data migration using [Mongock](https://mongock.io/)
 - Architecture validation using [ArchUnit](https://www.archunit.org/)
 - Distributed lock for scheduled jobs using [Shedlock](https://github.com/lukas-krecan/ShedLock)
@@ -43,10 +43,10 @@ This is a template Spring Boot 4 project with the following features:
 
 ## Editing tools
 
-- We use [draw.io](https://www.drawio.com/) for diagrams and export the diagrams into SVG file containing the original
+- We use [draw.io](https://www.drawio.com/) for drawing diagrams and export the diagrams into SVG file containing the original
   draw.io diagram data which allows for future editing. You can do this by enabling the `Include a copy of my diagram`
   option in the export dialog.
-- We use [PlantUML](https://plantuml.com/) for UML diagrams in various documentation files. You will need to install
+- We use [PlantUML](https://plantuml.com/) for UML diagrams in various documentation files. Please install
   PlantUML plugin in your IDE to view the UML diagrams. For example, in IntelliJ IDEA you can install
   the [plantuml4java](https://plugins.jetbrains.com/plugin/7017-plantuml4idea) plugin.
 
@@ -75,8 +75,7 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to run tests
 
-- We do both unit testing and integration testing.
-- To run tests, locate them inside IDE and run them directly from there.
+- We do both unit testing and integration testing. To run a test, locate the test method inside IDE and run them directly from there.
 - We have a [testing strategy](adr/014_testing_strategy.md), please read it before writing any tests.
 
 ## Architecture Decision Records (ADRs)
@@ -88,18 +87,17 @@ architecture and coding practices of this project.
 
 ## Sample feature code
 
-There are four sample AggregateRoots which serve as reference implementations:
+When implementing you own code, please use the below sample AggregateRoots as reference implementations:
 
 - [Equipment](src/main/java/com/company/andy/feature/equipment/domain/Equipment.java): Represents equipment that needs
-  to be managed under an org, such as a computer.
+  to be managed under an org, such as a computer device etc. It's an org level object.
 - [MaintenanceRecord](src/main/java/com/company/andy/feature/maintenance/domain/MaintenanceRecord.java): Represents a
   maintenance record created for an `Equipment`, it's also an org level object.
 - [SystemSettings](src/main/java/com/company/andy/feature/systemsettings/domain/SystemSettings.java): Represents a
-  system level object that are not related to any org and should only be accessed by supervisor.
-- [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents that
-  a public user has requested a demo of the product.
+  platform level object that are not related to any org and should only be accessed by supervisor or platform level service client.
+- [DemoReservation](src/main/java/com/company/andy/feature/demoreservation/domain/DemoReservation.java): Represents a demo reservation requested by any user including anonymous users.
 
-The APIs for these sample AggregateRoots are only exposed in local and testing environment. You may keep them in your
+The APIs for these sample AggregateRoots are only exposed in local and testing environments. You may keep them in your
 real project as implementation references. If you choose to delete them, make sure you also update the ADRs that
 reference them.
 

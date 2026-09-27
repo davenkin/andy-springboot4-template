@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentCreatedAnotherEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
+public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
-    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }

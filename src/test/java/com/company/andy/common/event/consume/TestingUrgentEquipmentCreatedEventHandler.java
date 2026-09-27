@@ -17,11 +17,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Order(2)
 @Component
 @RequiredArgsConstructor
-public class TestingUrgentEquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
+public class TestingUrgentEquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     private final List<HandledEvent> handledEvents = new CopyOnWriteArrayList<>();
 
     @Override
-    protected void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
         this.handledEvents.add(new HandledEvent(event, Instant.now()));
     }
 

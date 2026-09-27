@@ -394,9 +394,7 @@ public abstract class EquipmentUpdatedEvent extends DomainEvent {
 ### EventHandler
 
 - All even handlers should
-  extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java) or its
-  abstract subclasses
-  like [AbstractDomainEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractDomainEventHandler.java)
+  extend [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java)
 - An event can be handled by multiple event handlers, and they operate independently to each other
 - You may choose to override `AbstractEventHandler`'s `isIdempotent()`, `isTransactional()` and `priority()` for
   specific purposes, where:
@@ -420,7 +418,7 @@ handler [EquipmentDeletedEventEventHandler](../src/main/java/com/company/andy/fe
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentDeletedEventEventHandler extends AbstractDomainEventHandler<EquipmentDeletedEvent> {
+public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<EquipmentDeletedEvent> {
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
     @Override

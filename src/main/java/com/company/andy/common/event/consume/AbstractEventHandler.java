@@ -1,7 +1,6 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.common.model.actor.PlatformActor;
-import com.company.andy.common.tracing.ActorMdcSupport;
 
 import static com.company.andy.common.utils.CommonUtils.singleParameterizedArgumentClassOf;
 
@@ -37,12 +36,13 @@ public abstract class AbstractEventHandler<T> {
         return this.eventClass.isAssignableFrom(event.getClass());
     }
 
-    public final void handle(T event) {
-        PlatformActor actor = this.getActor(event);
-        ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
-    }
+//    public abstract void handle(T event);
 
-    protected abstract PlatformActor getActor(T event);
-
-    protected abstract void handle(T event, PlatformActor actor);
+    /// /    {
+    /// /        PlatformActor actor = this.getActor(event);
+    /// /        ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
+    /// /    }
+//
+//    protected abstract PlatformActor getActor(T event);
+    public abstract void handle(T event, PlatformActor actor);
 }

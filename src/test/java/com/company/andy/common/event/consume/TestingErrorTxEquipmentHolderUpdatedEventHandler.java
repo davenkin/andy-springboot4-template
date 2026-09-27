@@ -15,11 +15,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter
 @Component
 @RequiredArgsConstructor
-public class TestingErrorTxEquipmentHolderUpdatedEventHandler extends AbstractDomainEventHandler<EquipmentHolderUpdatedEvent> {
+public class TestingErrorTxEquipmentHolderUpdatedEventHandler extends AbstractEventHandler<EquipmentHolderUpdatedEvent> {
     private final List<HandledEvent> handledEvents = new CopyOnWriteArrayList<>();
 
     @Override
-    protected void handle(EquipmentHolderUpdatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentHolderUpdatedEvent event, PlatformActor actor) {
         this.handledEvents.add(new HandledEvent(event, Instant.now()));
         throw new RuntimeException("Simulated error for event: " + event.getId());
     }

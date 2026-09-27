@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.task.CountMaintenanceRecordsForEquipmentTask;
@@ -9,17 +9,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-// All DomainEvent handlers should extend from AbstractDomainEventHandler.
+// All event handlers should extend from AbstractEventHandler.
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MaintenanceRecordDeletedEventHandler extends AbstractDomainEventHandler<MaintenanceRecordDeletedEvent> {
+public class MaintenanceRecordDeletedEventHandler extends AbstractEventHandler<MaintenanceRecordDeletedEvent> {
     private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
 
     @Override
-    protected void handle(MaintenanceRecordDeletedEvent event, PlatformActor actor) {
+    public void handle(MaintenanceRecordDeletedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
     }
 

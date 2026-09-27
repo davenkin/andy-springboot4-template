@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.event.EquipmentNameUpdatedEvent;
@@ -9,16 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-// All DomainEvent handlers should extend from AbstractDomainEventHandler.
+// All event handlers should extend from AbstractEventHandler.
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentNameUpdatedEventHandler extends AbstractDomainEventHandler<EquipmentNameUpdatedEvent> {
+public class EquipmentNameUpdatedEventHandler extends AbstractEventHandler<EquipmentNameUpdatedEvent> {
     private final SyncEquipmentNameToMaintenanceRecordsTask syncEquipmentNameToMaintenanceRecordsTask;
 
     @Override
-    protected void handle(EquipmentNameUpdatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentNameUpdatedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> syncEquipmentNameToMaintenanceRecordsTask.run(event.getEquipmentId()));
     }
 

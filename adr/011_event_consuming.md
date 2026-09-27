@@ -26,11 +26,12 @@ events:
 ## Implementation
 
 - When consuming an event, the only thing from your side is to create an event handler class that
-  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java), or extends  [AbstractDomainEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractDomainEventHandler.java) for `DomainEvent`, and
+  extends [AbstractEventHandler](../src/main/java/com/company/andy/common/event/consume/AbstractEventHandler.java), and
   make
   sure the event's topic is subscribed to
   in [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
 
+// todo: change image:
 ![event handlers](./image/event-handlers.drawio.svg)
 
 - Example event handler:
@@ -39,7 +40,7 @@ events:
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EquipmentCreatedEventHandler extends AbstractDomainEventHandler<EquipmentCreatedEvent> {
+public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
   @Override
   public void handle(EquipmentCreatedEvent event, PlatformActor actor) {

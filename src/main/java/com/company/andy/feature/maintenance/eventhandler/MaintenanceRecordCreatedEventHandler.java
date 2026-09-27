@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
-import com.company.andy.common.event.consume.AbstractDomainEventHandler;
+import com.company.andy.common.event.consume.AbstractEventHandler;
 import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -11,19 +11,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-// All DomainEvent handlers should extend from AbstractDomainEventHandler.
+// All event handlers should extend from AbstractEventHandler.
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MaintenanceRecordCreatedEventHandler extends AbstractDomainEventHandler<MaintenanceRecordCreatedEvent> {
+public class MaintenanceRecordCreatedEventHandler extends AbstractEventHandler<MaintenanceRecordCreatedEvent> {
     private final CountMaintenanceRecordsForEquipmentTask countMaintenanceRecordsForEquipmentTask;
     private final EquipmentRepository equipmentRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Override
-    protected void handle(MaintenanceRecordCreatedEvent event, PlatformActor actor) {
+    public void handle(MaintenanceRecordCreatedEvent event, PlatformActor actor) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
         ExceptionSwallowRunner.run(() -> updateEquipmentStatus(event.getEquipmentId(), actor));
     }
