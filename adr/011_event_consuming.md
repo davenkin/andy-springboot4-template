@@ -31,7 +31,6 @@ events:
   sure the event's topic is subscribed to
   in [SpringKafkaEventListener](../src/main/java/com/company/andy/common/event/consume/infrastructure/SpringKafkaEventListener.java)
 
-// todo: change image:
 ![event handlers](./image/event-handlers.drawio.svg)
 
 - Example event handler:
