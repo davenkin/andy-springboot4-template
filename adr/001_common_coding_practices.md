@@ -1,5 +1,8 @@
 # Common coding practices
 
+- Rule No.1: Before you start implementing any code, please read all the ADRs in the `adr` directory, as they contain
+  important information about the architecture and coding practices of this project.
+
 - Do not rely on databases to generate IDs, instead generate IDs within your own code
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).
   This means when the object is created, its ID should already been generated in the constructor. Reason: This decouples
@@ -10,6 +13,15 @@
         return "EQP" + newSnowflakeId(); // Generate ID in the code
     }
 ```
+
+- When writing unit tests, you can use `@Mock` and `@InjectMocks` to manage mocks.
+  Example: [EquipmentDomainServiceTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentDomainServiceTest.java).
+  More details on testing strategy please refer to [014_testing_strategy.md](./014_testing_strategy.md).
+
+- All integration test classes should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java).
+  Example: [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java).
+  More details on testing strategy please refer to [014_testing_strategy.md](./014_testing_strategy.md).
+
 
 - In domain objects, such as AggregateRoots/DomainServices, use the
   generic [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) as much as possible, don't use
@@ -188,6 +200,25 @@ log.info("Created Equipment[{}].", equipment.getId());
     }
 ```
 
+- For DomainEvent publishing, events are firstly staged(saved) in the database within the same database transaction with
+  the business objects, and then published asynchronously triggered by
+  MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be
+  found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish
+  your own DomainEvent, you don't need to touch all of these, instead just call `raiseDomainEvent()` method from your
+  AggregateRoot and everything else will be handled for you automatically. More details please refer
+  to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
+
+```java
+    public void updateName(String newName, Actor actor) {
+        if (Objects.equals(newName, this.name)) {
+            return;
+        }
+        this.name = newName;
+        // Call raiseEvent() for publishing DomainEvents
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
+    }
+```
+
 - For event consuming, [EventConsumer](../src/main/java/com/company/andy/common/event/consume/EventConsumer.java) is the
   central place where all kinds of events (internal DomainEvents, external events etc.) are consumed. But you don't need
   to touch it when implementing your own event consuming process, instead just create an event handler class that
@@ -223,24 +254,26 @@ public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<Eq
     }
 ```
 
-- For DomainEvent publishing, events are firstly staged(saved) in the database within the same database transaction with
-  the business objects, and then published asynchronously triggered by
-  MongoDB's [Change Stream](https://www.mongodb.com/docs/manual/changestreams/). The Change Stream configuration can be
-  found in [EventConfiguration](../src/main/java/com/company/andy/common/event/EventConfiguration.java). When publish
-  your own DomainEvent, you don't need to touch all of these, instead just call `raiseDomainEvent()` method from your
-  AggregateRoot and everything else will be handled for you automatically. More details please refer
-  to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
+- Sometimes you may need to make multiple DomainEvents inherit from the same intermediate base class other than directly
+  inherit from [DomainEvent](../src/main/java/com/company/andy/common/event/DomainEvent.java). Please refer
+  to [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
+  as an example, where:
+    - [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
+      is the intermediate base class which itself inherits
+      from [DomainEvent](src/main/java/com/company/andy/common/event/DomainEvent.java)
+    - [EquipmentStatusUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentStatusUpdatedEvent.java)
+      and [EquipmentNameUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentNameUpdatedEvent.java)
+      are the subclasses
+      of [EquipmentUpdatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentUpdatedEvent.java)
 
-```java
-    public void updateName(String newName, Actor actor) {
-        if (Objects.equals(newName, this.name)) {
-            return;
-        }
-        this.name = newName;
-        // Call raiseEvent() for publishing DomainEvents
-        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
-    }
-```
+- Sometimes you may need multiple event handlers handle the same event independently. In order to do so, just create
+  multiple event handler classes with the same event type, and you are ready to go.
+    - Example:
+      both [EquipmentCreatedEventHandler](src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedEventHandler.java)
+      and [EquipmentCreatedAnotherEventHandler](src/main/java/com/company/andy/feature/equipment/eventhandler/EquipmentCreatedAnotherEventHandler.java)
+      handle the same
+      event [EquipmentCreatedEvent](src/main/java/com/company/andy/feature/equipment/domain/event/EquipmentCreatedEvent.java)
+      independently.
 
 - For validating caches in integration tests, you can use `CacheManager` to retrieve the cache value and do validation.
   For example:

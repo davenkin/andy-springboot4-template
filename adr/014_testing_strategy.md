@@ -1,27 +1,15 @@
 # Testing strategy
 
-todo: add TestId
-
 ## Context
 
 Backend developers usually write both unit tests and integration tests. According
 to [Testing Pyramid](https://martinfowler.com/bliki/TestPyramid.html), unit tests constitute the base of the pyramid
 while integration tests are at a level higher. The goal is to have a large number of unit tests and a smaller number of
-integration tests. But in our case, we find that unit tests can be too fragile and require frequent updates when the
-code changes, and it gives us less confidence than integration tests, more detail can be
-found [here](https://web.dev/articles/ta-strategies).
+integration tests. More detail can be found [here](https://web.dev/articles/ta-strategies).
 
 ## Decision
 
-We choose to focus more on integration tests than unit tests.
-
-We write integration tests for:
-
-- Controller APIs,
-  e.g. [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java)
-- Event handlers, both internal DomainEvents and external events, e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
-- Jobs,
-  e.g. [RemoveOldMaintenanceRecordsJobTest](../src/test/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsJobTest.java)
+We choose to write both unit tests and integration tests.
 
 We write unit tests for:
 
@@ -29,29 +17,88 @@ We write unit tests for:
 - Other domain models under `domain` package,
   e.g. [EquipmentDomainServiceTest](../src/test/java/com/company/andy/feature/equipment/domain/EquipmentDomainServiceTest.java)
 
+We write integration tests for:
+
+- Controller APIs,
+  e.g. [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java)
+- Event handlers, both internal DomainEvents and external events,
+  e.g. [ExternalMaintenanceRecordCreatedEventHandlerTest](../src/test/java/com/company/andy/feature/maintenance/eventhandler/external/ExternalMaintenanceRecordCreatedEventHandlerTest.java)
+- Jobs,
+  e.g. [RemoveOldMaintenanceRecordsScheduledJobTest](../src/test/java/com/company/andy/feature/maintenance/scheduledjob/RemoveOldMaintenanceRecordsScheduledJobTest.java)
+
 No need to write tests for:
 
-- CommandService: CommandServices are already covered by controller tests
-- QueryService: QueryServices are already covered by controller tests
-- Repository: repositories are already covered in integration tests implicitly
+- CommandService: already covered by controller integration tests
+- QueryService:  already covered by controller integration tests
+- Repository: already covered in integration tests
 
 ## Implementation
 
-- [Integration tests](#integration-tests)
-  - [Testing profiles](#testing-profiles) 
-  - [Testing Controllers](#testing-controllers)
-  - [Test internal DomainEvent handlers](#test-internal-domainevent-handlers)
-  - [Test external event handlers](#test-external-event-handlers)
-  - [Test Jobs](#test-jobs)
 - [Unit tests](#unit-tests)
-
+- [Integration tests](#integration-tests)
+    - [Testing profiles](#testing-profiles)
+    - [TestIdContext](#testidcontext)
+    - [Faked authentication](#faked-authentication)
+    - [Test Controllers](#test-controllers)
+    - [Test internal DomainEvent handlers](#test-internal-domainevent-handlers)
+    - [Test external event handlers](#test-external-event-handlers)
+    - [Test Jobs](#test-jobs)
+- [FAQs](#faqs)
 
 All tests name should use underscore to separate words, and should be descriptive enough to indicate what the test is
 doing, e.g. `should_create_equipment()`.
 
-Junit has been configured to run all test classes and all test methods in parallel as configured in [junit-platform.properties](../src/test/resources/junit-platform.properties). If your test class needs to run all its methods sequentially, you may add `@Execution(ExecutionMode.SAME_THREAD)` to you test class.
+Junit has been configured to run all test classes and all test methods in parallel as configured
+in [junit-platform.properties](../src/test/resources/junit-platform.properties). If your test class needs to run all its
+methods sequentially, you may add `@Execution(ExecutionMode.SAME_THREAD)` to you test class.
 
-Maven's [surefire](https://maven.apache.org/surefire/maven-surefire-plugin/) plugin is used to run both unit tests and integration tests. Even though it's commonly advised that integration tests should be run with [failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/) plugin, we choose to use `surefire` for both types of tests for simplicity.
+Maven's [surefire](https://maven.apache.org/surefire/maven-surefire-plugin/) plugin is used to run both unit tests and
+integration tests. Even though it's commonly advised that integration tests should be run
+with [failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/) plugin, we choose to use `surefire` for both
+types of tests for simplicity.
+
+### Unit Tests
+
+- For unit tests without mocks, it's quite straight forward:
+
+```java
+class EquipmentTest {
+  @Test
+  void should_create_equipment() {
+    Actor actor = randomOrgUserActor();
+    Equipment equipment = new Equipment("name", actor);
+    assertEquals("name", equipment.getName());
+    assertEquals(1, equipment.getEvents().size());
+    assertTrue(equipment.getEvents().stream()
+        .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
+  }
+}
+```
+
+- For unit tests with mocks, use `@Mock` and `@InjectMocks`, together with `@ExtendWith(MockitoExtension.class)`, to
+  simplify the mocking setup:
+
+```java
+@ExtendWith(MockitoExtension.class)
+class EquipmentDomainServiceTest {
+
+    @Mock // @Mock means it's a mocked object
+    private EquipmentRepository equipmentRepository;
+
+    @InjectMocks // @InjectMocks means automatically inject other @Mock objects into this object
+    private EquipmentDomainService equipmentDomainService;
+
+    @Test
+    void should_update_name() {
+        Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+        Equipment equipment = new Equipment("name", randomHumanUserOrgActor(ORG_ADMIN));
+
+        equipmentDomainService.updateEquipmentName(equipment, "newName", randomHumanUserOrgActor(ORG_ADMIN));
+
+        assertEquals("newName", equipment.getName());
+    }
+}
+```
 
 ### Integration Tests
 
@@ -89,28 +136,48 @@ class EquipmentControllerTest extends IntegrationTest {
 You can use `@Autowired` to get an instance of the bean that should be tested, or whatever beans that you require to
 assist your testing.
 
-When prepare testing data, you can use methods in `CommandService`  or `Repository` to insert/update data into database. Sometimes you may need to set values on some fields directly, you can use Spring's `ReflectionTestUtils` for such purpose.
+When prepare testing data, you can use methods in `CommandService`  or `Repository` to insert/update data into database.
+Sometimes you may need to set values on some fields directly, you can use Spring's `ReflectionTestUtils` for such
+purpose.
 
-Since integration tests write data into database, in order to avoid primary key duplication errors, you
-should use random IDs for your objects in every test method, do not reuse IDs across test methods. Random IDs ensure concurrent execution of tests which reduces the time on running tests.
+Since integration tests write data into database, in order to avoid primary key duplication errors, you should use
+random IDs for your objects in every test method, do not reuse IDs across test methods. Random IDs ensure concurrent
+execution of tests which reduces the time on running tests.
 
-For every test method, do not rely on any shared state as it might result in conflicts between test methods and make the tests hard to manage. Instead, prepare everything from scratch with random IDs.
+For every test method, do not rely on any shared state as it might result in conflicts between test methods and make the
+tests hard to manage. Instead, prepare everything from scratch with random IDs.
 
 In order to [enhance testing performance](https://www.baeldung.com/spring-tests) by avoiding creating Spring testing
-context repeatedly, please use as less mock beans(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests, instead create your own stub classes.
+context repeatedly, please use as less mock beans(`@MockitoBean` or `@MockitoSpyBean`) as possible in integration tests,
+instead create your own stub classes.
 
 #### Testing profiles
 
-There are two profiles for integration test: [application-it-embedded.yaml](../src/test/resources/application-it--embedded.yaml)
+There are two profiles for integration
+test: [application-it-embedded.yaml](../src/test/resources/application-it--embedded.yaml)
 and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
-choose to enable one of them, but not both.
+choose to enable one of them, but not both. Normally you can just use `application-it-embedded.yaml` for development and
+CI pipelines, at it does not require local MongoDB/Redis to run and hence easier to run tests.
 
-The main difference between `application-it-embedded.yaml` and `application-it-local.yaml` is that the former uses embedded
-MongoDB and Redis while the latter uses real ones from your local machine.
+The main difference between `application-it-embedded.yaml` and `application-it-local.yaml` is that the former uses
+embedded MongoDB and Redis while the latter uses real ones from your local machine.
 
-- `application-it-embedded.yaml`: This is the default profile which you use most of the time. This profile should be enabled for
-  CI pipelines. This profile enables developers to run integration tests without setting up any middlewares locally like
-  MongoDB, Redis or Kafka. It has the following configurations:
+|                         | `application-it-embedded.yaml` | `application-it-local.yaml` |
+|-------------------------|--------------------------------|-----------------------------|
+| Embedded MongoDB server | Yes                            | No                          |
+| Local MongoDB server    | No                             | Yes                         |
+| Embedded Redis server   | Yes                            | No                          |
+| Local Redis server      | No                             | Yes                         |
+| MongoDB transaction     | Enabled                        | Enabled                     |
+| Mongock migration       | Disabled                       | Disabled                    |
+| Kafka publishing        | Disabled                       | Disabled                    |
+| Kafka consuming         | Disabled                       | Disabled                    |
+| Scheduled job           | Disabled                       | Disabled                    |
+| Rest client             | Disabled                       | Disabled                    |
+
+- `application-it-embedded.yaml`: This is the default profile which you use most of the time. This profile should be
+  enabled for CI pipelines. This profile enables developers to run integration tests without setting up any middlewares
+  locally like MongoDB, Redis or Kafka. It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
     - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
     - MongoDB transactions enabled
@@ -132,20 +199,32 @@ For both profiles:
 
 - As Kafka is disabled, you will need to call `EventConsumer.consumeXxxEvent()` explicitly for testing event consuming.
 - As [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern is used, the
-  DomainEvents will firstly be stored into database before publishing, you may use `IntegrationTest.latestDomainEventFor()` to
-  verify the existence of DomainEvents.
+  DomainEvents will firstly be stored into database before publishing, you may use
+  `IntegrationTest.latestDomainEventFor()` to verify the existence of DomainEvents.
 
 #### TestIdContext
-todo: impl
 
-#### Fake authentication
-todo: impl, TestingActorJwtDecoder and authHeaderOf, authenticationManagerResolver()
+[TestIdContext](../src/test/java/com/company/andy/support/testid/TestIdContext.java) is used to hold a unique test ID
+for each test method. You can use `TestIdContext` for implementing you own assertions in stubbed classes.
 
-Reason:
-- Don't want to talk to actual public key as that introduces dependencies on network 
+#### Faked authentication
+
+Authentication is faked
+by [IntegrationTest.authHeaderOf(Actor actor)](../src/test/java/com/company/andy/IntegrationTest.java)
+and [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java). Reason:
+
+- We don't want to use the real public key for JWT validation, as that introduces dependencies on external Keycloak
+  server
 - Simulates the real HTTP API calling process, other than just calling controller/service method directly
 
-#### Testing Controllers
+In [IntegrationTest.authHeaderOf(Actor actor)](../src/test/java/com/company/andy/IntegrationTest.java), the current
+actor is been serialized into JWT token and put into `Authorization` header, which is then sent to the controller API.
+Upon receiving the request,
+the [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java) decode the JWT token
+without any validation and deserialize it back to an actor object, which is then injected into the controller method
+parameter annotated with `@AuthenticationPrincipal`.
+
+#### Test Controllers
 
 1. Prepared data
 2. Call API using `RestTestClient`
@@ -178,15 +257,17 @@ Reason:
     }
 ```
 
-
 #### Test internal DomainEvent handlers
 
-Usually DomainEvent handler testing is covered in Controller test file, as normally DomainEvents are raised from Controller API calling.
+Usually DomainEvent handler testing is covered in Controller test file, as normally DomainEvents are raised from
+Controller API calling.
 
 1. Prepare data (usually by calling CommandService or Repository or RestTestClient)
-2. Execute the EventHandler using `EventConsumer.consumeDomainEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
+2. Execute the EventHandler using `EventConsumer.consumeDomainEvent()`, do not call `EventHandler.handle()` directly as
+   it's not end-to-end testing.
 3. Verify results
-4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using `latestDomainEventFor()`
+4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using
+   `latestDomainEventFor()`
 
 ```java
     @Test
@@ -217,12 +298,15 @@ Usually DomainEvent handler testing is covered in Controller test file, as norma
 
 #### Test external event handlers
 
-Unlike DomainEvent handler tests which can be covered in controller tests, external event handlers should be tested in their own test files, as they are not triggered by our own controller APIs but by external systems.
+Unlike DomainEvent handler tests which can be covered in controller tests, external event handlers should be tested in
+their own test files, as they are not triggered by our own controller APIs but by external systems.
 
 1. Prepare data (usually by calling CommandService or Repository)
-2. Execute the EventHandler using `EventConsumer.consumeExternalEvent()`, do not call `EventHandler.handle()` directly as it's not end-to-end testing.
+2. Execute the EventHandler using `EventConsumer.consumeExternalEvent()`, do not call `EventHandler.handle()` directly
+   as it's not end-to-end testing.
 3. Verify results
-4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using `latestDomainEventFor()`
+4. If other DomainEvents are further raised during the event consuming, you will still need to verify it using
+   `latestDomainEventFor()`
 
 ```java
    @Test
@@ -289,47 +373,49 @@ Unlike DomainEvent handler tests which can be covered in controller tests, exter
     }
 ```
 
-### Unit Tests
+### FAQs
 
-- For unit tests without mocks, it's quite straight forward:
+#### How Kafka is disabled in integration tests?
+
+- In `application-it-embedded.yaml` or `application-it-local.yaml`, the KafkaAutoConfiguration is excluded which disables the consuming side:
+
+```yaml
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration # Disable Kafka
+```
+
+- Also, `EventConfiguration` is disabled using `@DisableForIT` which disables the publishing side:
 
 ```java
-class EquipmentTest {
-  @Test
-  void should_create_equipment() {
-    Actor actor = randomOrgUserActor();
-    Equipment equipment = new Equipment("name", actor);
-    assertEquals("name", equipment.getName());
-    assertEquals(1, equipment.getEvents().size());
-    assertTrue(equipment.getEvents().stream()
-        .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
-  }
+@Slf4j
+@DisableForIT
+@Configuration(proxyBeanMethods = false)
+public class EventConfiguration {
+    // ...
 }
 ```
 
-- For unit tests with mocks, use `@Mock` and `@InjectMocks`, together with `@ExtendWith(MockitoExtension.class)`, to
-  simplify the mocking setup:
+#### How Redis server is set up in integration tests?
+
+- The `TestingEmbeddedRedisServer` is enabled for `it` profile(not `it-local` profile) and it starts an embedded Redis
+  server using
+  `@PostConstruct`:
 
 ```java
-@ExtendWith(MockitoExtension.class)
-class EquipmentDomainServiceTest {
-
-    @Mock // @Mock means it's a mocked object
-    private EquipmentRepository equipmentRepository;
-
-    @InjectMocks // @InjectMocks means automatically inject other @Mock objects into this object
-    private EquipmentDomainService equipmentDomainService;
-
-    @Test
-    void should_update_name() {
-        Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-        Equipment equipment = new Equipment("name", randomHumanUserOrgActor(ORG_ADMIN));
-
-        equipmentDomainService.updateEquipmentName(equipment, "newName", randomHumanUserOrgActor(ORG_ADMIN));
-
-        assertEquals("newName", equipment.getName());
+    @PostConstruct
+    public synchronized void startRedisServer() {
+        // ...
     }
-}
 ```
 
-
+#### How Oauth2 clients are disabled in integration tests?
+- in `application-it-embedded.yaml` and `application-it-local.yaml`, `OAuth2ClientAutoConfiguration` is excluded to disable the auto configuration of Oauth2 clients:
+```yaml
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration # Disable OAuth2 Client for service account
+```
+- [RestClientConfiguration](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) is marked with `@DisableForIT`.

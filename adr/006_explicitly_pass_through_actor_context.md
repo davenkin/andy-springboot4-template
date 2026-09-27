@@ -22,6 +22,9 @@ We choose to explicitly pass through the user context as a parameter, as we pref
 believe the boilerplate code will not cost much development time as developers spend most of their time on
 designing/thinking/understanding/debugging rather than typing.
 
+![actor](./image/actor.drawio.svg)
+
+
 ## Implementation
 
 [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is used to represent the user context. Is has
