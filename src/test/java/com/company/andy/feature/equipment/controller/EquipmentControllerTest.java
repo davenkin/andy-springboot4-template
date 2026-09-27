@@ -67,7 +67,7 @@ class EquipmentControllerTest extends IntegrationTest {
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
-        // Verify DomainEvents
+        // Verify raised DomainEvent(s)
         EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
@@ -90,7 +90,7 @@ class EquipmentControllerTest extends IntegrationTest {
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(updateEquipmentNameCommand.name(), equipment.getName());
 
-        // Verify DomainEvents
+        // Verify raised DomainEvent(s)
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
         assertEquals(equipmentId, equipmentNameUpdatedEvent.getEquipmentId());
@@ -106,19 +106,18 @@ class EquipmentControllerTest extends IntegrationTest {
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
                 actor);
 
-        // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         restTestClient.put()
                 .uri("/equipments/{id}/name", equipmentId).headers(authHeaderOf(actor))
                 .body(updateEquipmentNameCommand)
                 .exchange().expectStatus().isOk();
-
-        // Verify
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
 
-        // Test DomainEvents
+        // Execute
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
+
+        // Verify
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
 

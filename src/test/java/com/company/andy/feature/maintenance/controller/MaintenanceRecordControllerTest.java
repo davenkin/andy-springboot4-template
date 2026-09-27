@@ -64,7 +64,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
         assertEquals(createCommand.status(), maintenanceRecord.getStatus());
         assertEquals(createCommand.description(), maintenanceRecord.getDescription());
 
-        // Verify DomainEvent
+        // Verify raised DomainEvent(s)
         MaintenanceRecordCreatedEvent createdEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
@@ -113,7 +113,7 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
         // Verify
         assertFalse(maintenanceRecordRepository.exists(maintenanceRecordId));
 
-        // Verify DomainEvent
+        // Verify raised DomainEvent(s)
         MaintenanceRecordDeletedEvent deletedEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_DELETED_EVENT,
                 MaintenanceRecordDeletedEvent.class);

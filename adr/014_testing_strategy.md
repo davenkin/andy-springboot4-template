@@ -91,9 +91,9 @@ class EquipmentDomainServiceTest {
     @Test
     void should_update_name() {
         Mockito.when(equipmentRepository.existsByName(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-        Equipment equipment = new Equipment("name", randomHumanUserOrgActor(ORG_ADMIN));
+        Equipment equipment = new Equipment("name", randomMemberActor());
 
-        equipmentDomainService.updateEquipmentName(equipment, "newName", randomHumanUserOrgActor(ORG_ADMIN));
+        equipmentDomainService.updateEquipmentName(equipment, "newName", randomMemberActor());
 
         assertEquals("newName", equipment.getName());
     }
@@ -235,7 +235,7 @@ parameter annotated with `@AuthenticationPrincipal`.
     @Test
     void should_create_equipment() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
@@ -251,7 +251,7 @@ parameter annotated with `@AuthenticationPrincipal`.
         assertEquals(createEquipmentCommand.name(), equipment.getName());
         assertEquals(actor.getOrgId(), equipment.getOrgId());
 
-        // Verify DomainEvents
+        // Verify raised DomainEvent(s)
         EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
         assertEquals(equipmentId, equipmentCreatedEvent.getEquipmentId());
     }
@@ -273,25 +273,24 @@ Controller API calling.
     @Test
     void update_equipment_name_should_also_sync_to_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
                 actor);
 
-        // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         restTestClient.put()
                 .uri("/equipments/{id}/name", equipmentId).headers(authHeaderOf(actor))
                 .body(updateEquipmentNameCommand)
                 .exchange().expectStatus().isOk();
-
-        // Verify
         EquipmentNameUpdatedEvent equipmentNameUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT,
                 EquipmentNameUpdatedEvent.class);
-        
-        // Test DomainEvents
+
+        // Execute
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
+        
+        // Verify
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
 ```
@@ -312,7 +311,7 @@ their own test files, as they are not triggered by our own controller APIs but b
    @Test
     void external_maintenance_record_created_event_should_be_added() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
 
@@ -336,7 +335,7 @@ their own test files, as they are not triggered by our own controller APIs but b
         assertEquals(externalEvent.getEquipmentStatus(), record.getStatus());
         assertEquals(equipment.getName(), record.getEquipmentName());
 
-        // Verify DomainEvent
+        // Verify raised DomainEvent(s)
         MaintenanceRecordCreatedEvent internalEvent = latestDomainEventFor(record.getId(),
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
@@ -354,7 +353,7 @@ their own test files, as they are not triggered by our own controller APIs but b
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare
-        OrgActor actor = randomHumanUserOrgActor(ORG_ADMIN);
+        OrgActor actor = randomMemberActor();
         String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
