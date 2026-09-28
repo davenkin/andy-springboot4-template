@@ -116,7 +116,7 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
         Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
 
         // code omitted

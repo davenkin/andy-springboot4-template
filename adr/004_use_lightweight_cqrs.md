@@ -59,7 +59,7 @@ firstly fetch domain models using `Repository` and then convert to query models.
   don't use the domain object `Equipment`, instead a query model `QPagedEquipment` is used.
 
 ```java
-public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, Actor actor) {
+public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
   Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
 
   // more code omitted

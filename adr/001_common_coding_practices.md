@@ -148,7 +148,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 
 ```java
 @Transactional
-public String createEquipment(CreateEquipmentCommand command, Actor actor) {
+public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
   Equipment equipment = equipmentFactory.create(command.name(), actor);
   equipmentRepository.save(equipment);
   log.info("Created Equipment[{}].", equipment.getId());
@@ -305,7 +305,7 @@ public class DemoReservationCommandService {
     private final RateLimiter rateLimiter;
 
     @Transactional
-    public String createDemoReservation(CreateDemoReservationCommand command, Actor actor) {
+    public String createDemoReservation(CreateDemoReservationCommand command, PlatformActor actor) {
         rateLimiter.applyFor("create_demo_reservation", 5);
         // more code here
         return demoReservation.getId();
