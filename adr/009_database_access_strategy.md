@@ -22,4 +22,7 @@ database should not be exposed everywhere in the code but via some abstraction l
       example: [EquipmentQueryService.pageEquipments()](../src/main/java/com/company/andy/feature/equipment/query/EquipmentQueryService.java)
     - **Task**: for background tasks that need to access database,
       example: [CountMaintenanceRecordsForEquipmentTask](../src/main/java/com/company/andy/feature/equipment/domain/task/CountMaintenanceRecordsForEquipmentTask.java)
+    - **ScheduledJob**: for scheduled jobs that need to access database,
+      example: [DomainEventHouseKeepingScheduledJob](../src/main/java/com/company/andy/common/event/DomainEventHouseKeepingScheduledJob.java),
+      prefer using `Repository` and `Task` instead.
 - All other places other than the above should not use `MongoTemplate` directly unless agreed by the team.

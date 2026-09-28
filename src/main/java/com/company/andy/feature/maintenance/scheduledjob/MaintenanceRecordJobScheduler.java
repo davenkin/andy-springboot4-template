@@ -25,6 +25,6 @@ public class MaintenanceRecordJobScheduler {
         assertLocked();
 
         PlatformActor actor = createScheduledJobActor("removeOldMaintenanceRecords");
-        ActorMdcSupport.runWithMdc(actor, this.removeOldMaintenanceRecordsScheduledJob::run);
+        ActorMdcSupport.runWithMdc(actor, () -> this.removeOldMaintenanceRecordsScheduledJob.run(actor));
     }
 }

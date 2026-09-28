@@ -40,6 +40,10 @@ public class TestFixture {
         return "ORG" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
+    public static String randomScheduledJobName() {
+        return "ScheduledJob:" + RandomStringUtils.secure().nextAlphanumeric(10);
+    }
+
     public static OrgActor randomMemberActor() {
         return Actor.createMemberActor(randomMemberId(), randomUserName(), randomOrgId(), Set.of(), RANDOM_ACTOR_ORIGIN);
     }
@@ -58,6 +62,10 @@ public class TestFixture {
 
     public static PlatformActor randomAnonymousActor() {
         return Actor.createAnonymousActor(RANDOM_ACTOR_ORIGIN);
+    }
+
+    public static PlatformActor randomScheduledJobRobotActor() {
+        return Actor.createRobotActor(randomScheduledJobName());
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

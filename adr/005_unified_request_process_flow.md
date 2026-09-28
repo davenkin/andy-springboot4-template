@@ -383,7 +383,7 @@ public class EquipmentJobScheduler {
         assertLocked();
 
         PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderScheduledJob::run);
+        ActorMdcSupport.runWithMdc(actor, () -> maintenanceReminderScheduledJob.run(actor));
     }
 }
 ```
@@ -398,7 +398,7 @@ The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into M
 @RequiredArgsConstructor
 public class MaintenanceReminderScheduledJob {
 
-  public void run() {
+  public void run(PlatformActor actor) {
     log.info("MaintenanceReminderScheduledJob started.");
 
     //do something

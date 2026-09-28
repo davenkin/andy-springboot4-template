@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 // Tasks are one-time operation which operates on single or multiple objects.
@@ -23,6 +24,8 @@ public class SyncEquipmentNameToMaintenanceRecordsTask {
     private final EquipmentRepository equipmentRepository;
 
     public void run(String equipmentId) {
+        requireNonBlank(equipmentId, "equipmentId must not be blank");
+
         equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
             Query query = new Query(where(MaintenanceRecord.Fields.equipmentId).is(equipmentId));
             Update update = new Update().set(MaintenanceRecord.Fields.equipmentName, equipment.getName());

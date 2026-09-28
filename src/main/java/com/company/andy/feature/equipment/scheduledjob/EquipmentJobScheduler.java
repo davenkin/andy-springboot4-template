@@ -27,6 +27,6 @@ public class EquipmentJobScheduler {
         assertLocked();
 
         PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, this.maintenanceReminderScheduledJob::run);
+        ActorMdcSupport.runWithMdc(actor, () -> maintenanceReminderScheduledJob.run(actor));
     }
 }

@@ -1,5 +1,6 @@
 package com.company.andy.feature.equipment.scheduledjob;
 
+import com.company.andy.common.model.actor.PlatformActor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MaintenanceReminderScheduledJob {
 
-    public void run() {
+    public void run(PlatformActor actor) {
         log.info("MaintenanceReminderScheduledJob started.");
 
         //do something

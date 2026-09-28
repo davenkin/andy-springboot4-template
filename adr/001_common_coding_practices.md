@@ -22,8 +22,7 @@
   Example: [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java).
   More details on testing strategy please refer to [014_testing_strategy.md](./014_testing_strategy.md).
 
-
-- In domain objects, such as AggregateRoots/DomainServices, use the
+- In domain objects, such as AggregateRoots/DomainServices/DomainEvents, use the
   generic [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) as much as possible, don't use
   specific actor types such as `OrgActor` or `PlatformActor` unless really needed. Reason: This makes the domain objects
   more generic and reusable, and also decouples the domain objects from specific actor types. Example:
