@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class RemoveOldMaintenanceRecordsScheduledJob {
-  private static final int KEEP_DAYS = 180;
-  private final RemoveOldMaintenanceRecordsTask removeOldMaintenanceRecordsTask;
+    private static final int KEEP_DAYS = 180;
+    private final RemoveOldMaintenanceRecordsTask removeOldMaintenanceRecordsTask;
 
-  public void run(PlatformActor actor) {
-    this.removeOldMaintenanceRecordsTask.run(KEEP_DAYS);
-  }
+    public void run(PlatformActor actor) {
+        this.removeOldMaintenanceRecordsTask.run(KEEP_DAYS);
+    }
 }
