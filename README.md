@@ -1,3 +1,10 @@
+todo: 
+- 检查current actor是否能线程间传递，可以用event handler来测试，否则需要修改taskDecorator()
+- 测试domainevent的raisedBy应该有值
+- 重新整理adr，所有的代码以及提及actor
+- 重新做keycloak 模板
+- 测试JwtRelayRestClient中的确有jwt
+
 ## Introduction
 
 This is a template Spring Boot 4 project with the following features:

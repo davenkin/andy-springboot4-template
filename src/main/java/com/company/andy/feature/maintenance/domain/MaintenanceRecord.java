@@ -1,9 +1,6 @@
 package com.company.andy.feature.maintenance.domain;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.Actor;
-import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.company.andy.feature.maintenance.domain.event.MaintenanceRecordCreatedEvent;
@@ -45,49 +42,45 @@ public class MaintenanceRecord extends AggregateRoot {
     public MaintenanceRecord(
             Equipment equipment,
             EquipmentStatus status,
-            String description,
-            OrgActor actor) {
+            String description) {
         requireNonNull(equipment, "equipment must not be null");
         requireNonNull(status, "status must not be null");
         requireNonBlank(description, "description must not be blank");
-        requireNonNull(actor, "actor must not be null");
 
-        super(newMaintenanceRecordId(), actor);
+        super(newMaintenanceRecordId(), equipment.getOrgId());
         this.equipmentId = equipment.getId();
         this.equipmentName = equipment.getName();
         this.status = status;
         this.description = description;
         this.channel = INTERNAL;
-        raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
+        raiseEvent(new MaintenanceRecordCreatedEvent(this));
     }
 
     public MaintenanceRecord(
             Equipment equipment,
             EquipmentStatus status,
             String description,
-            String channelRecordId,
-            PlatformActor actor) {
+            String channelRecordId) {
         requireNonNull(equipment, "equipment must not be null");
         requireNonNull(status, "status must not be null");
         requireNonBlank(description, "description must not be blank");
         requireNonBlank(channelRecordId, "channelRecordId must not be blank");
-        requireNonNull(actor, "actor must not be null");
 
-        super(newMaintenanceRecordId(), equipment.getOrgId(), actor);
+        super(newMaintenanceRecordId(), equipment.getOrgId());
         this.equipmentId = equipment.getId();
         this.equipmentName = equipment.getName();
         this.status = status;
         this.description = description;
         this.channel = EXTERNAL;
         this.channelRecordId = channelRecordId;
-        raiseEvent(new MaintenanceRecordCreatedEvent(this, actor));
+        raiseEvent(new MaintenanceRecordCreatedEvent(this));
     }
 
     public static String newMaintenanceRecordId() {
         return "MTR" + newSnowflakeId();
     }
 
-    public void onDelete(Actor actor) {
-        raiseEvent(new MaintenanceRecordDeletedEvent(this, actor));
+    public void onDelete() {
+        raiseEvent(new MaintenanceRecordDeletedEvent(this));
     }
 }

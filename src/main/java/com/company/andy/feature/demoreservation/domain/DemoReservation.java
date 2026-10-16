@@ -1,7 +1,6 @@
 package com.company.andy.feature.demoreservation.domain;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.demoreservation.domain.event.DemoReservationCreatedEvent;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -30,10 +29,10 @@ public class DemoReservation extends AggregateRoot {
 
     private String mobileNumber;
 
-    public DemoReservation(String mobileNumber, PlatformActor actor) {
-        super(newDemoReservationId(), actor);
+    public DemoReservation(String mobileNumber) {
+        super(newDemoReservationId());
         this.mobileNumber = mobileNumber;
-        raiseEvent(new DemoReservationCreatedEvent(this, actor));
+        raiseEvent(new DemoReservationCreatedEvent(this));
     }
 
     public static String newDemoReservationId() {

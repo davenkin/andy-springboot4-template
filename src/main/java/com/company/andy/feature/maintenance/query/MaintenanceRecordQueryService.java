@@ -2,7 +2,6 @@ package com.company.andy.feature.maintenance.query;
 
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 public class MaintenanceRecordQueryService {
     private final MongoTemplate mongoTemplate;
 
-    public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(PageMaintenanceRecordsQuery query, OrgActor actor) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
+    public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(PageMaintenanceRecordsQuery query, String orgId) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(orgId);
 
         if (isNotBlank(query.getSearch())) {
             criteria.orOperator(where(MaintenanceRecord.Fields.equipmentName).regex(query.getSearch()),
@@ -62,8 +61,8 @@ public class MaintenanceRecordQueryService {
         return new PagedResponse<>(records, pageable, count);
     }
 
-    public QDetailedMaintenanceRecord getMaintenanceRecordDetail(String maintenanceRecordId, OrgActor actor) {
-        Query query = Query.query(where(MONGO_ID).is(maintenanceRecordId).and(AggregateRoot.Fields.orgId).is(actor.getOrgId()));
+    public QDetailedMaintenanceRecord getMaintenanceRecordDetail(String maintenanceRecordId, String orgId) {
+        Query query = Query.query(where(MONGO_ID).is(maintenanceRecordId).and(AggregateRoot.Fields.orgId).is(orgId));
 
         query.fields().include(
                 MaintenanceRecord.Fields.equipmentId,

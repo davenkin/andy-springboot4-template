@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.domain;
 
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import org.junit.jupiter.api.Test;
 
 import static com.company.andy.TestFixture.randomMemberActor;
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EquipmentTest {
     @Test
     void should_create_equipment() {
-        OrgActor actor = randomMemberActor();
-        Equipment equipment = new Equipment("name", actor);
+        Actor actor = randomMemberActor();
+        Equipment equipment = new Equipment("name", actor.requireOrgId());
         assertEquals("name", equipment.getName());
         assertEquals(1, equipment.getEvents().size());
         assertTrue(equipment.getEvents().stream()

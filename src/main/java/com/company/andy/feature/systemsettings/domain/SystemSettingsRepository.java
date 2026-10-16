@@ -1,6 +1,5 @@
 package com.company.andy.feature.systemsettings.domain;
 
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.mongo.AbstractMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.company.andy.common.model.actor.Actor.createRobotActor;
 import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
 
@@ -22,10 +20,7 @@ public class SystemSettingsRepository extends AbstractMongoRepository<SystemSett
     private final SystemSettingsFactory systemSettingsFactory;
 
     public SystemSettings getSystemSettings() {
-        return byIdOptional(SYSTEM_SETTINGS_ID).orElseGet(() -> {
-            PlatformActor actor = createRobotActor(getClass().getSimpleName());
-            return systemSettingsFactory.createSystemSettings(actor);
-        });
+        return byIdOptional(SYSTEM_SETTINGS_ID).orElseGet(systemSettingsFactory::createSystemSettings);
     }
 
     @Cacheable(value = SYSTEM_SETTINGS_CACHE, key = "'SYSTEM_SETTINGS'")

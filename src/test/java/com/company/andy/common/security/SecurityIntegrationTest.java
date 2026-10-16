@@ -3,8 +3,7 @@ package com.company.andy.common.security;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ApiError;
 import com.company.andy.common.exception.QApiErrorResponse;
-import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.PlatformActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.query.PageDemoReservationQuery;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -49,7 +48,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
 
     @Test
     void supervisor_should_impersonate_org_actor_for_org_api() {
-        PlatformActor actor = randomSupervisorActor();
+        Actor actor = randomSupervisorActor();
         String orgId = randomOrgId();
 
         String equipmentId = restTestClient.post()
@@ -64,7 +63,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
 
     @Test
     void platform_service_client_should_impersonate_org_actor_for_org_api() {
-        PlatformActor actor = randomPlatformServiceClientActor();
+        Actor actor = randomPlatformServiceClientActor();
         String orgId = randomOrgId();
 
         String equipmentId = restTestClient.post()
@@ -79,7 +78,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
 
     @Test
     void supervisor_should_get_401_error_if_both_jwt_org_id_and_org_id_header_missing_for_org_api() {
-        PlatformActor supervisorActor = randomSupervisorActor();
+        Actor supervisorActor = randomSupervisorActor();
 
         restTestClient.post()
                 .uri("/equipments")
@@ -90,7 +89,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
 
     @Test
     void org_actor_should_not_access_platform_api() {
-        OrgActor orgActor = randomMemberActor();
+        Actor orgActor = randomMemberActor();
 
         restTestClient.post()
                 .uri("/platform/demo-reservations/paged")

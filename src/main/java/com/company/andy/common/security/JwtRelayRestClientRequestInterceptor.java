@@ -22,7 +22,7 @@ public class JwtRelayRestClientRequestInterceptor implements ClientHttpRequestIn
                                         byte[] body,
                                         ClientHttpRequestExecution execution) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof ActorAuthenticationToken token) {
+        if (authentication instanceof ActorAuthenticationToken token && token.getJwt() != null) {
             request.getHeaders().setBearerAuth(token.getJwt().getTokenValue());
         } else if (authentication instanceof BearerTokenAuthenticationToken bearerToken) {
             request.getHeaders().setBearerAuth(bearerToken.getToken());

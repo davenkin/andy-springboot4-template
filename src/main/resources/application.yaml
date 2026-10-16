@@ -2,6 +2,7 @@ common:
   limitRate: true
   orgJwtIssuer: http://localhost:7125/realms/org
   platformJwtIssuer: http://localhost:7125/realms/platform
+  deviceJwtIssuer: http://localhost:7125/realms/device
 
 server:
   port: 8080

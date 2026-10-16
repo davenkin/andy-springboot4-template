@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -47,8 +47,8 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_create_maintenance_record() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
 
         // Execute
         CreateMaintenanceRecordCommand createCommand = randomCreateMaintenanceRecordCommand(equipmentId);
@@ -74,8 +74,8 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void created_maintenance_record_should_update_count_on_equipment() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         assertEquals(0, equipmentRepository.byId(equipmentId).getMaintenanceRecordCount());
 
         // Execute
@@ -96,10 +96,10 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_delete_maintenance_record() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
-                actor);
+                actor.requireOrgId());
         MaintenanceRecordCreatedEvent createdEvent = latestDomainEventFor(maintenanceRecordId,
                 MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
@@ -124,12 +124,12 @@ class MaintenanceRecordControllerTest extends IntegrationTest {
     @Test
     void should_page_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         Consumer<HttpHeaders> authHeader = authHeaderOf(actor);
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         IntStream.range(0, 20)
-                .forEach(_ -> maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor));
+                .forEach(_ -> maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId), actor.requireOrgId()));
 
         // Execute
         PageMaintenanceRecordsQuery query = PageMaintenanceRecordsQuery.builder().pageSize(12).build();

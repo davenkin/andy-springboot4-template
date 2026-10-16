@@ -4,8 +4,7 @@ import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.consume.external.ExternalEvent;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.model.actor.ActorOrigin;
-import com.company.andy.common.model.actor.PlatformActor;
-import com.company.andy.common.tracing.ActorMdcSupport;
+import com.company.andy.common.security.CurrentActorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -88,8 +87,8 @@ public class EventConsumer {
         if (handler.isIdempotent() || this.consumingEventDao.markEventAsConsumedByHandler(consumingEvent, handler)) {
             Object event = consumingEvent.getEvent();
             ActorOrigin origin = ActorOrigin.fromEvent(event.getClass().getName(), consumingEvent.getEventId());
-            PlatformActor actor = Actor.createEventHandlerActor(handler.getClass().getName(), origin);
-            ActorMdcSupport.runWithMdc(actor, () -> ((AbstractEventHandler<Object>) handler).handle(event, actor));
+            Actor actor = Actor.createEventHandlerActor(handler.getClass().getName(), origin);
+            CurrentActorService.runWithActor(actor, () -> ((AbstractEventHandler<Object>) handler).handle(event));
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
                     consumingEvent.getEventId(), consumingEvent.getType(), handler.getName());

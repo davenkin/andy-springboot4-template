@@ -1,7 +1,6 @@
 package com.company.andy.feature.equipment.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.event.EquipmentDeletedEvent;
 import com.company.andy.feature.maintenance.domain.task.DeleteAllMaintenanceRecordsUnderEquipmentTask;
@@ -19,7 +18,7 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
     @Override
-    public void handle(EquipmentDeletedEvent event, PlatformActor actor) {
+    public void handle(EquipmentDeletedEvent event) {
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 

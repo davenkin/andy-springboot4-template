@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.scheduledjob;
 
-import com.company.andy.common.model.actor.PlatformActor;
-import com.company.andy.common.tracing.ActorMdcSupport;
+import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.security.CurrentActorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -23,8 +23,7 @@ public class MaintenanceRecordJobScheduler {
     @SchedulerLock(name = "removeOldMaintenanceRecords")
     public void removeOldMaintenanceRecords() {
         assertLocked();
-
-        PlatformActor actor = createScheduledJobActor("removeOldMaintenanceRecords");
-        ActorMdcSupport.runWithMdc(actor, () -> this.removeOldMaintenanceRecordsScheduledJob.run(actor));
+        Actor actor = createScheduledJobActor("removeOldMaintenanceRecords");
+        CurrentActorService.runWithActor(actor, this.removeOldMaintenanceRecordsScheduledJob::run);
     }
 }

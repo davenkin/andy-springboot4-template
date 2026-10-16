@@ -11,17 +11,22 @@ import static java.util.Objects.requireNonNull;
 public record ActorOrigin(ActorOriginChannel type, String originId) {
 
     public static ActorOrigin fromOrgApiCall(HttpServletRequest request) {
-        requireNonNull(request, "request must not be null.");
-        String httpMethod = request.getMethod();
-        String path = request.getRequestURI();
-        return new ActorOrigin(ORG_API, "%s[%s]".formatted(httpMethod, path));
+        return fromApiCall(request, ORG_API);
     }
 
     public static ActorOrigin fromPlatformApiCall(HttpServletRequest request) {
+        return fromApiCall(request, PLATFORM_API);
+    }
+
+    public static ActorOrigin fromDeviceApiCall(HttpServletRequest request) {
+        return fromApiCall(request, DEVICE_API);
+    }
+
+    public static ActorOrigin fromApiCall(HttpServletRequest request, ActorOriginChannel channel) {
         requireNonNull(request, "request must not be null.");
         String httpMethod = request.getMethod();
         String path = request.getRequestURI();
-        return new ActorOrigin(PLATFORM_API, "%s[%s]".formatted(httpMethod, path));
+        return new ActorOrigin(channel, "%s[%s]".formatted(httpMethod, path));
     }
 
     public static ActorOrigin fromScheduledJob(String jobName) {

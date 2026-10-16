@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.controller;
 
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
@@ -43,31 +43,31 @@ public class MaintenanceRecordController {
     @PostMapping
     public ResponseId createMaintenanceRecord(
             @RequestBody @Valid CreateMaintenanceRecordCommand command,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return new ResponseId(maintenanceRecordCommandService.createMaintenanceRecord(command, actor));
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return new ResponseId(maintenanceRecordCommandService.createMaintenanceRecord(command, actor.requireOrgId()));
     }
 
     @Operation(summary = "Delete a maintenance record")
     @DeleteMapping("/{id}")
     public void deleteMaintenanceRecord(
             @PathVariable("id") @NotBlank String maintenanceRecordId,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        this.maintenanceRecordCommandService.deleteMaintenanceRecord(maintenanceRecordId, actor.requireOrgId());
     }
 
     @Operation(summary = "Query maintenance records with pagination")
     @PostMapping("/paged")
     public PagedResponse<QPagedMaintenanceRecord> pageMaintenanceRecords(
             @RequestBody @Valid PageMaintenanceRecordsQuery query,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return maintenanceRecordQueryService.pageMaintenanceRecords(query, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return maintenanceRecordQueryService.pageMaintenanceRecords(query, actor.requireOrgId());
     }
 
     @Operation(summary = "Get a maintenance record's detail")
     @GetMapping("/{id}")
     public QDetailedMaintenanceRecord getMaintenanceRecordDetail(
             @PathVariable("id") @NotBlank String maintenanceRecordId,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return maintenanceRecordQueryService.getMaintenanceRecordDetail(maintenanceRecordId, actor.requireOrgId());
     }
 }

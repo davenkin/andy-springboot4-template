@@ -137,6 +137,7 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
         if (Objects.equals(ar.getOrgId(), orgId)) {
             return ar;
         }
+
         throw new ServiceException(AR_NOT_FOUND, arType() + " not found.",
                 mapOf("type", arType(), "id", id, "orgId", orgId));
     }

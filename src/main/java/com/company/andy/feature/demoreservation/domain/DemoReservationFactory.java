@@ -1,6 +1,5 @@
 package com.company.andy.feature.demoreservation.domain;
 
-import com.company.andy.common.model.actor.PlatformActor;
 import org.springframework.stereotype.Component;
 
 // Always use factories to create AggregateRoot,
@@ -8,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoReservationFactory {
-    public DemoReservation createDemoReservation(String mobileNumber, PlatformActor actor) {
-        return new DemoReservation(mobileNumber, actor);
+    public DemoReservation createDemoReservation(String mobileNumber) {
+        return new DemoReservation(mobileNumber);
     }
 }

@@ -1,6 +1,5 @@
 package com.company.andy.common.event.consume;
 
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.event.EquipmentUpdatedEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class TestingEquipmentUpdatedEventHandler extends AbstractEventHandler<Eq
     private final List<HandledEvent> handledEvents = new CopyOnWriteArrayList<>();
 
     @Override
-    public void handle(EquipmentUpdatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentUpdatedEvent event) {
         this.handledEvents.add(new HandledEvent(event, Instant.now()));
     }
 }

@@ -1,8 +1,7 @@
 package com.company.andy.common.event;
 
 import com.company.andy.common.event.publish.DomainEventPublisher;
-import com.company.andy.common.model.actor.PlatformActor;
-import com.company.andy.common.tracing.ActorMdcSupport;
+import com.company.andy.common.model.actor.Actor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -10,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import static com.company.andy.common.model.actor.Actor.createScheduledJobActor;
+import static com.company.andy.common.security.CurrentActorService.runWithActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
@@ -24,8 +24,8 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish DomainEvents.");
-        PlatformActor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
-        ActorMdcSupport.runWithMdc(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
+        Actor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
+        runWithActor(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
     }
 
     // PublishingDomainEvent and ConsumingEvent are temporary and should be removed regularly
@@ -34,8 +34,8 @@ public class DomainEventJobScheduler {
     public void removeOldDomainEvents() {
         assertLocked();
 
-        PlatformActor actor = createScheduledJobActor("removeOldDomainEvents");
-        ActorMdcSupport.runWithMdc(actor, () -> {
+        Actor actor = createScheduledJobActor("removeOldDomainEvents");
+        runWithActor(actor, () -> {
             try {
                 domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(100);
             } catch (Throwable t) {

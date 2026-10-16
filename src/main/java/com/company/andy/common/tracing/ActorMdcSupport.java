@@ -1,23 +1,16 @@
 package com.company.andy.common.tracing;
 
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.common.model.actor.OrgActor;
 import org.slf4j.MDC;
 
 import java.util.List;
 
 public class ActorMdcSupport {
-    public static final List<String> ACTOR_MDC_KEYS = List.of(
-            "actor",
-            "actorOrgId",
-            "actorOrigin"
-    );
+    public static final List<String> ACTOR_MDC_KEYS = List.of("actor", "actorOrgId", "actorOrigin");
 
     public static void addMdc(Actor actor) {
-        MDC.put("actor", "%s[%s]".formatted(actor.getPrincipalType(), actor.getId()));
-        if (actor instanceof OrgActor orgActor) {
-            MDC.put("actorOrgId", orgActor.getOrgId());
-        }
+        MDC.put("actor", "%s[%s]".formatted(actor.getType(), actor.getId()));
+        actor.ifOrgActor(orgActorId -> MDC.put("actorOrgId", orgActorId));
         MDC.put("actorOrigin", actor.getOrigin().toString());
     }
 

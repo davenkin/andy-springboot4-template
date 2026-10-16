@@ -1,7 +1,6 @@
 package com.company.andy.feature.systemsettings.domain;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.systemsettings.domain.event.SystemBaseSettingsUpdatedEvent;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_COLLECTION;
@@ -31,19 +29,19 @@ public class SystemSettings extends AggregateRoot {
 
     private BaseSettings baseSettings;
 
-    public SystemSettings(PlatformActor actor) {
-        super(SYSTEM_SETTINGS_ID, actor);
-        baseSettings = new BaseSettings(List.of());
+    public SystemSettings(BaseSettings baseSettings) {
+        super(SYSTEM_SETTINGS_ID);
+        this.baseSettings = baseSettings;
     }
 
-    public void updateBaseSettings(BaseSettings newSettings, PlatformActor actor) {
+    public void updateBaseSettings(BaseSettings newSettings) {
         if (Objects.equals(this.baseSettings, newSettings)) {
             return;
         }
 
         BaseSettings oldBaseSettings = this.baseSettings;
         this.baseSettings = newSettings;
-        raiseEvent(new SystemBaseSettingsUpdatedEvent(oldBaseSettings, this, actor));
+        raiseEvent(new SystemBaseSettingsUpdatedEvent(oldBaseSettings, this));
     }
 
     @Override

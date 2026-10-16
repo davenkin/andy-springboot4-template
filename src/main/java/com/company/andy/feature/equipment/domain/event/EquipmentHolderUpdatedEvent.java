@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.domain.event;
 
-import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -19,8 +18,8 @@ public class EquipmentHolderUpdatedEvent extends EquipmentUpdatedEvent {
     private String oldHolder;
     private String newHolder;
 
-    public EquipmentHolderUpdatedEvent(String oldHolder, String newHolder, Equipment equipment, Actor actor) {
-        super(EQUIPMENT_HOLDER_UPDATED_EVENT, equipment, actor);
+    public EquipmentHolderUpdatedEvent(String oldHolder, String newHolder, Equipment equipment) {
+        super(EQUIPMENT_HOLDER_UPDATED_EVENT, equipment);
         this.oldHolder = oldHolder;
         this.newHolder = newHolder;
     }

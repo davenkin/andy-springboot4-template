@@ -1,7 +1,7 @@
 package com.company.andy.common.event.consume;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.event.EquipmentCreatedEvent;
@@ -64,8 +64,8 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void handlers_should_only_handle_events_that_can_be_handled() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         EquipmentCreatedEvent createdEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -80,9 +80,9 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_call_handlers_for_event_hierarchy() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        equipmentCommandService.updateEquipmentName(equipmentId, randomUpdateEquipmentNameCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
+        equipmentCommandService.updateEquipmentName(equipmentId, randomUpdateEquipmentNameCommand(), actor.requireOrgId());
         EquipmentNameUpdatedEvent updatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class);
 
         eventConsumer.consumeDomainEvent(updatedEvent);
@@ -98,8 +98,8 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_in_order_of_priority() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         EquipmentCreatedEvent createdEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -116,9 +116,9 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_record_consumed_or_not_if_handler_throws_exception() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
+        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor.requireOrgId());
         EquipmentHolderUpdatedEvent holderUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT,
                 EquipmentHolderUpdatedEvent.class);
 
@@ -130,8 +130,8 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_mark_as_consumed_for_idempotent_handler() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         EquipmentCreatedEvent createdEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -142,9 +142,9 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void multiple_handlers_should_run_independently() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
+        equipmentCommandService.updateEquipmentHolder(equipmentId, randomUpdateEquipmentHolderCommand(), actor.requireOrgId());
         EquipmentHolderUpdatedEvent holderUpdatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_HOLDER_UPDATED_EVENT,
                 EquipmentHolderUpdatedEvent.class);
 
@@ -161,8 +161,8 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_run_for_duplicated_event_for_non_idempotent_handler() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         EquipmentCreatedEvent createdEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -177,8 +177,8 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void should_run_for_duplicated_event_for_idempotent_handler() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         EquipmentCreatedEvent createdEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
 
         eventConsumer.consumeDomainEvent(createdEvent);
@@ -195,12 +195,12 @@ class EventConsumerIntegrationTest extends IntegrationTest {
 
     @Test
     void event_handler_can_further_raise_events_and_been_handled() {
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         assertNull(equipmentRepository.byId(equipmentId).getStatus());
 
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor.requireOrgId());
         MaintenanceRecordCreatedEvent maintenanceRecordCreatedEvent = latestDomainEventFor(maintenanceRecordId, MAINTENANCE_RECORD_CREATED_EVENT,
                 MaintenanceRecordCreatedEvent.class);
         eventConsumer.consumeDomainEvent(maintenanceRecordCreatedEvent);

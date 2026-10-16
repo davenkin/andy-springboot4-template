@@ -1,7 +1,7 @@
 package com.company.andy.feature.equipment.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -51,7 +51,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_create_equipment() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
@@ -65,7 +65,7 @@ class EquipmentControllerTest extends IntegrationTest {
         String equipmentId = responseId.id();
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
-        assertEquals(actor.getOrgId(), equipment.getOrgId());
+        assertEquals(actor.requireOrgId(), equipment.getOrgId());
 
         // Verify raised DomainEvent(s)
         EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
@@ -75,9 +75,9 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_update_equipment_name() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
 
         // Execute
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
@@ -100,11 +100,11 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void update_equipment_name_should_also_sync_to_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
-                actor);
+                actor.requireOrgId());
 
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         restTestClient.put()
@@ -124,15 +124,15 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_evict_org_equipment_summaries_cache_after_new_equipment_added() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
-        equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
-        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
-        List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
+        Actor actor = randomMemberActor();
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.requireOrgId())));
+        equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.requireOrgId())));
+        List<EquipmentSummary> equipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.requireOrgId()).summaries();
         assertNotNull(equipmentSummaries);
-        List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
+        List<EquipmentSummary> cachedEquipmentSummaries = equipmentRepository.cachedEquipmentSummaries(actor.requireOrgId()).summaries();
         assertNotNull(cachedEquipmentSummaries);
-        pollAssert().run(() -> assertNotNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
+        pollAssert().run(() -> assertNotNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.requireOrgId())));
 
         // Execute
         // Create another equipment to evict the cache
@@ -143,14 +143,14 @@ class EquipmentControllerTest extends IntegrationTest {
                 .expectBody(ResponseId.class).returnResult().getResponseBody().id();
 
         // Verify
-        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.getOrgId())));
+        pollAssert().run(() -> assertNull(cacheManager.getCache(ORG_EQUIPMENTS_CACHE).get(actor.requireOrgId())));
     }
 
     @Test
     void should_delete_equipment() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         assertTrue(equipmentRepository.exists(equipmentId));
 
         // Execute
@@ -165,10 +165,10 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void delete_equipment_should_also_delete_its_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
-                actor);
+                actor.requireOrgId());
         assertTrue(maintenanceRecordRepository.exists(maintenanceRecordId));
 
         // Execute
@@ -184,8 +184,8 @@ class EquipmentControllerTest extends IntegrationTest {
     @Test
     void should_page_equipments() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor));
+        Actor actor = randomMemberActor();
+        IntStream.range(0, 20).forEach(_ -> equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId()));
 
         // Execute
         PageEquipmentsQuery query = PageEquipmentsQuery.builder().pageSize(12).build();

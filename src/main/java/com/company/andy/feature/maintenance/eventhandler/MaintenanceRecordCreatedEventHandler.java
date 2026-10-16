@@ -1,7 +1,6 @@
 package com.company.andy.feature.maintenance.eventhandler;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.utils.ExceptionSwallowRunner;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.equipment.domain.task.CountMaintenanceRecordsForEquipmentTask;
@@ -23,15 +22,15 @@ public class MaintenanceRecordCreatedEventHandler extends AbstractEventHandler<M
     private final MaintenanceRecordRepository maintenanceRecordRepository;
 
     @Override
-    public void handle(MaintenanceRecordCreatedEvent event, PlatformActor actor) {
+    public void handle(MaintenanceRecordCreatedEvent event) {
         ExceptionSwallowRunner.run(() -> countMaintenanceRecordsForEquipmentTask.run(event.getEquipmentId()));
-        ExceptionSwallowRunner.run(() -> updateEquipmentStatus(event.getEquipmentId(), actor));
+        ExceptionSwallowRunner.run(() -> updateEquipmentStatus(event.getEquipmentId()));
     }
 
-    private void updateEquipmentStatus(String equipmentId, PlatformActor actor) {
+    private void updateEquipmentStatus(String equipmentId) {
         equipmentRepository.byIdOptional(equipmentId).ifPresent(equipment -> {
             maintenanceRecordRepository.latestForOptional(equipmentId).ifPresent(record -> {
-                equipment.updateStatus(record.getStatus(), actor);
+                equipment.updateStatus(record.getStatus());
                 equipmentRepository.save(equipment);
                 log.info("Updated equipment[{}] status from its lasted maintenance record[{}].",
                         equipment.getId(), record.getId());

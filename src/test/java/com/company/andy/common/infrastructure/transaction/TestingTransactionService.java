@@ -1,6 +1,6 @@
 package com.company.andy.common.infrastructure.transaction;
 
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
 import com.company.andy.feature.equipment.command.UpdateEquipmentNameCommand;
@@ -18,9 +18,9 @@ public class TestingTransactionService {
             String equipmentId,
             UpdateEquipmentNameCommand nameCommand,
             UpdateEquipmentHolderCommand holderCommand,
-            OrgActor actor) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+            Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor.requireOrgId());
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor.requireOrgId());
         throw new RuntimeException("fake exception"); // mimic exception at the end of transaction flow
     }
 
@@ -28,9 +28,9 @@ public class TestingTransactionService {
             String equipmentId,
             UpdateEquipmentNameCommand nameCommand,
             UpdateEquipmentHolderCommand holderCommand,
-            OrgActor actor) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+            Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor.requireOrgId());
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor.requireOrgId());
         throw new RuntimeException("fake exception");
     }
 
@@ -38,11 +38,11 @@ public class TestingTransactionService {
             String equipmentId,
             UpdateEquipmentNameCommand nameCommand,
             UpdateEquipmentHolderCommand holderCommand,
-            OrgActor actor) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor);
+            Actor actor) {
+        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor.requireOrgId());
         if (true) { // mimic exception in the middle of the transaction flow
             throw new RuntimeException("fake exception");
         }
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor);
+        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor.requireOrgId());
     }
 }

@@ -1,7 +1,7 @@
 package com.company.andy.feature.equipment.scheduledjob;
 
-import com.company.andy.common.model.actor.PlatformActor;
-import com.company.andy.common.tracing.ActorMdcSupport;
+import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.security.CurrentActorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -26,7 +26,7 @@ public class EquipmentJobScheduler {
     public void remindForEquipmentMaintenance() {
         assertLocked();
 
-        PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, () -> maintenanceReminderScheduledJob.run(actor));
+        Actor actor = createScheduledJobActor("remindForEquipmentMaintenance");
+        CurrentActorService.runWithActor(actor, maintenanceReminderScheduledJob::run);
     }
 }

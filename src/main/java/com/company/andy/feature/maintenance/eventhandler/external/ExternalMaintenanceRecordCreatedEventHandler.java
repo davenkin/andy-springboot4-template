@@ -1,7 +1,6 @@
 package com.company.andy.feature.maintenance.eventhandler.external;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordFactory;
@@ -21,13 +20,12 @@ public class ExternalMaintenanceRecordCreatedEventHandler extends AbstractEventH
     private final MaintenanceRecordFactory maintenanceRecordFactory;
 
     @Override
-    public void handle(ExternalMaintenanceRecordCreatedEvent event, PlatformActor actor) {
+    public void handle(ExternalMaintenanceRecordCreatedEvent event) {
         equipmentRepository.byIdOptional(event.getEquipmentId()).ifPresent(equipment -> {
             MaintenanceRecord record = maintenanceRecordFactory.createFromExternal(equipment,
                     event.getEquipmentStatus(),
                     event.getDescription(),
-                    event.getChannelRecordId(),
-                    actor);
+                    event.getChannelRecordId());
             maintenanceRecordRepository.save(record);
         });
     }

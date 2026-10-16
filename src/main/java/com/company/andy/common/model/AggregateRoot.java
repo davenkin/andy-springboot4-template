@@ -2,8 +2,6 @@ package com.company.andy.common.model;
 
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.common.model.actor.OrgActor;
-import com.company.andy.common.model.actor.PlatformActor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
@@ -14,6 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.company.andy.common.security.CurrentActorService.currentActor;
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -54,53 +53,42 @@ public abstract class AggregateRoot {
     @Getter(PRIVATE)
     private Long _version; // for optimistic lock
 
-    protected AggregateRoot(String id, OrgActor actor) {
-        requireNonBlank(id, "id must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
-
-        if (this.isPlatformObject()) {
-            init(id, actor);
-        } else {
-            init(id, actor);
-            this.orgId = actor.getOrgId();
-        }
-    }
-
-    protected AggregateRoot(String id, PlatformActor actor) {
-        requireNonBlank(id, "id must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
-
-        if (!isPlatformObject()) {
-            throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not a platform level class.");
-        }
-
-        init(id, actor);
-    }
-
-    protected AggregateRoot(String id, String orgId, PlatformActor actor) {
+    protected AggregateRoot(String id, String orgId) {
         requireNonBlank(id, "id must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
-        requireNonNull(actor, "actor must not be null.");
 
         if (isPlatformObject()) {
             throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not an org level class.");
         }
 
-        init(id, actor);
+        init(id);
         this.orgId = orgId;
     }
 
-    private void init(String id, Actor actor) {
+    protected AggregateRoot(String id) {
+        requireNonBlank(id, "id must not be blank.");
+
+        if (!isPlatformObject()) {
+            throw new UnsupportedOperationException(this.getClass().getSimpleName() + " is not a platform level class.");
+        }
+
+        init(id);
+    }
+
+    private void init(String id) {
         this.id = id;
         this.createdAt = Instant.now();
-        this.creator = actor;
-        this.creatorId = actor.getId();
-        this.creatorName = actor.getName();
+
+        currentActor().ifPresent(actor -> {
+            creator = actor;
+            creatorId = actor.getId();
+            creatorName = actor.getName();
+        });
     }
 
 
     // raiseEvent() only stores events in AggregateRoot temporarily,
-    // the events will then be persisted into DB by Repository within the same transaction that saves the AggregateRoot object.
+    // the events will then be persisted into DB by Repository within the same transaction that saves the AggregateRoot.
     // The actual sending of events to messaging middleware is handled by DomainEventPublisher.
     protected final void raiseEvent(DomainEvent event) {
         requireNonNull(event, "event must not be null.");
@@ -129,4 +117,5 @@ public abstract class AggregateRoot {
         // Platform object should override this and return true.
         return false;
     }
+
 }

@@ -1,7 +1,7 @@
 package com.company.andy.feature.systemsettings.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.PlatformActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.systemsettings.command.UpdateSystemBaseSettingsCommand;
 import com.company.andy.feature.systemsettings.domain.BaseSettings;
 import com.company.andy.feature.systemsettings.domain.SystemSettings;
@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 @Execution(SAME_THREAD)
-class SystemSettingsControllerTest extends IntegrationTest {
+class PlatformSystemSettingsControllerTest extends IntegrationTest {
 
     @Autowired
     private SystemSettingsRepository systemSettingsRepository;
 
     @Test
     void should_get_system_settings() {
-        PlatformActor actor = randomSupervisorActor();
+        Actor actor = randomSupervisorActor();
 
         QSystemSettings qSystemSettings = restTestClient.get()
                 .uri("/platform/system-settings").headers(authHeaderOf(actor))
@@ -44,7 +44,7 @@ class SystemSettingsControllerTest extends IntegrationTest {
     @Test
     void should_update_system_base_settings() {
         // Prepare
-        PlatformActor actor = randomSupervisorActor();
+        Actor actor = randomSupervisorActor();
         UpdateSystemBaseSettingsCommand updateCommand = UpdateSystemBaseSettingsCommand.builder()
                 .baseSettings(BaseSettings.builder().demoReservationNotificationEmails(List.of(randomEmail())).build())
                 .build();
@@ -63,7 +63,7 @@ class SystemSettingsControllerTest extends IntegrationTest {
     @Test
     void save_system_settings_should_evict_cache() {
         // Prepare
-        PlatformActor actor = randomSupervisorActor();
+        Actor actor = randomSupervisorActor();
         QSystemSettings systemSettings = restTestClient.get()
                 .uri("/platform/system-settings").headers(authHeaderOf(actor))
                 .exchange().expectStatus().isOk()

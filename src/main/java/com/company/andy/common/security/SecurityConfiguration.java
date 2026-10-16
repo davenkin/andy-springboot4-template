@@ -2,10 +2,6 @@ package com.company.andy.common.security;
 
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.configuration.property.CommonProperties;
-import com.company.andy.common.security.org.AnonymousOrgActorAuthenticationTokenFilter;
-import com.company.andy.common.security.org.JwtToOrgActorAuthenticationTokenFilter;
-import com.company.andy.common.security.platform.AnonymousPlatformActorAuthenticationTokenFilter;
-import com.company.andy.common.security.platform.JwtToPlatformActorAuthenticationTokenFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -20,6 +16,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import static com.company.andy.common.model.actor.ActorOriginChannel.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -50,6 +47,7 @@ public class SecurityConfiguration {
                                 "/favicon.ico",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**").permitAll()
+                        .requestMatchers(POST, "/demo-reservations").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))
@@ -61,7 +59,7 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler))
                 .addFilterAfter(new JwtToOrgActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint, commonProperties), BearerTokenAuthenticationFilter.class)
-                .anonymous((it) -> it.authenticationFilter(new AnonymousOrgActorAuthenticationTokenFilter()))
+                .anonymous((it) -> it.authenticationFilter(new AnonymousActorAuthenticationTokenFilter(ORG_API)))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
         ;
         return http.build();
@@ -74,7 +72,6 @@ public class SecurityConfiguration {
                                                       AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) {
         http.securityMatcher("/platform/**", "/actuator/**")
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(POST, "/platform/demo-reservations").permitAll()
                         .requestMatchers(GET, "/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -87,7 +84,31 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler))
                 .addFilterAfter(new JwtToPlatformActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint, commonProperties), BearerTokenAuthenticationFilter.class)
-                .anonymous((it) -> it.authenticationFilter(new AnonymousPlatformActorAuthenticationTokenFilter()))
+                .anonymous((it) -> it.authenticationFilter(new AnonymousActorAuthenticationTokenFilter(PLATFORM_API)))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+        ;
+        return http.build();
+    }
+
+    @Bean
+    @Order(-2)
+    public SecurityFilterChain deviceApiFilterChain(HttpSecurity http,
+                                                    CorsConfigurationSource corsConfigurationSource,
+                                                    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) {
+        http.securityMatcher("/device/**")
+                .authorizeHttpRequests((authorize) -> authorize
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(it -> it.sessionCreationPolicy(STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer((oauth2) -> oauth2.authenticationManagerResolver(authenticationManagerResolver)
+                        .authenticationEntryPoint(jsonAuthenticationEntryPoint)
+                        .accessDeniedHandler(jsonAccessDeniedHandler))
+                .addFilterAfter(new JwtToDeviceActorAuthenticationTokenFilter(jsonAuthenticationEntryPoint, commonProperties), BearerTokenAuthenticationFilter.class)
+                .anonymous((it) -> it.authenticationFilter(new AnonymousActorAuthenticationTokenFilter(DEVICE_API)))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
         ;
         return http.build();

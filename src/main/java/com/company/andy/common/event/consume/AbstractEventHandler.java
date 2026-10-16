@@ -1,7 +1,5 @@
 package com.company.andy.common.event.consume;
 
-import com.company.andy.common.model.actor.PlatformActor;
-
 import static com.company.andy.common.utils.CommonUtils.singleParameterizedArgumentClassOf;
 
 // Base class for all event handlers, deals with handlers' priority, idempotency and transactionality
@@ -36,13 +34,5 @@ public abstract class AbstractEventHandler<T> {
         return this.eventClass.isAssignableFrom(event.getClass());
     }
 
-//    public abstract void handle(T event);
-
-    /// /    {
-    /// /        PlatformActor actor = this.getActor(event);
-    /// /        ActorMdcSupport.runWithMdc(actor, () -> this.handle(event, actor));
-    /// /    }
-//
-//    protected abstract PlatformActor getActor(T event);
-    public abstract void handle(T event, PlatformActor actor);
+    public abstract void handle(T event);
 }

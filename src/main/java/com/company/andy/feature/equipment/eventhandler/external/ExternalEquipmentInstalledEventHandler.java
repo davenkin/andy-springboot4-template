@@ -1,7 +1,6 @@
 package com.company.andy.feature.equipment.eventhandler.external;
 
 import com.company.andy.common.event.consume.AbstractEventHandler;
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentFactory;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -19,8 +18,8 @@ public class ExternalEquipmentInstalledEventHandler extends AbstractEventHandler
     private final EquipmentFactory equipmentFactory;
 
     @Override
-    public void handle(ExternalEquipmentInstalledEvent event, PlatformActor actor) {
-        Equipment equipment = equipmentFactory.create(event.getEquipmentId(), event.getName(), event.getOrgId(), event.getEngine(), actor);
+    public void handle(ExternalEquipmentInstalledEvent event) {
+        Equipment equipment = equipmentFactory.create(event.getEquipmentId(), event.getName(), event.getEngine(), event.getOrgId());
         equipmentRepository.save(equipment);
     }
 }

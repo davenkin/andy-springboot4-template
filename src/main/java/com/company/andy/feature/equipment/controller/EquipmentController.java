@@ -1,6 +1,6 @@
 package com.company.andy.feature.equipment.controller;
 
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
@@ -46,8 +46,9 @@ public class EquipmentController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command,
+                                      @AuthenticationPrincipal @NotNull Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor.requireOrgId()));
     }
 
     @Operation(summary = "Update an equipment's name")
@@ -57,8 +58,8 @@ public class EquipmentController {
             @Parameter(description = "Id of the equipment")
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor.requireOrgId());
     }
 
     @Operation(summary = "Update an equipment's holder")
@@ -66,35 +67,36 @@ public class EquipmentController {
     public void updateEquipmentHolder(
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor.requireOrgId());
     }
 
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{id}")
-    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull OrgActor actor) {
-        this.equipmentCommandService.deleteEquipment(equipmentId, actor);
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId,
+                                @AuthenticationPrincipal @NotNull Actor actor) {
+        this.equipmentCommandService.deleteEquipment(equipmentId, actor.requireOrgId());
     }
 
     @Operation(summary = "Query equipments with pagination")
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return this.equipmentQueryService.pageEquipments(query, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return this.equipmentQueryService.pageEquipments(query, actor.requireOrgId());
     }
 
     @Operation(summary = "Get an equipment's detail")
     @GetMapping("/{id}")
     public QDetailedEquipment getEquipmentDetail(
             @PathVariable("id") @NotBlank String equipmentId,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return this.equipmentQueryService.getEquipmentDetail(equipmentId, actor);
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return this.equipmentQueryService.getEquipmentDetail(equipmentId, actor.requireOrgId());
     }
 
     @Operation(summary = "Get all equipment summaries for an organization")
     @GetMapping("/summaries")
-    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal @NotNull OrgActor actor) {
-        return this.equipmentQueryService.getAllEquipmentSummaries(actor);
+    public List<EquipmentSummary> getAllEquipmentSummaries(@AuthenticationPrincipal @NotNull Actor actor) {
+        return this.equipmentQueryService.getAllEquipmentSummaries(actor.requireOrgId());
     }
 }

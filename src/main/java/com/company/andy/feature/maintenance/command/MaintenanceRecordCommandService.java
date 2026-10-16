@@ -1,6 +1,5 @@
 package com.company.andy.feature.maintenance.command;
 
-import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
@@ -23,21 +22,18 @@ public class MaintenanceRecordCommandService {
     private final EquipmentRepository equipmentRepository;
 
     @Transactional
-    public String createMaintenanceRecord(CreateMaintenanceRecordCommand command, OrgActor actor) {
-        Equipment equipment = equipmentRepository.byId(command.equipmentId(), actor.getOrgId());
-        MaintenanceRecord record = maintenanceRecordFactory.create(equipment,
-                command.status(),
-                command.description(),
-                actor);
+    public String createMaintenanceRecord(CreateMaintenanceRecordCommand command, String orgId) {
+        Equipment equipment = equipmentRepository.byId(command.equipmentId(), orgId);
+        MaintenanceRecord record = maintenanceRecordFactory.create(equipment, command.status(), command.description());
         maintenanceRecordRepository.save(record);
         log.info("Created MaintenanceRecord[{}].", record.getId());
         return record.getId();
     }
 
     @Transactional
-    public void deleteMaintenanceRecord(String maintenanceRecordId, OrgActor actor) {
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, actor.getOrgId());
-        maintenanceRecord.onDelete(actor);
+    public void deleteMaintenanceRecord(String maintenanceRecordId, String orgId) {
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.byId(maintenanceRecordId, orgId);
+        maintenanceRecord.onDelete();
         maintenanceRecordRepository.delete(maintenanceRecord);
         log.info("Deleted MaintenanceRecord[{}].", maintenanceRecordId);
     }

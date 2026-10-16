@@ -1,6 +1,7 @@
-package com.company.andy.common.security.platform;
+package com.company.andy.common.security;
 
-import com.company.andy.common.model.actor.PlatformActor;
+import com.company.andy.common.model.actor.Actor;
+import com.company.andy.common.model.actor.ActorOriginChannel;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -10,24 +11,24 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import java.util.UUID;
 
 import static com.company.andy.common.model.actor.Actor.createAnonymousActor;
-import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
-import static com.company.andy.common.utils.Constants.ANONYMOUS_ROLE;
-import static com.company.andy.common.utils.Constants.ROLE_PREFIX;
+import static com.company.andy.common.model.actor.ActorOrigin.fromApiCall;
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
 @NullMarked
-public class AnonymousPlatformActorAuthenticationTokenFilter extends AnonymousAuthenticationFilter {
+public class AnonymousActorAuthenticationTokenFilter extends AnonymousAuthenticationFilter {
     private final String theKey;
+    private final ActorOriginChannel channel;
 
-    public AnonymousPlatformActorAuthenticationTokenFilter() {
+    public AnonymousActorAuthenticationTokenFilter(ActorOriginChannel channel) {
         String key = UUID.randomUUID().toString();
         super(key);
         this.theKey = key;
+        this.channel = channel;
     }
 
     @Override
     protected Authentication createAuthentication(HttpServletRequest request) {
-        PlatformActor anonymousActor = createAnonymousActor(fromPlatformApiCall(request));
-        return new AnonymousAuthenticationToken(this.theKey, anonymousActor, createAuthorityList(ROLE_PREFIX + ANONYMOUS_ROLE));
+        Actor anonymousActor = createAnonymousActor(fromApiCall(request, this.channel));
+        return new AnonymousAuthenticationToken(this.theKey, anonymousActor, createAuthorityList("ROLE_ANONYMOUS"));
     }
 }

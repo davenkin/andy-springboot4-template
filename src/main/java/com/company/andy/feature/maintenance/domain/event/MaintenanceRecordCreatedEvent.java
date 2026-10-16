@@ -1,7 +1,6 @@
 package com.company.andy.feature.maintenance.domain.event;
 
 import com.company.andy.common.event.DomainEvent;
-import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecord;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
@@ -21,8 +20,8 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
     private String equipmentId;
     private String equipmentName;
 
-    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord, Actor actor) {
-        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord, actor);
+    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord) {
+        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord);
         this.maintenanceRecordId = maintenanceRecord.getId();
         this.equipmentId = maintenanceRecord.getEquipmentId();
         this.equipmentName = maintenanceRecord.getEquipmentName();

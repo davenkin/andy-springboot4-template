@@ -1,5 +1,7 @@
 # JWT Specification
 
+//todo: re-impl
+
 Please modify this specification according to your project requirements.
 
 ### Org API plane

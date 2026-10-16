@@ -50,6 +50,8 @@ class PackageDependencyArchTest {
             .because(
                     "Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and should not depend on other outer packages.");
 
+    // todo: domain, command,controller,eventhandler,infrastructure,query 不能直接引用CurrentActorService
+
     @ArchTest
     static final ArchRule map_struct_should_not_be_used = noClasses()
             .should()

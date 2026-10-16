@@ -6,8 +6,6 @@ public class Constants {
     public static final String ID = "id";
     public static final String TRACE_PARENT = "traceparent";
     public final static String CHINA_TIME_ZONE = "Asia/Shanghai";
-    public static final String ANONYMOUS_ROLE = "ANONYMOUS";
-    public static final String ROLE_PREFIX = "ROLE_";
     public static final String ORG_ID_HEADER = "x-org-id";
     public static final String KEYCLOAK_SERVICE_ACCOUNT = "keycloak-service-account";
     public static final String JWT_RELAY_REST_CLIENT = "jwtRelayRestClient";
@@ -27,13 +25,12 @@ public class Constants {
 
     // JWT
     public static final String JWT_CLAIM_PREFERRED_USERNAME = "preferred_username";
-    public static final String JWT_CLAIM_REALM_ACCESS = "realm_access";
-    public static final String JWT_CLAIM_REALM_ACCESS_ROLES = "roles";
     public static final String JWT_CLAIM_AZP = "azp";
-    public static final String JWT_CLAIM_SUPERVISOR_ID = "supervisor_id";
-    public static final String JWT_CLAIM_PRINCIPAL_TYPE = "principal_type";
+    public static final String JWT_CLAIM_ACTOR_TYPE = "actor_type";
     public static final String JWT_CLAIM_ORG_ID = "org_id";
     public static final String JWT_CLAIM_MEMBER_ID = "member_id";
+    public static final String JWT_CLAIM_SUPERVISOR_ID = "supervisor_id";
+    public static final String JWT_CLAIM_DEVICE_ID = "device_id";
 
     // Regex
     public static final String MOBILE_NUMBER_REGEX = "^[1]([3-9])[0-9]{9}$";

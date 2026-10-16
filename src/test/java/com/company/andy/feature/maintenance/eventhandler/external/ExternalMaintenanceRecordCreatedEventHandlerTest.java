@@ -1,7 +1,7 @@
 package com.company.andy.feature.maintenance.eventhandler.external;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.domain.Equipment;
@@ -35,9 +35,9 @@ class ExternalMaintenanceRecordCreatedEventHandlerTest extends IntegrationTest {
     @Test
     void external_maintenance_record_created_event_should_be_added() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
 
         ExternalMaintenanceRecordCreatedEvent externalEvent = ExternalMaintenanceRecordCreatedEvent.builder()
                 .eventId(randomExternalEventId())

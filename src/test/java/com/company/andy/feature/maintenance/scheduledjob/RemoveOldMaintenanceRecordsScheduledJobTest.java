@@ -2,7 +2,7 @@ package com.company.andy.feature.maintenance.scheduledjob;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.maintenance.command.CreateMaintenanceRecordCommand;
 import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import java.time.Instant;
 
 import static com.company.andy.TestFixture.randomMemberActor;
-import static com.company.andy.TestFixture.randomScheduledJobRobotActor;
 import static com.company.andy.common.utils.Constants.MONGO_ID;
 import static com.company.andy.feature.equipment.EquipmentTestFixture.randomCreateEquipmentCommand;
 import static com.company.andy.feature.maintenance.MaintenanceRecordTestFixture.randomCreateMaintenanceRecordCommand;
@@ -41,18 +40,18 @@ class RemoveOldMaintenanceRecordsScheduledJobTest extends IntegrationTest {
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
-        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor.requireOrgId());
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor.requireOrgId());
 
         Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
         mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
         // Execute
-        removeOldMaintenanceRecordsScheduledJob.run(randomScheduledJobRobotActor());
+        removeOldMaintenanceRecordsScheduledJob.run();
 
         // Verify
         assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));

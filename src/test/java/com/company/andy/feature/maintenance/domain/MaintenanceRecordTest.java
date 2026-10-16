@@ -1,6 +1,6 @@
 package com.company.andy.feature.maintenance.domain;
 
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import org.junit.jupiter.api.Test;
 
@@ -14,13 +14,13 @@ class MaintenanceRecordTest {
 
     @Test
     void should_create_maintenance_record() {
-        OrgActor actor = randomMemberActor();
-        Equipment equipment = new Equipment(randomEquipmentName(), actor);
+        Actor actor = randomMemberActor();
+        Equipment equipment = new Equipment(randomEquipmentName(), actor.requireOrgId());
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord(equipment,
                 randomEquipmentStatus(),
                 randomDescription(),
-                actor);
+                actor.requireOrgId());
 
         assertNotNull(maintenanceRecord.getId());
     }

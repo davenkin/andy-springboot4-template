@@ -1,7 +1,7 @@
 package com.company.andy.feature.demoreservation.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.PlatformActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
@@ -38,7 +38,7 @@ class DemoReservationControllerTest extends IntegrationTest {
 
         // Execute
         ResponseId responseId = restTestClient.post()
-                .uri("/platform/demo-reservations")
+                .uri("/demo-reservations")
                 .body(command)
                 .exchange().expectStatus().isCreated()
                 .expectBody(ResponseId.class).returnResult().getResponseBody();
@@ -58,9 +58,9 @@ class DemoReservationControllerTest extends IntegrationTest {
     @Test
     void should_page_demo_reservations() {
         // Prepare
-        PlatformActor anonymousActor = randomAnonymousActor();
+        Actor anonymousActor = randomAnonymousActor();
         IntStream.range(0, 20)
-                .forEach(_ -> demoReservationCommandService.createDemoReservation(randomDemoReservationCommand(), anonymousActor));
+                .forEach(_ -> demoReservationCommandService.createDemoReservation(randomDemoReservationCommand()));
 
         // Execute
         PageDemoReservationQuery query = PageDemoReservationQuery.builder().pageSize(12).build();

@@ -1,7 +1,6 @@
 package com.company.andy.feature.equipment.query;
 
 import com.company.andy.common.model.AggregateRoot;
-import com.company.andy.common.model.actor.OrgActor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
@@ -28,8 +27,8 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, String orgId) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(orgId);
 
         if (isNotBlank(query.getSearch())) {
             criteria.and(Equipment.Fields.name).regex(query.getSearch());
@@ -56,8 +55,8 @@ public class EquipmentQueryService {
         return new PagedResponse<>(equipments, pageable, count);
     }
 
-    public QDetailedEquipment getEquipmentDetail(String equipmentId, OrgActor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
+    public QDetailedEquipment getEquipmentDetail(String equipmentId, String orgId) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
         return QDetailedEquipment.builder()
                 .id(equipment.getId())
                 .orgId(equipment.getOrgId())
@@ -68,7 +67,7 @@ public class EquipmentQueryService {
                 .build();
     }
 
-    public List<EquipmentSummary> getAllEquipmentSummaries(OrgActor actor) {
-        return equipmentRepository.cachedEquipmentSummaries(actor.getOrgId()).summaries();
+    public List<EquipmentSummary> getAllEquipmentSummaries(String orgId) {
+        return equipmentRepository.cachedEquipmentSummaries(orgId).summaries();
     }
 }

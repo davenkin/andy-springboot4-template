@@ -1,6 +1,5 @@
 package com.company.andy.feature.demoreservation.command;
 
-import com.company.andy.common.model.actor.PlatformActor;
 import com.company.andy.common.ratelimiter.RateLimiter;
 import com.company.andy.feature.demoreservation.domain.DemoReservation;
 import com.company.andy.feature.demoreservation.domain.DemoReservationFactory;
@@ -22,9 +21,9 @@ public class DemoReservationCommandService {
     private final RateLimiter rateLimiter;
 
     @Transactional
-    public String createDemoReservation(CreateDemoReservationCommand command, PlatformActor actor) {
+    public String createDemoReservation(CreateDemoReservationCommand command) {
         rateLimiter.applyFor("create_demo_reservation", 5);
-        DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber(), actor);
+        DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber());
         demoReservationRepository.save(demoReservation);
         log.info("Created DemoReservation[{}].", demoReservation.getId());
         return demoReservation.getId();

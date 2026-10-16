@@ -16,6 +16,7 @@ import lombok.experimental.FieldNameConstants;
 
 import java.time.Instant;
 
+import static com.company.andy.common.security.CurrentActorService.currentActor;
 import static com.company.andy.common.utils.Constants.THIS_SERVICE_NAME;
 import static com.company.andy.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static java.util.Objects.requireNonNull;
@@ -50,10 +51,9 @@ public abstract class DomainEvent {
     private Instant raisedAt;
     private Actor raisedBy;
 
-    protected DomainEvent(DomainEventType type, AggregateRoot ar, Actor raisedBy) {
+    protected DomainEvent(DomainEventType type, AggregateRoot ar) {
         requireNonNull(type, "type must not be null.");
         requireNonNull(ar, "ar must not be null.");
-        requireNonNull(raisedBy, "actor must not be null.");
 
         this.source = THIS_SERVICE_NAME;
         this.id = newEventId();
@@ -61,7 +61,7 @@ public abstract class DomainEvent {
         this.arOrgId = ar.getOrgId();
         this.type = type;
         this.raisedAt = Instant.now();
-        this.raisedBy = raisedBy;
+        currentActor().ifPresent(actor -> this.raisedBy = actor);
     }
 
     public static String newEventId() {

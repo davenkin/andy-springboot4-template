@@ -1,6 +1,5 @@
 package com.company.andy.feature.equipment.domain.event;
 
-import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.domain.Equipment;
 import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -19,8 +18,8 @@ import static lombok.AccessLevel.PRIVATE;
 public class EquipmentStatusUpdatedEvent extends EquipmentUpdatedEvent {
     private EquipmentStatus status;
 
-    public EquipmentStatusUpdatedEvent(EquipmentStatus status, Equipment equipment, Actor actor) {
-        super(EQUIPMENT_STATUS_UPDATED_EVENT, equipment, actor);
+    public EquipmentStatusUpdatedEvent(EquipmentStatus status, Equipment equipment) {
+        super(EQUIPMENT_STATUS_UPDATED_EVENT, equipment);
         this.status = status;
     }
 }

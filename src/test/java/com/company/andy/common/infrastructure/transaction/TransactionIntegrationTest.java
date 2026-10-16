@@ -2,7 +2,7 @@ package com.company.andy.common.infrastructure.transaction;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
-import com.company.andy.common.model.actor.OrgActor;
+import com.company.andy.common.model.actor.Actor;
 import com.company.andy.feature.equipment.command.CreateEquipmentCommand;
 import com.company.andy.feature.equipment.command.EquipmentCommandService;
 import com.company.andy.feature.equipment.command.UpdateEquipmentHolderCommand;
@@ -29,15 +29,15 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void transaction_should_work_for_aggregate_root_and_domain_event() {
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
         CreateEquipmentCommand createAnotherEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
-        equipmentCommandService.createEquipment(createAnotherEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
+        equipmentCommandService.createEquipment(createAnotherEquipmentCommand, actor.requireOrgId());
 
         UpdateEquipmentNameCommand updateEquipmentNameCommand = new UpdateEquipmentNameCommand(createAnotherEquipmentCommand.name());
         assertThrows(ServiceException.class,
-                () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor));
+                () -> equipmentCommandService.updateEquipmentName(equipmentId, updateEquipmentNameCommand, actor.requireOrgId()));
 
         assertEquals(createEquipmentCommand.name(), equipmentRepository.byId(equipmentId).getName());
         assertNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
@@ -45,9 +45,9 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_with_transaction() {
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
@@ -63,9 +63,9 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_work_for_multiple_aggregate_roots_when_exception_thrown_at_the_end_without_transaction() {
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
@@ -81,9 +81,9 @@ class TransactionIntegrationTest extends IntegrationTest {
 
     @Test
     void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
 
