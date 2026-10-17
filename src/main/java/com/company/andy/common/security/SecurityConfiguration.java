@@ -34,7 +34,10 @@ public class SecurityConfiguration {
     @Bean
     @DisableForIT
     public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
-        return fromTrustedIssuers(commonProperties.orgJwtIssuer(), commonProperties.platformJwtIssuer());
+        return fromTrustedIssuers(
+                commonProperties.orgJwtIssuer(),
+                commonProperties.platformJwtIssuer(),
+                commonProperties.deviceJwtIssuer());
     }
 
     @Bean

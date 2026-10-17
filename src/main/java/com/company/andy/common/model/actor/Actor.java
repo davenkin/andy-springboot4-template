@@ -44,15 +44,15 @@ public class Actor {
     }
 
     public static Actor createMemberActor(String memberId,
-                                          String name,
+                                          String memberName,
                                           String orgId,
                                           ActorOrigin origin) {
         requireNonBlank(memberId, "memberId must not be blank.");
-        requireNonBlank(name, "name must not be blank.");
+        requireNonBlank(memberName, "memberName must not be blank.");
         requireNonBlank(orgId, "orgId must not be blank.");
         requireNonNull(origin, "origin must not be null.");
 
-        return new Actor(memberId, name, MEMBER, orgId, origin);
+        return new Actor(memberId, memberName, MEMBER, orgId, origin);
     }
 
     public static Actor createOrgServiceClientActor(String clientId,
@@ -104,7 +104,6 @@ public class Actor {
 
         return new Actor(clientId, null, PLATFORM_SERVICE_CLIENT, null, origin);
     }
-
 
     public static Actor createScheduledJobActor(String jobName) {
         requireNonBlank(jobName, "jobName must not be blank.");
@@ -191,6 +190,14 @@ public class Actor {
             return this.orgId;
         } else {
             throw new IllegalStateException("orgId is required but no value presents.");
+        }
+    }
+
+    public String requireServiceClientId() {
+        if (this.getType() == ORG_SERVICE_CLIENT || this.getType() == PLATFORM_SERVICE_CLIENT) {
+            return this.id;
+        } else {
+            throw new IllegalStateException("Actor is not service client but " + this.getType() + ".");
         }
     }
 

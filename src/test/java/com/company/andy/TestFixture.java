@@ -29,6 +29,10 @@ public class TestFixture {
         return "SPV" + RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
+    public static String randomDeviceId() {
+        return "DEV" + RandomStringUtils.secure().nextAlphanumeric(10);
+    }
+
     public static String randomUserName() {
         return "UNM" + RandomStringUtils.secure().nextAlphanumeric(5);
     }
@@ -38,7 +42,15 @@ public class TestFixture {
     }
 
     public static String randomScheduledJobName() {
-        return "ScheduledJob:" + RandomStringUtils.secure().nextAlphanumeric(10);
+        return RandomStringUtils.secure().nextAlphanumeric(10);
+    }
+
+    public static String randomRobotName() {
+        return RandomStringUtils.secure().nextAlphanumeric(10);
+    }
+
+    public static String randomEventHandlerName() {
+        return RandomStringUtils.secure().nextAlphanumeric(10);
     }
 
     public static Actor randomMemberActor() {
@@ -59,10 +71,6 @@ public class TestFixture {
 
     public static Actor randomAnonymousActor() {
         return Actor.createAnonymousActor(RANDOM_ACTOR_ORIGIN);
-    }
-
-    public static Actor randomScheduledJobRobotActor() {
-        return Actor.createRobotActor(randomScheduledJobName());
     }
 
     public static <T extends Enum<T>> T randomEnum(Class<T> enumClass) {

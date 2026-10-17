@@ -6,6 +6,8 @@ import lombok.experimental.SuperBuilder;
 
 import static lombok.AccessLevel.PROTECTED;
 
+// This is used to demo events received from external systems
+
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = PROTECTED)

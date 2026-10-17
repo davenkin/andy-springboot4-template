@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorOrigin.fromDeviceApiCall;
-import static com.company.andy.common.security.SecurityUtils.getJwtDeviceId;
-import static com.company.andy.common.security.SecurityUtils.getJwtOrgId;
+import static com.company.andy.common.security.JwtUtils.getJwtDeviceId;
+import static com.company.andy.common.security.JwtUtils.getJwtOrgId;
 import static java.util.Objects.requireNonNull;
 
 // Convert JWT into a Device actor

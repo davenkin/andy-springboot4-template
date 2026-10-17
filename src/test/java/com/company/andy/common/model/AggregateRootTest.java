@@ -1,5 +1,7 @@
 package com.company.andy.common.model;
 
+import com.company.andy.common.event.DomainEvent;
+import com.company.andy.common.event.DomainEventType;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.security.CurrentActorService;
 import org.junit.jupiter.api.Test;
@@ -61,6 +63,22 @@ class AggregateRootTest {
     void should_not_create_org_level_ar_without_passed_org_id() {
         assertThrows(UnsupportedOperationException.class, () -> new AggregateRoot("some-id") {
         });
+    }
+
+    @Test
+    void should_raise_domain_event() {
+        AggregateRoot ar = new AggregateRoot("some-id", randomOrgId()) {
+        };
+
+        assertNull(ar.getEvents());
+
+        ar.raiseEvent(new DomainEvent(DomainEventType.EQUIPMENT_CREATED_EVENT, ar) {
+        });
+
+        assertEquals(1, ar.getEvents().size());
+
+        ar.clearEvents();
+        assertNull(ar.getEvents());
     }
 
 }

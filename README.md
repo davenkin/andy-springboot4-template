@@ -4,6 +4,7 @@ todo:
 - 重新整理adr，所有的代码以及提及actor
 - 重新做keycloak 模板
 - 测试JwtRelayRestClient中的确有jwt
+- 命名规范中：XxxRef和XxxSummary，summary可以携带比ref更多的信息，Ref主要用于关联关系，summary主要用于信息传递
 
 ## Introduction
 

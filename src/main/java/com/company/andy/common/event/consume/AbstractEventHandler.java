@@ -30,7 +30,7 @@ public abstract class AbstractEventHandler<T> {
         return this.getClass().getName();
     }
 
-    public final boolean canHandle(Object event) {
+    public boolean canHandle(Object event) {
         return this.eventClass.isAssignableFrom(event.getClass());
     }
 

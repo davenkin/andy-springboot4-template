@@ -37,13 +37,13 @@ public class DomainEventJobScheduler {
         Actor actor = createScheduledJobActor("removeOldDomainEvents");
         runWithActor(actor, () -> {
             try {
-                domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(100);
+                domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(180);
             } catch (Throwable t) {
                 log.error("Failed remove old publishing DomainEvents from mongo.", t);
             }
 
             try {
-                domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(100);
+                domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(180);
             } catch (Throwable t) {
                 log.error("Failed remove old consuming DomainEvents from mongo.", t);
             }

@@ -11,8 +11,8 @@ import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 import static com.company.andy.common.utils.NullableMapUtils.mapOf;
 import static java.lang.Integer.parseInt;
 import static java.time.Instant.now;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.data.redis.core.types.Expiration.seconds;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +52,6 @@ public class RedisRateLimiter implements RateLimiter {
         }
 
         stringRedisTemplate.opsForValue().increment(finalKey);
-        stringRedisTemplate.expire(finalKey, WINDOW_SECONDS + 10, SECONDS);
+        stringRedisTemplate.expire(finalKey, seconds(WINDOW_SECONDS + 10));
     }
 }

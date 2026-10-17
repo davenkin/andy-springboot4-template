@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static com.company.andy.common.model.actor.ActorOrigin.fromOrgApiCall;
 import static com.company.andy.common.model.actor.ActorType.*;
-import static com.company.andy.common.security.SecurityUtils.*;
+import static com.company.andy.common.security.JwtUtils.*;
 import static com.company.andy.common.utils.Constants.ORG_ID_HEADER;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -107,7 +107,7 @@ public class JwtToOrgActorAuthenticationTokenFilter extends AbstractJwtToActorAu
         String headerOrgId = request.getHeader(ORG_ID_HEADER);
 
         if (isBlank(headerOrgId)) {
-            throw new IllegalStateException("Cannot obtain an orgId from header: " + ORG_ID_HEADER);
+            throw new IllegalStateException("Cannot obtain orgId from header: " + ORG_ID_HEADER);
         }
         return headerOrgId;
     }

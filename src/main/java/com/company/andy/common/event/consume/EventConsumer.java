@@ -91,7 +91,7 @@ public class EventConsumer {
             CurrentActorService.runWithActor(actor, () -> ((AbstractEventHandler<Object>) handler).handle(event));
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
-                    consumingEvent.getEventId(), consumingEvent.getType(), handler.getName());
+                    consumingEvent.getType(), consumingEvent.getEventId(), handler.getName());
         }
     }
 }

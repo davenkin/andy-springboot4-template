@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import static com.company.andy.common.utils.Constants.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class SecurityUtils {
+public class JwtUtils {
 
     public static String getJwtUserName(Jwt jwt) {
         return jwt.getClaimAsString(JWT_CLAIM_PREFERRED_USERNAME);

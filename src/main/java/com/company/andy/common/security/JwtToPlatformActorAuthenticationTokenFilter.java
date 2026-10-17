@@ -15,7 +15,7 @@ import java.util.Set;
 import static com.company.andy.common.model.actor.ActorOrigin.fromPlatformApiCall;
 import static com.company.andy.common.model.actor.ActorType.PLATFORM_SERVICE_CLIENT;
 import static com.company.andy.common.model.actor.ActorType.SUPERVISOR;
-import static com.company.andy.common.security.SecurityUtils.*;
+import static com.company.andy.common.security.JwtUtils.*;
 import static java.util.Objects.requireNonNull;
 
 // Convert JWT into Platform actor

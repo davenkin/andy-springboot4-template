@@ -35,7 +35,7 @@ public class ApplicationInitializer implements SmartLifecycle {
         createCollection(Equipment.class);
         createCollection(MaintenanceRecord.class);
         createCollection(DemoReservation.class);
-        log.info("Created all MongoDB collections.");
+        log.info("All MongoDB collections are ready.");
     }
 
     private void clearCaches() {

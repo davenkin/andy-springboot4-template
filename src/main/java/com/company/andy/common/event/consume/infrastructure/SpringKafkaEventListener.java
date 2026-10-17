@@ -3,6 +3,7 @@ package com.company.andy.common.event.consume.infrastructure;
 import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.consume.EventConsumer;
+import com.company.andy.common.event.consume.external.ExternalEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -29,5 +30,14 @@ public class SpringKafkaEventListener {
         this.eventConsumer.consumeDomainEvent(event);
     }
 
-    // You may add more @KafkaListener annotated methods for different topics if needed
+    // Listen to external events
+    @KafkaListener(id = "external-event-listener",
+            groupId = "external-event-listener",
+            topics = {"external-event-topic"},
+            concurrency = "3")
+    public void listenExternalEvent(ExternalEvent event) {
+        this.eventConsumer.consumeExternalEvent(event);
+    }
+
+    // You may add more @KafkaListener annotated methods for more event types if needed
 }
