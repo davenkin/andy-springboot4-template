@@ -29,14 +29,17 @@ class PlatformSystemSettingsControllerTest extends IntegrationTest {
 
     @Test
     void should_get_system_settings() {
+        // Prepare
         Actor actor = randomSupervisorActor();
 
+        // Execute
         QSystemSettings qSystemSettings = restTestClient.get()
                 .uri("/platform/system-settings").headers(authHeaderOf(actor))
                 .exchange().expectStatus().isOk()
                 .expectBody(QSystemSettings.class).returnResult().getResponseBody();
-        assertNotNull(qSystemSettings);
 
+        // Verify
+        assertNotNull(qSystemSettings);
         SystemSettings systemSettings = systemSettingsRepository.getSystemSettings();
         assertNull(systemSettings.getOrgId()); // SystemSettings does not belong to any org
     }

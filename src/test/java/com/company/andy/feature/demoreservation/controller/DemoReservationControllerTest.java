@@ -1,7 +1,6 @@
 package com.company.andy.feature.demoreservation.controller;
 
 import com.company.andy.IntegrationTest;
-import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
@@ -17,7 +16,6 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.stream.IntStream;
 
-import static com.company.andy.TestFixture.randomAnonymousActor;
 import static com.company.andy.TestFixture.randomSupervisorActor;
 import static com.company.andy.common.event.DomainEventType.DEMO_RESERVATION_CREATED_EVENT;
 import static com.company.andy.feature.demoreservation.DemoReservationTestFixture.randomDemoReservationCommand;
@@ -58,7 +56,6 @@ class DemoReservationControllerTest extends IntegrationTest {
     @Test
     void should_page_demo_reservations() {
         // Prepare
-        Actor anonymousActor = randomAnonymousActor();
         IntStream.range(0, 20)
                 .forEach(_ -> demoReservationCommandService.createDemoReservation(randomDemoReservationCommand()));
 
