@@ -6,8 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("common")
-public record CommonProperties(boolean limitRate,
-                               @NotNull String orgJwtIssuer,
+public record CommonProperties(@NotNull String orgJwtIssuer,
                                @NotNull String platformJwtIssuer,
                                @NotNull String deviceJwtIssuer) {
 }
