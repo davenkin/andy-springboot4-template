@@ -1,5 +1,6 @@
 package com.company.andy.archunit;
 
+import com.company.andy.common.security.CurrentActorService;
 import com.fasterxml.jackson.annotation.*;
 import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -43,6 +44,7 @@ class PackageDependencyArchTest {
             .dependOnClassesThat()
             .resideInAnyPackage(
                     "..com.company.andy.feature..command..",
+                    "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..eventhandler..",
                     "..com.company.andy.feature..infrastructure..",
                     "..com.company.andy.feature..scheduledjob..",
@@ -50,7 +52,22 @@ class PackageDependencyArchTest {
             .because(
                     "Domain package is most important part of the application and reside in the kernel of the architecture, it should only contain business logic and should not depend on other outer packages.");
 
-    // todo: domain, command,controller,eventhandler,infrastructure,query 不能直接引用CurrentActorService
+    @ArchTest
+    static final ArchRule feature_code_should_not_depend_on_current_actor_service = noClasses()
+            .that()
+            .resideInAnyPackage(
+                    "..com.company.andy.feature..command..",
+                    "..com.company.andy.feature..domain..",
+                    "..com.company.andy.feature..eventhandler..",
+                    "..com.company.andy.feature..query.."
+            )
+            .should()
+            .dependOnClassesThat()
+            .belongToAnyOf(
+                    CurrentActorService.class
+            )
+            .because("CurrentActorService is only used at the framework level, our own feature code should not be directly coupled to it.");
+
 
     @ArchTest
     static final ArchRule map_struct_should_not_be_used = noClasses()

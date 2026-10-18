@@ -1,5 +1,7 @@
 # Explicitly pass through actor context
 
+todo: not explicitly anymore, change update the doc
+
 ## Context
 
 In software, the "Current User Context" refers to the information about the user who is currently interacting with the
