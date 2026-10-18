@@ -3,8 +3,7 @@ package com.company.andy.common.ratelimiter;
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.exception.ServiceException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -16,12 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RedisRateLimiterIntegrationTest extends IntegrationTest {
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
     @Test
     public void should_limit_rate_for_global_key() {
-        RedisRateLimiter redisRateLimiter = new RedisRateLimiter(stringRedisTemplate);
+        RedisRateLimiter redisRateLimiter = new RedisRateLimiter(stringRedisTemplate, commonProperties);
+        ReflectionTestUtils.setField(redisRateLimiter, "enabled", true);
         String key = UUID.randomUUID().toString();
         redisRateLimiter.applyFor(key, 5);
         ServiceException serviceException = assertThrows(ServiceException.class, () -> IntStream.range(0, 10).forEach(value -> redisRateLimiter.applyFor(key, 5)));
@@ -30,7 +27,8 @@ class RedisRateLimiterIntegrationTest extends IntegrationTest {
 
     @Test
     public void should_limit_rate_for_org_key() {
-        RedisRateLimiter redisRateLimiter = new RedisRateLimiter(stringRedisTemplate);
+        RedisRateLimiter redisRateLimiter = new RedisRateLimiter(stringRedisTemplate, commonProperties);
+        ReflectionTestUtils.setField(redisRateLimiter, "enabled", true);
         String key = UUID.randomUUID().toString();
         String orgId = randomOrgId();
         redisRateLimiter.applyFor(orgId, key, 5);

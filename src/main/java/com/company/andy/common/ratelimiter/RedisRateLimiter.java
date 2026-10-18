@@ -1,6 +1,6 @@
 package com.company.andy.common.ratelimiter;
 
-import com.company.andy.common.configuration.profile.DisableForIT;
+import com.company.andy.common.configuration.property.CommonProperties;
 import com.company.andy.common.exception.ServiceException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -18,11 +18,11 @@ import static com.company.andy.common.utils.NullableMapUtils.mapOf;
 
 @Component
 @NullMarked
-@DisableForIT
 public class RedisRateLimiter implements RateLimiter {
     private static final String KEY_PREFIX = "RateLimit:";
     private static final long WINDOW_MS = 2_000L;
     private final StringRedisTemplate stringRedisTemplate;
+    private final boolean enabled;
     private final RedisScript<Long> luaScript;
     private final static String LUA_SCRIPT_STRING = """
             local key = KEYS[1]
@@ -55,8 +55,9 @@ public class RedisRateLimiter implements RateLimiter {
             
             return 1""";
 
-    public RedisRateLimiter(StringRedisTemplate stringRedisTemplate) {
+    public RedisRateLimiter(StringRedisTemplate stringRedisTemplate, CommonProperties commonProperties) {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.enabled = commonProperties.enableRateLimiter();
         this.luaScript = new DefaultRedisScript<>(LUA_SCRIPT_STRING, Long.class);
     }
 
@@ -76,6 +77,10 @@ public class RedisRateLimiter implements RateLimiter {
     private void doApply(String key, int tps) {
         if (tps <= 0) {
             throw new IllegalArgumentException("tps must be greater than zero");
+        }
+
+        if (!this.enabled) {
+            return;
         }
 
         String finalKey = KEY_PREFIX + key;

@@ -1,5 +1,6 @@
 package com.company.andy;
 
+import com.company.andy.common.configuration.property.CommonProperties;
 import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.DomainEventType;
 import com.company.andy.common.event.consume.EventConsumer;
@@ -61,6 +62,9 @@ public abstract class IntegrationTest {
 
     @Autowired
     protected CacheManager cacheManager;
+
+    @Autowired
+    protected CommonProperties commonProperties;
 
     protected <T extends DomainEvent> T latestDomainEventFor(String arId, DomainEventType type, Class<T> eventClass) {
         requireNonBlank(arId, "arId must not be blank.");
