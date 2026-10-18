@@ -22,8 +22,8 @@ public class RestClientConfiguration {
 
     // RestClient that relays current actor's JWT token for calling external APIs
     @Bean(JWT_RELAY_REST_CLIENT)
-    public RestClient jwtRelayRestClient(RestClient.Builder builder, JwtRelayRestClientRequestInterceptor jwtRelayRestClientRequestInterceptor) {
-        return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(jwtRelayRestClientRequestInterceptor).build();
+    public RestClient jwtRelayRestClient(RestClient.Builder builder) {
+        return builder.defaultHeader(ACCEPT, APPLICATION_JSON_VALUE).requestInterceptor(new JwtRelayRestClientRequestInterceptor()).build();
     }
 
     // RestClient that represents the application itself with JWT token being obtained automatically by Spring using Oauth2 client_credentials grant type

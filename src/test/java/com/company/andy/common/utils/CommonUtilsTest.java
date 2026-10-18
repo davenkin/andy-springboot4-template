@@ -35,9 +35,9 @@ class CommonUtilsTest {
 
     @Test
     void should_get_single_parameterized_argument_class_for_all_level_subclass() {
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new FirstLevelSubClass().getClass()));
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new SecondLevelSubClass().getClass()));
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new ThirdLevelSubClass().getClass()));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(FirstLevelSubClass.class));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(SecondLevelSubClass.class));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(ThirdLevelSubClass.class));
     }
 
     @Test
@@ -73,9 +73,9 @@ class CommonUtilsTest {
 
     @Test
     void should_resolve_parameterized_argument_class_through_type_variable_forwarding() {
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new ForwardedSubClass().getClass()));
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new ForwardedMidSubClass().getClass()));
-        assertEquals(String.class, singleParameterizedArgumentClassOf(new LastForwardedSubClass().getClass()));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(ForwardedSubClass.class));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(ForwardedMidSubClass.class));
+        assertEquals(String.class, singleParameterizedArgumentClassOf(LastForwardedSubClass.class));
     }
 
     @Test

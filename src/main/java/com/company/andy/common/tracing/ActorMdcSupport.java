@@ -6,7 +6,7 @@ import org.slf4j.MDC;
 import java.util.List;
 
 public class ActorMdcSupport {
-    public static final List<String> ACTOR_MDC_KEYS = List.of("actor", "actorOrgId", "actorOrigin");
+    private static final List<String> ACTOR_MDC_KEYS = List.of("actor", "actorOrgId", "actorOrigin");
 
     public static void addMdc(Actor actor) {
         MDC.put("actor", "%s[%s]".formatted(actor.getType(), actor.getId()));

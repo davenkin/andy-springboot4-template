@@ -1,6 +1,7 @@
 package com.company.andy.common.configuration;
 
-import com.company.andy.common.tracing.ActorMdcPropagatingTaskDecorator;
+import io.micrometer.context.ContextRegistry;
+import io.micrometer.context.integration.Slf4jThreadLocalAccessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,10 @@ import static com.company.andy.common.utils.Constants.THREAD_POOL_TASK_EXECUTOR;
 @EnableAsync
 @Configuration
 public class TaskExecutorConfiguration implements AsyncConfigurer {
+
+    public TaskExecutorConfiguration() {
+        ContextRegistry.getInstance().registerThreadLocalAccessor(new Slf4jThreadLocalAccessor());
+    }
 
     @Primary
     @Bean(name = APPLICATION_TASK_EXECUTOR) // Default task executor uses virtual threads
@@ -55,10 +60,7 @@ public class TaskExecutorConfiguration implements AsyncConfigurer {
 
     @Bean
     public TaskDecorator taskDecorator() {
-        return new CompositeTaskDecorator(List.of(
-                new ContextPropagatingTaskDecorator(), // Handles propagation for Spring Security context and Micrometer tracing context
-                new ActorMdcPropagatingTaskDecorator() // Handles propagation for Actor MDC context
-        ));
+        return new CompositeTaskDecorator(List.of(new ContextPropagatingTaskDecorator()));
     }
 
     @Override
