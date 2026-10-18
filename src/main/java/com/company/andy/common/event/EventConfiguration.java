@@ -38,7 +38,7 @@ public class EventConfiguration {
     private static final String dltSuffix = "-dlt";
 
     // Automatically triggered on DomainEvent insertion in MongoDB,
-    // then publish staged DomainEvents to messaging middleware
+    // then publish staged DomainEvents to messaging middleware.
     @Bean(destroyMethod = "stop")
     MessageListenerContainer mongoDomainEventChangeStreamListenerContainer(
             MongoTemplate mongoTemplate,
@@ -78,6 +78,8 @@ public class EventConfiguration {
     public DefaultErrorHandler defaultErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
         ExponentialBackOff backOff = new ExponentialBackOff(500L, 2);
         backOff.setMaxAttempts(2); // the message will be processed at most [2 + 1 = 3] times
+
+        // For architecture simplicity, no automatic consumption from DLT is configured which means DLT messages should be handled manually.
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
                 (record, ex) -> {

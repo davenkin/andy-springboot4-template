@@ -20,7 +20,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-// Publishes DB staged DomainEvents to the messaging middleware
+// Publishes DB staged DomainEvents to the messaging middleware by calling DomainEventSender.
 
 @Slf4j
 @Component

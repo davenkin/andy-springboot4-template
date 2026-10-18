@@ -10,7 +10,7 @@ import org.springframework.data.annotation.TypeAlias;
 import static com.company.andy.common.event.DomainEventType.DEMO_RESERVATION_CREATED_EVENT;
 import static lombok.AccessLevel.PRIVATE;
 
-// All DomainEvents should extend from DomainEvent, directly or indirectly..
+// All DomainEvents should extend from DomainEvent, directly or indirectly.
 
 @Getter
 @TypeAlias("DEMO_RESERVATION_CREATED_EVENT")

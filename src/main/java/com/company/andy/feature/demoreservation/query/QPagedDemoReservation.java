@@ -5,7 +5,7 @@ import lombok.Builder;
 
 import java.time.Instant;
 
-// Query response object's name should start with "Q".
+// Query response object's name should be prefixed with "Q".
 
 @Builder
 @Schema(description = "Paged demo reservation")

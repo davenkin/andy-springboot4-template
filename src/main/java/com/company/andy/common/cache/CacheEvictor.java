@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import static com.company.andy.common.utils.CommonUtils.requireNonBlank;
 
-// Calls into CacheManager explicitly for evicting caches
-// Used in situations where @CacheEvict is not suitable, eg. when the @CacheEvict method is called from within the same class
+// Calls into CacheManager explicitly for evicting caches.
+// Used in situations where @CacheEvict is not suitable.
 
 @Component
 @RequiredArgsConstructor

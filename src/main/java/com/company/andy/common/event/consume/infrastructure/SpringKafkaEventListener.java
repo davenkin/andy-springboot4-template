@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import static com.company.andy.common.utils.Constants.KAFKA_DOMAIN_EVENT_TOPIC;
 
-// Entry point for receiving events from Kafka
-// This is the only place where event consuming touches Kafka, hence the coupling to Kafka is minimised
+// Single entry point for receiving events from Kafka.
+// This is the only place where event consuming touches Kafka, hence the coupling to Kafka is minimised.
 
 @Slf4j
 @Component

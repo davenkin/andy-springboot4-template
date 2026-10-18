@@ -2,7 +2,7 @@ package com.company.andy.common.event.consume;
 
 import static com.company.andy.common.utils.CommonUtils.singleParameterizedArgumentClassOf;
 
-// Base class for all event handlers, deals with handlers' priority, idempotency and transactionality
+// Base class for all event handlers, deals with handlers' priority, idempotency and transactionality.
 
 public abstract class AbstractEventHandler<T> {
     private final Class<?> eventClass;

@@ -14,7 +14,8 @@ import static com.company.andy.common.utils.Constants.PUBLISHING_EVENT_COLLECTIO
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
-// Wrapper of DomainEvent for publishing, added "status" and "publishCount" to track the publishing process
+// Wrapper of DomainEvent for publishing, added "status" and "publishCount" to track the publishing process.
+
 @Getter
 @FieldNameConstants
 @NoArgsConstructor(access = PRIVATE)

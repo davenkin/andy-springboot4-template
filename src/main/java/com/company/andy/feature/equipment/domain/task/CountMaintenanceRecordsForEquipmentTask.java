@@ -31,6 +31,6 @@ public class CountMaintenanceRecordsForEquipmentTask {
 
         Update update = new Update().set(Equipment.Fields.maintenanceRecordCount, count);
         mongoTemplate.updateFirst(query(where(MONGO_ID).is(equipmentId)), update, Equipment.class);
-        log.info("Counted maintenance records under equipment[{}].", equipmentId);
+        log.info("Counted {} maintenance records under equipment[{}].", count, equipmentId);
     }
 }

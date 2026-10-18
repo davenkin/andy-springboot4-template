@@ -1,7 +1,20 @@
 # Common coding practices
 
-- Rule No.1: Before you start implementing any code, please read all the ADRs in the `adr` directory, as they contain
-  important information about the architecture and coding practices of this project.
+- **Rule No.1**: Before you start implementing any code, please read all the ADRs in the `adr` directory, as they
+  contain important information about the architecture and coding practices of this project.
+
+- Naming convention:
+
+| Scenario                         | Convention                                  | Example                             |
+|----------------------------------|---------------------------------------------|-------------------------------------|
+| AggregateRoot                    | `Xxx`                                       | `Equipment`                         |
+| DomainService                    | `XxxDomainService`                          | `EquipmentDomainService`            |
+| Summary info of an object        | `XxxSummary`                                | `EquipmentSummary`                  |
+| Controller in Platform API plane | `PlatformXxxController`                     | `PlatformDemoReservationController` |
+| Unit tests                       | `XxxTest`                                   | `EquipmentTest`                     |
+| Integration tests                | `XxxControllerTest` or `XxxIntegrationTest` | `EquipmentControllerTest`           |
+
+todo: add more
 
 - Do not rely on databases to generate IDs, instead generate IDs within your own code
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).

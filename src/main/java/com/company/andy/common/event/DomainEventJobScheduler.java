@@ -24,6 +24,7 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish DomainEvents.");
+        assertLocked();
         Actor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
         runWithActor(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
     }
@@ -33,20 +34,21 @@ public class DomainEventJobScheduler {
     @SchedulerLock(name = "removeOldDomainEvents", lockAtMostFor = "PT60M", lockAtLeastFor = "PT1M")
     public void removeOldDomainEvents() {
         assertLocked();
-
         Actor actor = createScheduledJobActor("removeOldDomainEvents");
-        runWithActor(actor, () -> {
-            try {
-                domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(180);
-            } catch (Throwable t) {
-                log.error("Failed remove old publishing DomainEvents from mongo.", t);
-            }
+        runWithActor(actor, this::doRemoveOldDomainEvents);
+    }
 
-            try {
-                domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(180);
-            } catch (Throwable t) {
-                log.error("Failed remove old consuming DomainEvents from mongo.", t);
-            }
-        });
+    private void doRemoveOldDomainEvents() {
+        try {
+            domainEventHouseKeepingScheduledJob.removeOldPublishingDomainEvents(180);
+        } catch (Throwable t) {
+            log.error("Failed remove old publishing DomainEvents from mongo.", t);
+        }
+
+        try {
+            domainEventHouseKeepingScheduledJob.removeOldConsumingDomainEvents(180);
+        } catch (Throwable t) {
+            log.error("Failed remove old consuming DomainEvents from mongo.", t);
+        }
     }
 }

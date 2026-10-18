@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Controller should be thin and calls into CommandService and QueryService.
-// Controller should pass through the Actor to CommandService and QueryService.
-// Here PlatformDemoReservationController belongs to the Platform API plane.
+// Here PlatformDemoReservationController belongs to the Platform API plane and should be prefixed with "Platform".
 
 
 @Profile("local | it-embedded | it-local")

@@ -9,6 +9,9 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+// Disabled for integration tests,
+// as we don't want to run scheduled tasks in integration tests.
+
 @Slf4j
 @DisableForIT
 @EnableScheduling
@@ -20,7 +23,7 @@ public class SchedulingConfiguration {
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(5);
-        scheduler.setThreadNamePrefix("taskScheduler-");
+        scheduler.setThreadNamePrefix("scheduler-");
         scheduler.setRemoveOnCancelPolicy(true);
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(30);

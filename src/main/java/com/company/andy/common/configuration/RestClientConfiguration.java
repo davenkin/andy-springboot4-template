@@ -13,8 +13,8 @@ import static com.company.andy.common.utils.Constants.*;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-// Disable for integration tests,
-// as we don't want to make real api calls to external systems in integration tests
+// Disabled for integration tests,
+// as we don't want to make real api calls to external systems in integration tests.
 
 @DisableForIT
 @Configuration(proxyBeanMethods = false)

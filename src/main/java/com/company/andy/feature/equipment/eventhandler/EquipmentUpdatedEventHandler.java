@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 // Demonstrates handlers for handling parent events which covers all children events.
 // Here EquipmentUpdatedEvent is the parent of EquipmentHolderUpdatedEvent and EquipmentNameUpdatedEvent.
-// All children events will result in parent's handler to be called.
+// All children events of EquipmentUpdatedEvent will result in EquipmentUpdatedEventHandler to be called.
 
 @Slf4j
 @Component

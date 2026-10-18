@@ -9,6 +9,8 @@ import lombok.Builder;
 
 import java.util.List;
 
+// Demonstrates value objects under AggregateRoot.
+
 @Builder
 public record BaseSettings(
         @Valid

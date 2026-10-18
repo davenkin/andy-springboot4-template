@@ -36,7 +36,7 @@ public class TaskExecutorConfiguration implements AsyncConfigurer {
     public TaskExecutor applicationTaskExecutor() {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setVirtualThreads(true);
-        executor.setThreadNamePrefix("applicationTaskExecutor-");
+        executor.setThreadNamePrefix("application-");
         executor.setConcurrencyLimit(1000);
         executor.setTaskDecorator(taskDecorator());
         return executor;
@@ -48,7 +48,7 @@ public class TaskExecutorConfiguration implements AsyncConfigurer {
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(100);
         executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("threadPoolTaskExecutor-");
+        executor.setThreadNamePrefix("threadPool-");
         executor.setKeepAliveSeconds(60);
         executor.setAllowCoreThreadTimeOut(false);
         executor.setWaitForTasksToCompleteOnShutdown(true);

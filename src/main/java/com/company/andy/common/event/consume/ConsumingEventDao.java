@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-// Upon consuming, record the event in DB to avoid duplicated event consuming.
+// Upon consuming events, record the event in DB to avoid duplicated consumption.
 
 @Slf4j
 @Component

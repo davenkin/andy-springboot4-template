@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 // Only AggregateRoot objects have corresponding Repository.
-// All repositories should extend AbstractMongoRepository.
+// All repositories should extend from AbstractMongoRepository.
 
 @Repository
 @RequiredArgsConstructor

@@ -2,22 +2,14 @@ package com.company.andy.feature.systemsettings.controller;
 
 import com.company.andy.IntegrationTest;
 import com.company.andy.common.model.actor.Actor;
-import com.company.andy.feature.systemsettings.command.UpdateSystemBaseSettingsCommand;
-import com.company.andy.feature.systemsettings.domain.BaseSettings;
-import com.company.andy.feature.systemsettings.domain.SystemSettings;
 import com.company.andy.feature.systemsettings.domain.SystemSettingsRepository;
 import com.company.andy.feature.systemsettings.query.QSystemSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
-import static com.company.andy.TestFixture.*;
-import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
-import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
-import static com.company.andy.support.PollingAssertion.pollAssert;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.company.andy.TestFixture.randomMemberActor;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 @Execution(SAME_THREAD)

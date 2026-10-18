@@ -13,7 +13,6 @@ import static lombok.AccessLevel.PRIVATE;
 
 // All DomainEvents should extend from DomainEvent, directly or indirectly.
 
-
 @Getter
 @TypeAlias("SYSTEM_BASE_SETTINGS_UPDATED_EVENT")
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)

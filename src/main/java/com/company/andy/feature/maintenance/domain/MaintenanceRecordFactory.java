@@ -5,8 +5,7 @@ import com.company.andy.feature.equipment.domain.EquipmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-// Always use factories to create AggregateRoot,
-// which makes the creation process of AggregateRoot more explicit.
+// Always use factories to create AggregateRoot, as it makes the creation process of AggregateRoot more explicit.
 
 @Component
 @RequiredArgsConstructor

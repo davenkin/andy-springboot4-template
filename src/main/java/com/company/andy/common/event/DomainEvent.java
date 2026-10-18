@@ -38,12 +38,13 @@ import static lombok.AccessLevel.PROTECTED;
         @Type(value = SystemBaseSettingsUpdatedEvent.class, name = "SYSTEM_BASE_SETTINGS_UPDATED_EVENT"),
 })
 
-// Base class for all DomainEvents
+// Base class for all DomainEvents.
+
 @Getter
 @FieldNameConstants
 @NoArgsConstructor(access = PROTECTED)
 public abstract class DomainEvent {
-    private String source;
+    private String source; // Every microservice should have its own source name.
     private String id;
     private String arId;
     private String arOrgId;

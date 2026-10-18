@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-// Demonstrates multiple handlers for the same event type, the other handler is EquipmentCreatedEventHandler
+// Demonstrates multiple handlers for the same event type, the other handler is EquipmentCreatedEventHandler.
 
 @Slf4j
 @Component

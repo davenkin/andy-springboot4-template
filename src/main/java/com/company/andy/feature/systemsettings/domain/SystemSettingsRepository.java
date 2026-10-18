@@ -12,7 +12,7 @@ import static com.company.andy.common.utils.Constants.SYSTEM_SETTINGS_CACHE;
 import static com.company.andy.feature.systemsettings.domain.SystemSettings.SYSTEM_SETTINGS_ID;
 
 // Only AggregateRoot objects have corresponding Repository.
-// All repositories should extend AbstractMongoRepository.
+// All repositories should extend from AbstractMongoRepository.
 
 @Repository
 @RequiredArgsConstructor

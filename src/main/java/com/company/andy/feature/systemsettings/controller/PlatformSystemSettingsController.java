@@ -13,8 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 // Controller should be thin and calls into CommandService and QueryService.
-// Controller should pass through the Actor to CommandService and QueryService.
-// Here PlatformSystemSettingsController belongs to the Platform API plane.
+// Here PlatformSystemSettingsController belongs to the Platform API plane and should be prefixed with "Platform".
 
 @Profile("local | it-embedded | it-local")
 @Tag(name = "PlatformSystemSettingsController", description = "System settings APIs for Platform API plane")

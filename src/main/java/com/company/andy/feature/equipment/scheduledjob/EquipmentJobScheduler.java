@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import static com.company.andy.common.model.actor.Actor.createScheduledJobActor;
 import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
-// Scheduler delegates work to ScheduledJob
+// Scheduler delegates work to ScheduledJob.
 
 @Slf4j
 @Profile("local | it-embedded | it-local")

@@ -10,7 +10,7 @@ import java.util.Objects;
 import static com.company.andy.common.exception.ErrorCode.EQUIPMENT_NAME_ALREADY_EXISTS;
 import static com.company.andy.common.utils.NullableMapUtils.mapOf;
 
-// DomainSservice handles domain logic that's not suitable to be put inside AggregateRoot
+// DomainSservice handles domain logic that's not suitable to be put inside AggregateRoot.
 
 @Component
 @RequiredArgsConstructor

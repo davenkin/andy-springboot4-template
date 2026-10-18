@@ -21,7 +21,7 @@ import static org.springframework.data.domain.Sort.by;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-// DAO for publishing DomainEvents
+// DAO for publishing DomainEvents.
 
 @Slf4j
 @Component

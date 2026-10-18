@@ -30,6 +30,9 @@ public class CurrentActorService {
     }
 
     public static void runWithActor(Actor actor, Runnable runnable) {
+        requireNonNull(actor, "actor must not be null");
+        requireNonNull(runnable, "runnable must not be null");
+
         setActor(actor);
         try {
             runWithMdc(actor, runnable);

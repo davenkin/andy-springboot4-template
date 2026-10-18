@@ -20,7 +20,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 // Only AggregateRoot objects have corresponding Repository.
-// All repositories should extend AbstractMongoRepository.
+// All repositories should extend from AbstractMongoRepository.
 
 @Repository
 @RequiredArgsConstructor
