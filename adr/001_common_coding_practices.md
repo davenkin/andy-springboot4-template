@@ -1,20 +1,34 @@
 # Common coding practices
 
-- **Rule No.1**: Before you start implementing any code, please read all the ADRs in the `adr` directory, as they
-  contain important information about the architecture and coding practices of this project.
+- **Rule No.1**: Before you start implementing any code, please read all the ADRs in the `adr` directory as they contain
+  important information about the architecture and coding practices of this project.
 
 - Naming convention:
 
 | Scenario                         | Convention                                  | Example                             |
 |----------------------------------|---------------------------------------------|-------------------------------------|
-| AggregateRoot                    | `Xxx`                                       | `Equipment`                         |
-| DomainService                    | `XxxDomainService`                          | `EquipmentDomainService`            |
+| Aggregate root                   | `Xxx`                                       | `Equipment`                         |
 | Summary info of an object        | `XxxSummary`                                | `EquipmentSummary`                  |
+| Task                             | `XxxTask`                                   | `RemoveOldMaintenanceRecordsTask`   |
+| Factory                          | `XxxFactory`                                | `EquipmentFactory`                  |
+| Domain event                     | `XxxEvent`                                  | `EquipmentNameUpdatedEvent`         |
+| Event handler                    | `XxxEventHandler`                           | `EquipmentNameUpdatedEventHandler`  |
+| Domain service                   | `XxxDomainService`                          | `EquipmentDomainService`            |
+| Repository                       | `XxxRepository`                             | `EquipmentRepository`               |
+| Command object                   | `XxxCommand`                                | `CreateEquipmentCommand`            |
+| Command service                  | `XxxCommandService`                         | `EquipmentCommandService`           |
+| Query service                    | `XxxQueryService`                           | `EquipmentQueryService`             |
+| Query request for paged response | `PageXxxQuery`                              | `PageEquipmentsQuery`               |
+| Query response                   | `QXxx`                                      | `QDetailedEquipment`                |
+| Rest controller                  | `XxxController`                             | `EquipmentController`               |
 | Controller in Platform API plane | `PlatformXxxController`                     | `PlatformDemoReservationController` |
 | Unit tests                       | `XxxTest`                                   | `EquipmentTest`                     |
 | Integration tests                | `XxxControllerTest` or `XxxIntegrationTest` | `EquipmentControllerTest`           |
-
-todo: add more
+| Spring Configuration             | `XxxConfiguration`                          | `CacheConfiguration`                |
+| Spring Properties                | `XxxProperties`                             | `CommonProperties`                  |
+| Job scheduler                    | `XxxJobScheduler`                           | `EquipmentJobScheduler`             |
+| Scheduled job                    | `XxxScheduledJob`                           | `EquipmentScheduledJob`             |
+| Database migration               | `MigrationNnn_Xxx`                          | `Migration002_BaseSetup`            |
 
 - Do not rely on databases to generate IDs, instead generate IDs within your own code
   using [SnowflakeIdGenerator.newSnowflakeId()](../src/main/java/com/company/andy/common/utils/SnowflakeIdGenerator.java).
@@ -34,21 +48,6 @@ todo: add more
 - All integration test classes should extend [IntegrationTest](../src/test/java/com/company/andy/IntegrationTest.java).
   Example: [EquipmentControllerTest](../src/test/java/com/company/andy/feature/equipment/controller/EquipmentControllerTest.java).
   More details on testing strategy please refer to [014_testing_strategy.md](./014_testing_strategy.md).
-
-- In domain objects, such as AggregateRoots/DomainServices/DomainEvents, use the
-  generic [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) as much as possible, don't use
-  specific actor types such as `OrgActor` or `PlatformActor` unless really needed. Reason: This makes the domain objects
-  more generic and reusable, and also decouples the domain objects from specific actor types. Example:
-
-```java
-    public void updateName(String newName, Actor actor) {
-        if (Objects.equals(newName, this.name)) {
-            return;
-        }
-        this.name = newName;
-        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
-    }
-```
 
 - Prefer using Java Record over Lombok for ValueObjects. Reason: Records are Java's built-in support, they are more
   concise and embodies common best practices like immutability. Example:
@@ -81,7 +80,7 @@ public void someMethod() {
 }
 ```
 
-- All pagination request should use HTTP POST method. The query class should
+- All pagination request should use HTTP POST method. The query request class should
   extend [PageQuery](../src/main/java/com/company/andy/common/utils/PageQuery.java) which has the following pagination
   fields:
     - `pageNumber`: the zero-based page index
@@ -112,10 +111,12 @@ public class PageEquipmentsQuery extends PageQuery {
 The controller receives a query object using POST method:
 
 ```java
-    @Operation(summary = "Query equipments")
+    @Operation(summary = "Query equipments with pagination")
     @PostMapping("/paged")
-    public PagedResponse<QPagedEquipment> pageEquipments(@RequestBody @Valid PageEquipmentsQuery query, @AuthenticationPrincipal @NotNull OrgActor actor) {
-        return this.equipmentQueryService.pageEquipments(query, actor);
+    public PagedResponse<QPagedEquipment> pageEquipments(
+            @RequestBody @Valid PageEquipmentsQuery query,
+            @AuthenticationPrincipal @NotNull Actor actor) {
+        return this.equipmentQueryService.pageEquipments(query, actor.requireOrgId());
     }
 ```
 
@@ -159,13 +160,13 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 - Always enable transaction in CommandServices by using `@Transactional`:
 
 ```java
-@Transactional
-public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
-  Equipment equipment = equipmentFactory.create(command.name(), actor);
-  equipmentRepository.save(equipment);
-  log.info("Created Equipment[{}].", equipment.getId());
-  return equipment.getId();
-}
+    @Transactional
+    public String createEquipment(CreateEquipmentCommand command, String orgId) {
+        Equipment equipment = equipmentFactory.create(command.name(), orgId);
+        equipmentRepository.save(equipment);
+        log.info("Created Equipment[{}].", equipment.getId());
+        return equipment.getId();
+    }
 ```
 
 - CommandService's methods should contain logs of what has been done.
@@ -178,12 +179,6 @@ log.info("Created Equipment[{}].", equipment.getId());
 
 - Do not create interface classes for services until really needed. Reason: the public methods on service classes
   already serve as interfaces in general terms.
-
-- Use [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) to pass current user context around, do
-  not use Spring Security's `SecurityContextHolder` for retrieving user information. Reason:
-  `SecurityContextHolder` is essentially thread scoped global variable, it makes the code implicit and also makes
-  testing harder. You can find more details on this
-  in [006_explicitly_pass_through_actor_context.md](./006_explicitly_pass_through_actor_context.md).
 
 - There are two [TaskExecutors](../src/main/java/com/company/andy/common/configuration/TaskExecutorConfiguration.java)
   in the application, choose them wisely:
@@ -221,13 +216,13 @@ log.info("Created Equipment[{}].", equipment.getId());
   to [010_domain_event_publishing.md](./010_domain_event_publishing.md). For example:
 
 ```java
-    public void updateName(String newName, Actor actor) {
+    public void updateName(String newName) {
         if (Objects.equals(newName, this.name)) {
             return;
         }
         this.name = newName;
-        // Call raiseEvent() for publishing DomainEvents
-        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
+        // call raiseEvent() for publishing DomainEvents
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this));
     }
 ```
 
@@ -238,9 +233,12 @@ log.info("Created Equipment[{}].", equipment.getId());
   details on this please refer to [011_event_consuming.md](./011_event_consuming.md). Example:
 
 ```java
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class EquipmentCreatedAnotherEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
     @Override
-    public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentCreatedEvent event) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }
@@ -313,16 +311,14 @@ PollingAssertionpollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTE
   Use it inside CommandService and QueryService:
 
 ```java
-public class DemoReservationCommandService {
-    private final RateLimiter rateLimiter;
-
     @Transactional
-    public String createDemoReservation(CreateDemoReservationCommand command, PlatformActor actor) {
+    public String createDemoReservation(CreateDemoReservationCommand command) {
         rateLimiter.applyFor("create_demo_reservation", 5);
-        // more code here
+        DemoReservation demoReservation = demoReservationFactory.createDemoReservation(command.mobileNumber());
+        demoReservationRepository.save(demoReservation);
+        log.info("Created DemoReservation[{}].", demoReservation.getId());
         return demoReservation.getId();
     }
-}
 ```
 
 - When adding new MongoDB collections, make sure you pre-create the collection

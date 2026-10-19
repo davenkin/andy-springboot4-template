@@ -59,7 +59,7 @@ Controller --> Actor: equipment ID
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull Actor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 ```
@@ -144,7 +144,7 @@ Controller --> Actor: success
     public void updateEquipmentHolder(
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
+            @AuthenticationPrincipal @NotNull Actor actor) {
         this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
     }
 ```
@@ -267,7 +267,7 @@ Controller --> Actor: success
 ```java
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{id}")
-    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull OrgActor actor) {
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull Actor actor) {
         this.equipmentCommandService.deleteEquipment(equipmentId, actor);
     }
 ```
@@ -333,7 +333,7 @@ Controller --> Actor: fetched equipments
     @PostMapping("/paged")
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
-            @AuthenticationPrincipal @NotNull OrgActor actor) {
+            @AuthenticationPrincipal @NotNull Actor actor) {
         return this.equipmentQueryService.pageEquipments(query, actor);
     }
 ```

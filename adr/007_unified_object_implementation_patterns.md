@@ -208,7 +208,7 @@ public class EquipmentController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull OrgActor actor) {
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull Actor actor) {
         return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
     }
 }
