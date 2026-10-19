@@ -40,9 +40,9 @@ flow is:
 ```plantuml
 @startuml
 Actor -> Controller: createEquipment(command,actor)
-Controller -> CommandService: createEquipment(command,actor)
-CommandService -> Factory: create(command.name(), actor)
-Factory -> AggregateRoot: new Equipment(name, actor)
+Controller -> CommandService: createEquipment(command,orgId)
+CommandService -> Factory: create(command.name(), orgId)
+Factory -> AggregateRoot: new Equipment(name, orgId)
 AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentCreatedEvent())
 AggregateRoot --> Factory: created equipment
 Factory --> CommandService: created equipment
@@ -59,8 +59,9 @@ Controller --> Actor: equipment ID
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull Actor actor) {
-        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command,
+                                      @AuthenticationPrincipal @NotNull Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor.requireOrgId()));
     }
 ```
 
@@ -68,8 +69,8 @@ Controller --> Actor: equipment ID
 
 ```java
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
-        Equipment equipment = equipmentFactory.create(command.name(), actor);
+    public String createEquipment(CreateEquipmentCommand command, String orgId) {
+        Equipment equipment = equipmentFactory.create(command.name(), orgId);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
         return equipment.getId();
@@ -80,8 +81,8 @@ Controller --> Actor: equipment ID
    AggregateRoots:
 
 ```java
-    public Equipment create(String name, OrgActor actor) {
-        return new Equipment(name, actor);
+    public Equipment create(String name, String orgId) {
+        return new Equipment(name, orgId);
     }
 ```
 
@@ -90,14 +91,13 @@ Controller --> Actor: equipment ID
    event infrastructure and no further actions are required from your side:
 
 ```java
-    public Equipment(String name, OrgActor actor) {
+    public Equipment(String name, String orgId) {
         requireNonBlank(name, "name must not be blank");
-        requireNonNull(actor, "actor must not be null");
 
-        super(newEquipmentId(), actor);
+        super(newEquipmentId(), orgId);
         this.name = name;
         this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
-        raiseEvent(new EquipmentCreatedEvent(this, actor));
+        raiseEvent(new EquipmentCreatedEvent(this));
     }
 
     public static String newEquipmentId() {
@@ -123,10 +123,10 @@ database. Take "updating `Equipment`'s holder" as an example.
 ```plantuml
 @startuml
 Actor -> Controller: updateEquipmentHolder(equipmentId, command, actor)
-Controller -> CommandService: updateEquipmentHolder(equipmentId, command, actor)
-CommandService -> Repository: byId(id, actor.orgId())
+Controller -> CommandService: updateEquipmentHolder(equipmentId, command, orgId)
+CommandService -> Repository: byId(id, orgId)
 Repository --> CommandService: fetched equipment
-CommandService -> AggregateRoot: equipment.updateHolder(command.name(), actor)
+CommandService -> AggregateRoot: equipment.updateHolder(command.name())
 AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentHolderUpdatedEvent())
 AggregateRoot --> CommandService: success
 CommandService -> Repository: save(equipment)
@@ -145,7 +145,7 @@ Controller --> Actor: success
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
             @AuthenticationPrincipal @NotNull Actor actor) {
-        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
+        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor.requireOrgId());
     }
 ```
 
@@ -153,9 +153,9 @@ Controller --> Actor: success
 
 ```java
     @Transactional
-    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, OrgActor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
-        equipment.updateHolder(command.name(), actor);
+    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, String orgId) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
+        equipment.updateHolder(command.name());
         equipmentRepository.save(equipment);
         log.info("Updated holder for Equipment[{}].", equipment.getId());
     }
@@ -164,21 +164,19 @@ Controller --> Actor: success
 3. `EquipmentRepository` loads `Equipment` by its ID:
 
 ```java
-Equipment equipment = equipmentRepository.byId(id, actor.getOrgId());
+Equipment equipment = equipmentRepository.byId(id, orgId);
 ```
 
 4. `Equipment`'s `updateHolder()` is called to update its state according business logic(rules), and also raise
    `EquipmentHolderUpdatedEvent` if the holder is changed:
 
 ```java
-    public void updateHolder(String newHolder, Actor actor) {
-        if (Objects.equals(this.holder, newHolder)) {
-            return;
-        }
-
-        String oldHolder = this.holder;
-        this.holder = newHolder;
-        raiseEvent(new EquipmentHolderUpdatedEvent(oldHolder, newHolder, this, actor));
+    @Transactional
+    public void updateEquipmentHolder(String equipmentId, UpdateEquipmentHolderCommand command, String orgId) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
+        equipment.updateHolder(command.name());
+        equipmentRepository.save(equipment);
+        log.info("Updated holder for Equipment[{}].", equipment.getId());
     }
 ```
 
@@ -199,12 +197,12 @@ directly from `EquipmentCommandService`, DomainService `EquipmentDomainService.u
 ```plantuml
 @startuml
 Actor -> Controller: updateEquipmentName(equipmentId, command, actor)
-Controller -> CommandService: updateEquipmentName(equipmentId, command, actor)
-CommandService -> Repository: byId(id, actor.orgId())
+Controller -> CommandService: updateEquipmentName(equipmentId, command, orgId)
+CommandService -> Repository: byId(id, orgId)
 Repository --> CommandService: fetched equipment
-CommandService -> DomainService: updateEquipmentName(equipment, command.name(), actor)
+CommandService -> DomainService: updateEquipmentName(equipment, command.name())
 DomainService -> DomainService: apply business logic
-DomainService -> AggregateRoot: equipment.updateName(newName, actor);
+DomainService -> AggregateRoot: equipment.updateName(newName);
 AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentNameUpdatedEvent())
 AggregateRoot --> DomainService: success
 DomainService --> CommandService: success
@@ -217,9 +215,9 @@ Controller --> Actor: success
 
 ```java
     @Transactional
-    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, OrgActor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
-        equipmentDomainService.updateEquipmentName(equipment, command.name(), actor);
+    public void updateEquipmentName(String equipmentId, UpdateEquipmentNameCommand command, String orgId) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
+        equipmentDomainService.updateEquipmentName(equipment, command.name());
         equipmentRepository.save(equipment);
         log.info("Updated name for Equipment[{}].", equipment.getId());
     }
@@ -230,7 +228,7 @@ Inside `EquipmentDomainService.updateEquipmentName()`, it first checks whether t
 update `Equipment`'s name:
 
 ```java
-    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
+    public void updateEquipmentName(Equipment equipment, String newName) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -238,7 +236,7 @@ update `Equipment`'s name:
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName, actor);
+        equipment.updateName(newName);
     }
 ```
 
@@ -249,10 +247,10 @@ For deleting data, first load the AggregateRoot and then delete it. For example,
 ```plantuml
 @startuml
 Actor -> Controller: deleteEquipment(equipmentId, actor)
-Controller -> CommandService: deleteEquipment(equipmentId, actor)
-CommandService -> Repository: byId(equipmentId, actor.orgId())
+Controller -> CommandService: deleteEquipment(equipmentId, orgId)
+CommandService -> Repository: byId(equipmentId, orgId)
 Repository --> CommandService: fetched equipment
-CommandService -> AggregateRoot: equipment.onDelete(actor)
+CommandService -> AggregateRoot: equipment.onDelete()
 AggregateRoot -> AggregateRoot: raiseEvent(new EquipmentDeletedEvent())
 AggregateRoot --> CommandService: success
 CommandService -> Repository: delete(equipment)
@@ -267,8 +265,9 @@ Controller --> Actor: success
 ```java
     @Operation(summary = "Delete an equipment")
     @DeleteMapping("/{id}")
-    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId, @AuthenticationPrincipal @NotNull Actor actor) {
-        this.equipmentCommandService.deleteEquipment(equipmentId, actor);
+    public void deleteEquipment(@PathVariable("id") @NotBlank String equipmentId,
+                                @AuthenticationPrincipal @NotNull Actor actor) {
+        this.equipmentCommandService.deleteEquipment(equipmentId, actor.requireOrgId());
     }
 ```
 
@@ -276,9 +275,9 @@ Controller --> Actor: success
 
 ```java
     @Transactional
-    public void deleteEquipment(String equipmentId, OrgActor actor) {
-        Equipment equipment = equipmentRepository.byId(equipmentId, actor.getOrgId());
-        equipment.onDelete(actor);
+    public void deleteEquipment(String equipmentId, String orgId) {
+        Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
+        equipment.onDelete();
         equipmentRepository.delete(equipment);
         log.info("Deleted Equipment[{}].", equipmentId);
     }
@@ -287,14 +286,14 @@ Controller --> Actor: success
 3. `EquipmentRepository` loads the `Equipment` by equipment ID and org ID:
 
 ```java
-Equipment equipment = equipmentRepository.byId(equipmentId, actor.orgId());
+Equipment equipment = equipmentRepository.byId(equipmentId, orgId);
 ```
 
 4. `Equipment.onDelete()` is called to do some pre-deletion work such as raising DomainEvents:
 
 ```java
-    public void onDelete(Actor actor) {
-        raiseEvent(new EquipmentDeletedEvent(this, actor));
+    public void onDelete() {
+        raiseEvent(new EquipmentDeletedEvent(this));
     }
 ```
 
@@ -318,7 +317,7 @@ directly. For example, when querying a list of `Equipment`s:
 ```plantuml
 @startuml
 Actor -> Controller: pageEquipments(query, actor)
-Controller -> QueryService: pageEquipments(query, actor)
+Controller -> QueryService: pageEquipments(query, orgId)
 QueryService -> MongoTemplate: find()
 MongoTemplate --> QueryService: fetched equipments
 QueryService --> Controller: fetched equipments
@@ -334,7 +333,7 @@ Controller --> Actor: fetched equipments
     public PagedResponse<QPagedEquipment> pageEquipments(
             @RequestBody @Valid PageEquipmentsQuery query,
             @AuthenticationPrincipal @NotNull Actor actor) {
-        return this.equipmentQueryService.pageEquipments(query, actor);
+        return this.equipmentQueryService.pageEquipments(query, actor.requireOrgId());
     }
 ```
 
@@ -345,8 +344,8 @@ Controller --> Actor: fetched equipments
    query model `QPagedEquipment`:
 
 ```java
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, String orgId) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(orgId);
         // code omited
         List<QPagedEquipment> equipments = mongoTemplate.find(mongoQuery.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);
         return new PagedResponse<>(equipments, pageable, count);
@@ -360,10 +359,10 @@ Controller --> Actor: fetched equipments
 Timer -> Scheduler: remindForEquipmentMaintenance()
 Scheduler -> Actor: createScheduledJobActor()
 Actor --> Scheduler: actor
-Scheduler -> ActorMdcSupport: runWithMdc()
-ActorMdcSupport -> ScheduledJob: run()
-ScheduledJob --> ActorMdcSupport: success
-ActorMdcSupport --> Scheduler:success
+Scheduler -> CurrentActorService: runWithActor()
+CurrentActorService -> ScheduledJob: run()
+ScheduledJob --> CurrentActorService: success
+CurrentActorService --> Scheduler:success
 Scheduler --> Timer: success
 @enduml
 ```
@@ -372,6 +371,7 @@ Scheduler --> Timer: success
 
 ```java
 @Slf4j
+@Profile("local | it-embedded | it-local")
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {
@@ -382,13 +382,13 @@ public class EquipmentJobScheduler {
     public void remindForEquipmentMaintenance() {
         assertLocked();
 
-        PlatformActor actor = createScheduledJobActor("remindForEquipmentMaintenance");
-        ActorMdcSupport.runWithMdc(actor, () -> maintenanceReminderScheduledJob.run(actor));
+        Actor actor = createScheduledJobActor("remindForEquipmentMaintenance");
+        CurrentActorService.runWithActor(actor, maintenanceReminderScheduledJob::run);
     }
 }
 ```
 
-The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into MDC.
+The `CurrentActorService.runWithActor()` is used to set the `Actor` information into the current thread and MDC.
 
 2. Then create a scheduled job class:
 
@@ -398,13 +398,13 @@ The `ActorMdcSupport.runWithMdc()` is used to set the `Actor` information into M
 @RequiredArgsConstructor
 public class MaintenanceReminderScheduledJob {
 
-  public void run(PlatformActor actor) {
-    log.info("MaintenanceReminderScheduledJob started.");
+    public void run() {
+        log.info("MaintenanceReminderScheduledJob started.");
 
-    //do something
+        //do something
 
-    log.info("MaintenanceReminderScheduledJob ended.");
-  }
+        log.info("MaintenanceReminderScheduledJob ended.");
+    }
 }
 ```
 
@@ -419,8 +419,12 @@ The Kafka event consuming infrastructure is already set up for you. You only nee
 @startuml
 ListenerContainer -> SpringKafkaEventListener: listenDomainEvent(event)
 SpringKafkaEventListener -> EventConsumer: consumeDomainEvent(event)
-EventConsumer -> EventHandler: handle(event, actor)
-EventHandler -> EventConsumer: success
+EventConsumer -> Actor: createEventHandlerActor()
+Actor --> EventConsumer: actor
+EventConsumer -> CurrentActorService: runWithActor()
+CurrentActorService -> EventHandler: handle(event)
+EventHandler --> CurrentActorService: success
+CurrentActorService --> EventConsumer: success
 EventConsumer -> SpringKafkaEventListener: success
 SpringKafkaEventListener -> ListenerContainer: success
 @enduml
@@ -462,7 +466,7 @@ You may add more `@KafkaListener` methods for consuming different topics if need
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
     @Override
-    public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
+    public void handle(EquipmentCreatedEvent event) {
         log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
     }
 }

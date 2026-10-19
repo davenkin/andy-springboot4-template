@@ -65,7 +65,7 @@ DomainService [EquipmentDomainService](../src/main/java/com/company/andy/feature
 public class EquipmentDomainService {
     private final EquipmentRepository equipmentRepository;
 
-    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
+    public void updateEquipmentName(Equipment equipment, String newName) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -73,7 +73,7 @@ public class EquipmentDomainService {
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName, actor);
+        equipment.updateName(newName);
     }
 }
 ```
@@ -97,8 +97,8 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
-        Equipment equipment = equipmentFactory.create(command.name(), actor);
+    public String createEquipment(CreateEquipmentCommand command, String orgId) {
+        Equipment equipment = equipmentFactory.create(command.name(), orgId);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
         return equipment.getId();
@@ -116,8 +116,8 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, String orgId) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(orgId);
 
         // code omitted
     }
