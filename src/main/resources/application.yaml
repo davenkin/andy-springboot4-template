@@ -26,6 +26,8 @@ spring:
       observation-enabled: true
     listener:
       observation-enabled: true
+  messages:
+    basename: i18n/messages
 
 mongock:
   enabled: true
