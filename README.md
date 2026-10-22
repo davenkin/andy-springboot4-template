@@ -30,6 +30,7 @@ This is a template Spring Boot 4 project with the following features:
   and [OpenTelemetry](https://spring.io/blog/2025/11/18/opentelemetry-with-spring-boot)
 - [RestClient](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) for making external API
   calls
+- Internationalization (i18n) support with [Spring MessageSource](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#context-functionality-messagesource)
 
 ## Tech stack
 
