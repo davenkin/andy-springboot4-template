@@ -42,9 +42,10 @@ Example event handler:
 @RequiredArgsConstructor
 public class EquipmentCreatedEventHandler extends AbstractEventHandler<EquipmentCreatedEvent> {
 
-  @Override
-  public void handle(EquipmentCreatedEvent event, PlatformActor actor) {
-  }
+    @Override
+    public void handle(EquipmentCreatedEvent event) {
+        log.info("{} called for Equipment[{}].", this.getClass().getSimpleName(), event.getArId());
+    }
 }
 ```
 

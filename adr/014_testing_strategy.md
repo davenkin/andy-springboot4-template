@@ -63,15 +63,15 @@ types of tests for simplicity.
 
 ```java
 class EquipmentTest {
-  @Test
-  void should_create_equipment() {
-    Actor actor = randomOrgUserActor();
-    Equipment equipment = new Equipment("name", actor);
-    assertEquals("name", equipment.getName());
-    assertEquals(1, equipment.getEvents().size());
-    assertTrue(equipment.getEvents().stream()
-        .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
-  }
+    @Test
+    void should_create_equipment() {
+        Actor actor = randomMemberActor();
+        Equipment equipment = new Equipment("name", actor.requireOrgId());
+        assertEquals("name", equipment.getName());
+        assertEquals(1, equipment.getEvents().size());
+        assertTrue(equipment.getEvents().stream()
+                .anyMatch(domainEvent -> domainEvent.getType() == EQUIPMENT_CREATED_EVENT));
+    }
 }
 ```
 
@@ -235,7 +235,7 @@ parameter annotated with `@AuthenticationPrincipal`.
     @Test
     void should_create_equipment() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
 
         // Execute
@@ -249,7 +249,7 @@ parameter annotated with `@AuthenticationPrincipal`.
         String equipmentId = responseId.id();
         Equipment equipment = equipmentRepository.byId(equipmentId);
         assertEquals(createEquipmentCommand.name(), equipment.getName());
-        assertEquals(actor.getOrgId(), equipment.getOrgId());
+        assertEquals(actor.requireOrgId(), equipment.getOrgId());
 
         // Verify raised DomainEvent(s)
         EquipmentCreatedEvent equipmentCreatedEvent = latestDomainEventFor(equipmentId, EQUIPMENT_CREATED_EVENT, EquipmentCreatedEvent.class);
@@ -273,11 +273,11 @@ Controller API calling.
     @Test
     void update_equipment_name_should_also_sync_to_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
         String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(randomCreateMaintenanceRecordCommand(equipmentId),
-                actor);
+                actor.requireOrgId());
 
         UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
         restTestClient.put()
@@ -289,7 +289,7 @@ Controller API calling.
 
         // Execute
         eventConsumer.consumeDomainEvent(equipmentNameUpdatedEvent);
-        
+
         // Verify
         assertEquals(updateEquipmentNameCommand.name(), maintenanceRecordRepository.byId(maintenanceRecordId).getEquipmentName());
     }
@@ -308,12 +308,12 @@ their own test files, as they are not triggered by our own controller APIs but b
    `latestDomainEventFor()`
 
 ```java
-   @Test
+    @Test
     void external_maintenance_record_created_event_should_be_added() {
         // Prepare
-        OrgActor actor = randomMemberActor();
+        Actor actor = randomMemberActor();
         CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor);
+        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
 
         ExternalMaintenanceRecordCreatedEvent externalEvent = ExternalMaintenanceRecordCreatedEvent.builder()
                 .eventId(randomExternalEventId())
@@ -353,18 +353,18 @@ their own test files, as they are not triggered by our own controller APIs but b
     @Test
     void should_remove_old_maintenance_records() {
         // Prepare
-        OrgActor actor = randomMemberActor();
-        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor);
+        Actor actor = randomMemberActor();
+        String equipmentId = equipmentCommandService.createEquipment(randomCreateEquipmentCommand(), actor.requireOrgId());
         CreateMaintenanceRecordCommand createMaintenanceRecordCommand = randomCreateMaintenanceRecordCommand(equipmentId);
-        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
-        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor);
+        String maintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor.requireOrgId());
+        String oldMaintenanceRecordId = maintenanceRecordCommandService.createMaintenanceRecord(createMaintenanceRecordCommand, actor.requireOrgId());
 
         Query query = Query.query(where(MONGO_ID).is(oldMaintenanceRecordId));
         Update update = new Update().set(AggregateRoot.Fields.createdAt, Instant.now().minus(500, DAYS));
         mongoTemplate.updateFirst(query, update, MaintenanceRecord.class);
 
         // Execute
-        removeOldMaintenanceRecordsJob.run();
+        removeOldMaintenanceRecordsScheduledJob.run();
 
         // Verify
         assertFalse(maintenanceRecordRepository.exists(oldMaintenanceRecordId));

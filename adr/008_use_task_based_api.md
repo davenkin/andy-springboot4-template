@@ -43,7 +43,7 @@ are created, namely `updateEquipmentName()` and
             String equipmentId,
             @RequestBody @Valid UpdateEquipmentNameCommand command,
             @AuthenticationPrincipal @NotNull Actor actor) {
-        this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor);
+        this.equipmentCommandService.updateEquipmentName(equipmentId, command, actor.requireOrgId());
     }
 
     @Operation(summary = "Update an equipment's holder")
@@ -52,7 +52,7 @@ are created, namely `updateEquipmentName()` and
             @PathVariable("id") @NotBlank String equipmentId,
             @RequestBody @Valid UpdateEquipmentHolderCommand command,
             @AuthenticationPrincipal @NotNull Actor actor) {
-        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor);
+        this.equipmentCommandService.updateEquipmentHolder(equipmentId, command, actor.requireOrgId());
     }
 ```
 

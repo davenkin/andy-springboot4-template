@@ -35,13 +35,13 @@ refer to [event consuming](011_event_consuming.md) for more detail.
 - For sending a DomainEvent, the only action that you need is calling `raiseEvent()` from an AggregateRoot:
 
 ```java
-    public void updateName(String newName, Actor actor) {
+    public void updateName(String newName) {
         if (Objects.equals(newName, this.name)) {
             return;
         }
         this.name = newName;
         // call raiseEvent() for publishing DomainEvents
-        raiseEvent(new EquipmentNameUpdatedEvent(name, this, actor));
+        raiseEvent(new EquipmentNameUpdatedEvent(name, this));
     }
 ```
 
