@@ -24,13 +24,13 @@ spring:
         registration:
           keycloak-service-account:
             provider: keycloak
-            client-id: test-service-account-client
-            client-secret: pEuTKGJU2WicZFaEMsAKuwPBKhSChRKd
+            client-id: test-platform-service-client-001
+            client-secret: hw0lwxhz5M2cl3ncPE79geNEEIcPhNR2
             authorization-grant-type: client_credentials
             scope: openid
         provider:
           keycloak:
-            issuer-uri: http://localhost:7125/realms/test-realm
+            issuer-uri: http://localhost:7125/realms/platform
 
 springdoc:
   api-docs:

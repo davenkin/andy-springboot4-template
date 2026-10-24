@@ -36,14 +36,14 @@ class AggregateRootArchTest {
             .areAssignableTo(AggregateRoot.class)
             .and(areConcreteClasses())
             .should(havePrivateNoArgConstructor())
-            .because("Private no-arg constructors of AggregateRoots are only used for deserialization, it should not be used for manual AggregateRoot creation because otherwise we might end up with invalid AggregateRoots. You may use @NoArgsConstructor(access = PRIVATE) for private constructors.");
+            .because("Private no-arg constructors of AggregateRoots are only used for deserialization, it should not be used for manual AggregateRoot creation because otherwise we might end up with invalid AggregateRoots. You may use @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator) for private constructors.");
 
     @ArchTest
     static final ArchRule aggregate_root_should_have_non_public_no_arg_constructor = classes()
             .that()
             .areAssignableTo(AggregateRoot.class)
             .should(haveNonPublicNoArgConstructor())
-            .because("Non-public no-arg constructors of AggregateRoots are only used for deserialization, it should not be used for manual AggregateRoot creation because otherwise we might end up with invalid AggregateRoots. You may use @NoArgsConstructor(access = PRIVATE) or @NoArgsConstructor(access = PROTECTED) for constructors.");
+            .because("Non-public no-arg constructors of AggregateRoots are only used for deserialization, it should not be used for manual AggregateRoot creation because otherwise we might end up with invalid AggregateRoots. You may use @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator) or @NoArgsConstructor(access = PROTECTED) for constructors.");
 
     @ArchTest
     static final ArchRule aggregate_root_should_not_have_builder = classes()
