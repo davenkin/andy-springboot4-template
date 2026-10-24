@@ -23,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class DemoReservationQueryService {
     private final MongoTemplate mongoTemplate;
 
-    public PagedResponse<QPagedDemoReservation> pageDemoReservations(PageDemoReservationQuery query) {
+    public PagedResponse<QPagedDemoReservation> pageDemoReservations(PageDemoReservationsQuery query) {
         Criteria criteria = new Criteria();
 
         if (isNotBlank(query.getSearch())) {

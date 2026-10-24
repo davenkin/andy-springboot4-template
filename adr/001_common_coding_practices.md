@@ -20,6 +20,7 @@
 | Query service                    | `XxxQueryService`                           | `EquipmentQueryService`             |
 | Query request for paged response | `PageXxxQuery`                              | `PageEquipmentsQuery`               |
 | Query response                   | `QXxx`                                      | `QDetailedEquipment`                |
+| Paged query response             | `QPagedXxx`                                 | `QPagedEquipment`                   |
 | Rest controller                  | `XxxController`                             | `EquipmentController`               |
 | Controller in Platform API plane | `PlatformXxxController`                     | `PlatformDemoReservationController` |
 | Unit tests                       | `XxxTest`                                   | `EquipmentTest`                     |
@@ -351,4 +352,5 @@ PollingAssertionpollAssert().run(() -> assertNotNull(cacheManager.getCache(SYSTE
 
 - Make configuration files, e.g. `application.yaml` as simple as possible, prefer using constants in the code for
   configuration items that rarely change.
-- Internationalization (i18n) should be done using [I18n](../src/main/java/com/company/andy/common/i18n/I18n.java) with messages configured in [messages_XX.properties](../src/main/resources/i18n/messages.properties).
+- Internationalization (i18n) should be done using [I18n](../src/main/java/com/company/andy/common/i18n/I18n.java) with
+  messages configured in [messages_XX.properties](../src/main/resources/i18n/messages.properties).

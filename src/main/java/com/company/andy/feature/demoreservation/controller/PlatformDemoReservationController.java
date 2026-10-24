@@ -2,7 +2,7 @@ package com.company.andy.feature.demoreservation.controller;
 
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.feature.demoreservation.query.DemoReservationQueryService;
-import com.company.andy.feature.demoreservation.query.PageDemoReservationQuery;
+import com.company.andy.feature.demoreservation.query.PageDemoReservationsQuery;
 import com.company.andy.feature.demoreservation.query.QPagedDemoReservation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ public class PlatformDemoReservationController {
 
     @Operation(summary = "Query demo reservations")
     @PostMapping("/paged")
-    public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationQuery query) {
+    public PagedResponse<QPagedDemoReservation> pageDemoReservations(@RequestBody @Valid PageDemoReservationsQuery query) {
         return this.demoReservationQueryService.pageDemoReservations(query);
     }
 }

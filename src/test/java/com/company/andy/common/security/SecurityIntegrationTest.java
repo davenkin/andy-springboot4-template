@@ -5,7 +5,7 @@ import com.company.andy.common.exception.ApiError;
 import com.company.andy.common.exception.QApiErrorResponse;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.ResponseId;
-import com.company.andy.feature.demoreservation.query.PageDemoReservationQuery;
+import com.company.andy.feature.demoreservation.query.PageDemoReservationsQuery;
 import com.company.andy.feature.equipment.domain.EquipmentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
     void should_throw_401_error_if_jwt_not_provided_for_platform_api() {
         QApiErrorResponse response = restTestClient.post()
                 .uri("/platform/demo-reservations/paged")
-                .body(PageDemoReservationQuery.builder().pageSize(12).build())
+                .body(PageDemoReservationsQuery.builder().pageSize(12).build())
                 .exchange().expectStatus().isUnauthorized()
                 .expectBody(QApiErrorResponse.class).returnResult().getResponseBody();
 
@@ -94,7 +94,7 @@ public class SecurityIntegrationTest extends IntegrationTest {
         restTestClient.post()
                 .uri("/platform/demo-reservations/paged")
                 .headers(authHeaderOf(orgActor))
-                .body(PageDemoReservationQuery.builder().pageSize(12).build())
+                .body(PageDemoReservationsQuery.builder().pageSize(12).build())
                 .exchange().expectStatus().isUnauthorized();
     }
 }

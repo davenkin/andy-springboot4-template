@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = PRIVATE, onConstructor_ = @JsonCreator)
-public class PageDemoReservationQuery extends PageQuery {
+public class PageDemoReservationsQuery extends PageQuery {
     @Schema(description = "Search text")
     @Max(50)
     private String search;

@@ -45,7 +45,7 @@ public class ApplicationInitializer implements SmartLifecycle {
                 cache.clear();
             }
         });
-        log.info("Cleared application caches.");
+        log.info("Cleared all application caches.");
     }
 
     private void createCollection(Class<?> collectionClass) {

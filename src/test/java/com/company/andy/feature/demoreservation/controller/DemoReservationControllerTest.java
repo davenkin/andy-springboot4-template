@@ -8,7 +8,7 @@ import com.company.andy.feature.demoreservation.command.DemoReservationCommandSe
 import com.company.andy.feature.demoreservation.domain.DemoReservation;
 import com.company.andy.feature.demoreservation.domain.DemoReservationRepository;
 import com.company.andy.feature.demoreservation.domain.event.DemoReservationCreatedEvent;
-import com.company.andy.feature.demoreservation.query.PageDemoReservationQuery;
+import com.company.andy.feature.demoreservation.query.PageDemoReservationsQuery;
 import com.company.andy.feature.demoreservation.query.QPagedDemoReservation;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ class DemoReservationControllerTest extends IntegrationTest {
                 .forEach(_ -> demoReservationCommandService.createDemoReservation(randomDemoReservationCommand()));
 
         // Execute
-        PageDemoReservationQuery query = PageDemoReservationQuery.builder().pageSize(12).build();
+        PageDemoReservationsQuery query = PageDemoReservationsQuery.builder().pageSize(12).build();
         PagedResponse<QPagedDemoReservation> response = restTestClient.post()
                 .uri("/platform/demo-reservations/paged").headers(authHeaderOf(randomSupervisorActor()))
                 .body(query)
