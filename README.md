@@ -1,7 +1,3 @@
-todo: 
-- 重新整理adr，所有的代码以及提及actor
-- 重新做keycloak 模板，新的jwt field，包含
-
 ## Introduction
 
 This is a template Spring Boot 4 project with the following features:
