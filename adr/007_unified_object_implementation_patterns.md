@@ -76,11 +76,13 @@ public class Equipment extends AggregateRoot {
     private String holder;
     private long maintenanceRecordCount;
 
-    public Equipment(String name, OrgActor actor) { // Explict business contructors
-        super(newEquipmentId(), actor);
+    public Equipment(String name, String orgId) {
+        requireNonBlank(name, "name must not be blank");
+
+        super(newEquipmentId(), orgId);
         this.name = name;
         this.engine = new EquipmentEngine("DEFAULT_ENGINE_MODEL");
-        raiseEvent(new EquipmentCreatedEvent(this, actor)); // Raise DomainEvent
+        raiseEvent(new EquipmentCreatedEvent(this));
     }
 
     public static String newEquipmentId() {
@@ -189,7 +191,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {
 - Controller classes should be annotated with `@Validated` to enable request validation
 - Request objects in method parameters should be annotated with `@Valid` to enable request validation
 - Controller ensures an [Actor](../src/main/java/com/company/andy/common/model/actor/Actor.java) is injected using
-  `@AuthenticationPrincipal`, this `Actor` is then passed down the whole processing flow
+  `@AuthenticationPrincipal`
 - Controller should follow REST principles on naming URLs and choosing HTTP methods
 
 Example
@@ -208,8 +210,9 @@ public class EquipmentController {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Create an equipment")
-    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command, @AuthenticationPrincipal @NotNull Actor actor) {
-        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor));
+    public ResponseId createEquipment(@RequestBody @Valid CreateEquipmentCommand command,
+                                      @AuthenticationPrincipal @NotNull Actor actor) {
+        return new ResponseId(this.equipmentCommandService.createEquipment(command, actor.requireOrgId()));
     }
 }
 ```
@@ -219,7 +222,7 @@ public class EquipmentController {
 - CommandServices serves as the facade for the domain model
 - Every public method in CommandServices should represent a use case, and should be annotated with `@Transactional` if
   it writes to database
-- Methods in CommandServices usually accept a [Command](#command) object as parameter, as well as an `Actor` object
+- Methods in CommandServices usually accept a [Command](#command) object as parameter
 - CommandServices should not contain business logic but only orchestrate the work of domain model, repositories and
   other components, the business logic should be in AggregateRoots or DomainServices
 - CommandService returns the AggregateRoot's ID for creating objects, and return `void` for updating or deleting objects
@@ -237,8 +240,8 @@ public class EquipmentCommandService {
     private final EquipmentDomainService equipmentDomainService;
 
     @Transactional
-    public String createEquipment(CreateEquipmentCommand command, OrgActor actor) {
-        Equipment equipment = equipmentFactory.create(command.name(), actor);
+    public String createEquipment(CreateEquipmentCommand command, String orgId) {
+        Equipment equipment = equipmentFactory.create(command.name(), orgId);
         equipmentRepository.save(equipment);
         log.info("Created Equipment[{}].", equipment.getId());
         return equipment.getId();
@@ -286,7 +289,7 @@ service [EquipmentDomainService](../src/main/java/com/company/andy/feature/equip
 public class EquipmentDomainService {
     private final EquipmentRepository equipmentRepository;
 
-    public void updateEquipmentName(Equipment equipment, String newName, Actor actor) {
+    public void updateEquipmentName(Equipment equipment, String newName) {
         if (!Objects.equals(newName, equipment.getName()) &&
             equipmentRepository.existsByName(newName, equipment.getOrgId())) {
             throw new ServiceException(EQUIPMENT_NAME_ALREADY_EXISTS,
@@ -294,7 +297,7 @@ public class EquipmentDomainService {
                     mapOf(AggregateRoot.Fields.id, equipment.getId(), Equipment.Fields.name, newName));
         }
 
-        equipment.updateName(newName, actor);
+        equipment.updateName(newName);
     }
 }
 ```
@@ -336,8 +339,8 @@ public class MaintenanceRecordCreatedEvent extends DomainEvent {
     private String equipmentId;
     private String equipmentName;
 
-    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord, Actor actor) {
-        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord, actor);
+    public MaintenanceRecordCreatedEvent(MaintenanceRecord maintenanceRecord) {
+        super(MAINTENANCE_RECORD_CREATED_EVENT, maintenanceRecord);
         this.maintenanceRecordId = maintenanceRecord.getId();
         this.equipmentId = maintenanceRecord.getEquipmentId();
         this.equipmentName = maintenanceRecord.getEquipmentName();
@@ -422,7 +425,7 @@ public class EquipmentDeletedEventEventHandler extends AbstractEventHandler<Equi
     private final DeleteAllMaintenanceRecordsUnderEquipmentTask deleteAllMaintenanceRecordsUnderEquipmentTask;
 
     @Override
-    public void handle(EquipmentDeletedEvent event, PlatformActor actor) {
+    public void handle(EquipmentDeletedEvent event) {
         ExceptionSwallowRunner.run(() -> deleteAllMaintenanceRecordsUnderEquipmentTask.run(event.getEquipmentId()));
     }
 }
@@ -445,11 +448,11 @@ factory [MaintenanceRecordFactory](../src/main/java/com/company/andy/feature/mai
 @RequiredArgsConstructor
 public class MaintenanceRecordFactory {
 
-    public MaintenanceRecord create(Equipment equipment,
-                                    EquipmentStatus status,
-                                    String description,
-                                    OrgActor actor) {
-        return new MaintenanceRecord(equipment.getId(), equipment.getName(), status, description, actor);
+    public MaintenanceRecord create(
+            Equipment equipment,
+            EquipmentStatus status,
+            String description) {
+        return new MaintenanceRecord(equipment, status, description);
     }
 }
 ```
@@ -532,9 +535,9 @@ public class EquipmentQueryService {
     private final MongoTemplate mongoTemplate;
     private final EquipmentRepository equipmentRepository;
 
-    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, OrgActor actor) {
-        Criteria criteria = where(AggregateRoot.Fields.orgId).is(actor.getOrgId());
-        
+    public PagedResponse<QPagedEquipment> pageEquipments(PageEquipmentsQuery query, String orgId) {
+        Criteria criteria = where(AggregateRoot.Fields.orgId).is(orgId);
+
         // code omitted
         
         List<QPagedEquipment> equipments = mongoTemplate.find(query.with(pageable), QPagedEquipment.class, EQUIPMENT_COLLECTION);

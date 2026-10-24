@@ -20,3 +20,6 @@ Please modify this specification according to your project requirements.
 | iss            | Token颁发者的URL，系统通过iss来判定所属的API plane                                                   | 必填  |
 | supervisor_id  | 仅针对Supervisor，表示Supervisor ID，此时必填                                                    | 非必填 |
 | principal_type | Principal类型，对于supervisor固定为SUPERVISOR，<br/>对于service client固定为PLATFORM_SERVICE_CLIENT | 必填  |
+
+
+### Device API plane
