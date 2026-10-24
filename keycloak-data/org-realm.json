@@ -403,7 +403,7 @@
     "emailVerified" : false,
     "attributes" : {
       "member_id" : [ "MBR1234567890" ],
-      "principal_type" : [ "MEMBER" ],
+      "actor_type" : [ "MEMBER" ],
       "org_id" : [ "ORG123456" ]
     },
     "createdTimestamp" : 1790301501057,
@@ -697,8 +697,8 @@
         "access.tokenResponse.claim" : "false"
       }
     }, {
-      "id" : "9c43b222-d5f4-401c-8590-215b52359cf9",
-      "name" : "principal_type",
+      "id" : "2d4f1bb4-3ef7-49b1-aa5f-d02591ac0440",
+      "name" : "actor_type",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-hardcoded-claim-mapper",
       "consentRequired" : false,
@@ -709,7 +709,7 @@
         "id.token.claim" : "true",
         "lightweight.claim" : "false",
         "access.token.claim" : "true",
-        "claim.name" : "principal_type",
+        "claim.name" : "actor_type",
         "jsonType.label" : "String",
         "access.tokenResponse.claim" : "false"
       }
@@ -1077,24 +1077,6 @@
         "jsonType.label" : "String"
       }
     }, {
-      "id" : "54014af0-0d35-4a03-97b8-cb164b93a591",
-      "name" : "principal_type",
-      "protocol" : "openid-connect",
-      "protocolMapper" : "oidc-usermodel-attribute-mapper",
-      "consentRequired" : false,
-      "config" : {
-        "aggregate.attrs" : "false",
-        "introspection.token.claim" : "true",
-        "multivalued" : "false",
-        "userinfo.token.claim" : "true",
-        "user.attribute" : "principal_type",
-        "id.token.claim" : "true",
-        "lightweight.claim" : "false",
-        "access.token.claim" : "true",
-        "claim.name" : "principal_type",
-        "jsonType.label" : "String"
-      }
-    }, {
       "id" : "73ccd3dc-713f-457e-898d-c89a8fc7d33a",
       "name" : "member_id",
       "protocol" : "openid-connect",
@@ -1108,6 +1090,22 @@
         "lightweight.claim" : "false",
         "access.token.claim" : "true",
         "claim.name" : "member_id",
+        "jsonType.label" : "String"
+      }
+    }, {
+      "id" : "02506689-1ee0-4dae-887f-6412a1f67fb9",
+      "name" : "actor_type",
+      "protocol" : "openid-connect",
+      "protocolMapper" : "oidc-usermodel-attribute-mapper",
+      "consentRequired" : false,
+      "config" : {
+        "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "user.attribute" : "actor_type",
+        "id.token.claim" : "true",
+        "lightweight.claim" : "false",
+        "access.token.claim" : "true",
+        "claim.name" : "actor_type",
         "jsonType.label" : "String"
       }
     } ]
@@ -1473,7 +1471,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-role-list-mapper", "oidc-full-name-mapper", "saml-user-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper" ]
       }
     }, {
       "id" : "c35c345c-e0b8-407f-9420-529b1006a9b3",
@@ -1482,7 +1480,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "oidc-address-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "oidc-full-name-mapper" ]
       }
     }, {
       "id" : "5fe0a53c-dd97-4da1-8ef0-bb57324e2cad",
