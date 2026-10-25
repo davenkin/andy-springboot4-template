@@ -218,10 +218,10 @@ and [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingAc
 - Simulates the real HTTP API calling process, other than just calling controller/service method directly
 
 In [IntegrationTest.authHeaderOf(Actor actor)](../src/test/java/com/company/andy/IntegrationTest.java), the current
-actor is been serialized into JWT token and put into `Authorization` header, which is then sent to the controller API.
+actor is been serialized into JSON string and put into `Authorization` header to mimic a JWT token, which is then sent to the controller API.
 Upon receiving the request,
-the [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java) decode the JWT token
-without any validation and deserialize it back to an actor object, which is then injected into the controller method
+the [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java) decodes the JSON string into a JWT object
+without any validation, then an Actor object is created from the JWT object, which is then injected into the controller method
 parameter annotated with `@AuthenticationPrincipal`.
 
 #### Test Controllers

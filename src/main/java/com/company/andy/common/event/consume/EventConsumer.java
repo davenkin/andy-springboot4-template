@@ -52,10 +52,6 @@ public class EventConsumer {
     // You may add more consumeXxxEvent(XxxEvent event) here
 
     private void consume(ConsumingEvent event) {
-        if (event == null) {
-            return;
-        }
-
         log.debug("Start consume event[{}:{}].", event.getType(), event.getEventId());
         Set<String> errorHandlers = new HashSet<>();
         this.handlers.stream()
