@@ -159,7 +159,7 @@ public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 ```
 
 - Always enable transaction in CommandServices by using `@Transactional` if the service method modifies the database. Reason: this ensures that the database is always in a consistent state, and also
-  allows DomainEvents to be published within the same transaction. Example:
+  allows DomainEvents to be created within the same transaction. Example:
 
 ```java
     @Transactional
