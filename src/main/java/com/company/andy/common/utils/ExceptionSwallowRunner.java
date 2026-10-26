@@ -2,7 +2,8 @@ package com.company.andy.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
-// Mainly used by EventHandlers where multiple steps should be executed independently inside a single handler
+// Mainly used by places where multiple operations should be executed independently
+
 @Slf4j
 public class ExceptionSwallowRunner {
 

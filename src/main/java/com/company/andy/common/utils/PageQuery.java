@@ -29,12 +29,12 @@ public abstract class PageQuery {
 
     @Schema(description = "Zero-based page index (0..N).", defaultValue = "0")
     @Min(0)
-    @Max(value = 10000)
+    @Max(value = 1000)
     private int pageNumber;
 
     @Schema(description = "The size of the page to be returned, default is 25.", defaultValue = "25")
     @Min(0)
-    @Max(value = 1000)
+    @Max(value = 500)
     private int pageSize;
 
     @Schema(description = "The field name to be sorted.")
