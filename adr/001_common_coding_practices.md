@@ -148,7 +148,7 @@ private void someMethod() {
 - Do not
   use [Spring Data Repository](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html).
   Reason: Spring Data's auto generated repository query method names can be very long and hard to read, also it cannot
-  survive code refactoring. Instead, implement your own repository classes which
+  survive code refactoring on method renaming. Instead, implement your own repository classes which
   extends [AbstractMongoRepository](../src/main/java/com/company/andy/common/mongo/AbstractMongoRepository.java), this
   gives you more freedom:
 
@@ -158,7 +158,8 @@ private void someMethod() {
 public class EquipmentRepository extends AbstractMongoRepository<Equipment> {}
 ```
 
-- Always enable transaction in CommandServices by using `@Transactional`:
+- Always enable transaction in CommandServices by using `@Transactional` if the service method modifies the database. Reason: this ensures that the database is always in a consistent state, and also
+  allows DomainEvents to be published within the same transaction. Example:
 
 ```java
     @Transactional
