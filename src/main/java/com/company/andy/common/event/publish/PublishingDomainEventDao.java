@@ -48,7 +48,7 @@ public class PublishingDomainEventDao {
         Query query = query(where(PublishingDomainEvent.Fields.status).in(CREATED, PUBLISH_FAILED)
                 .and(MONGO_ID).gt(startId)
                 .and(PublishingDomainEvent.Fields.publishedCount).lt(MAX_PUBLISH_COUNT))
-                .with(by(ASC, PublishingDomainEvent.Fields.raisedAt))
+                .with(by(ASC, MONGO_ID))
                 .limit(limit);
         return mongoTemplate.find(query, PublishingDomainEvent.class);
     }
