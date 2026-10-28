@@ -24,7 +24,6 @@ public class DomainEventJobScheduler {
     @Scheduled(cron = "0 */5 * * * ?")
     public void houseKeepPublishStagedDomainEvents() {
         log.debug("Start house keep publish DomainEvents.");
-        assertLocked();
         Actor actor = createScheduledJobActor("houseKeepPublishStagedDomainEvents");
         runWithActor(actor, () -> domainEventPublisher.publishStagedDomainEvents(100));
     }
