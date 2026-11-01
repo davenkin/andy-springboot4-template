@@ -1,5 +1,6 @@
 package com.company.andy.feature.equipment.controller;
 
+import com.company.andy.common.configuration.profile.EnableOnlyForLocal;
 import com.company.andy.common.model.actor.Actor;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.common.utils.ResponseId;
@@ -30,7 +31,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 // Controller should be thin and calls into CommandService and QueryService.
 
-@Profile("local | it-embedded | it-local")
+@EnableOnlyForLocal
 @Tag(name = "EquipmentController", description = "Equipment management APIs")
 @Validated
 @RestController

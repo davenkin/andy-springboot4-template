@@ -4,6 +4,11 @@ common:
   platformJwtIssuer: http://localhost:7125/realms/platform
   deviceJwtIssuer: http://localhost:7125/realms/device
 
+aws:
+  s3:
+    region: "us-east-1"
+    bucket: "s3-bucket"
+
 server:
   port: 8080
   shutdown: graceful

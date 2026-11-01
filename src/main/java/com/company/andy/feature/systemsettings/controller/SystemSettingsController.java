@@ -1,5 +1,6 @@
 package com.company.andy.feature.systemsettings.controller;
 
+import com.company.andy.common.configuration.profile.EnableOnlyForLocal;
 import com.company.andy.feature.systemsettings.query.QSystemSettings;
 import com.company.andy.feature.systemsettings.query.SystemSettingsQueryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 // Controller should be thin and calls into CommandService and QueryService.
 
-@Profile("local | it-embedded | it-local")
+@EnableOnlyForLocal
 @Tag(name = "SystemSettingsController", description = "System settings APIs")
 @Validated
 @RestController

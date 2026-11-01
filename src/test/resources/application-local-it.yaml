@@ -4,6 +4,11 @@ common:
   platformJwtIssuer: http://localhost:7125/realms/platform
   deviceJwtIssuer: http://localhost:7125/realms/device
 
+aws:
+  s3:
+    region: "us-east-1"
+    bucket: "local-it-bucket"
+
 mongock:
   enabled: false # Disable Mongock
 

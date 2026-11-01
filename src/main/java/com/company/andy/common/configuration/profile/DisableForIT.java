@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-// Disable for integration tests, covering both "it-embedded" and "it-local" profiles
+// Disable for integration tests, covering both "local-it" and "local-it-embedded" profiles
 @Retention(RUNTIME)
-@Profile("!(it-embedded | it-local)")
+@Profile("!(local-it | local-it-embedded )")
 public @interface DisableForIT {
 }

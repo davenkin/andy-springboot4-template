@@ -106,8 +106,8 @@ class EquipmentDomainServiceTest {
 
 ```java
 @Slf4j
-@ActiveProfiles("it-embedded")
-//@ActiveProfiles("it-local")
+@ActiveProfiles("local-it-embedded")
+//@ActiveProfiles("local-it")
 @AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public abstract class IntegrationTest {
@@ -154,29 +154,32 @@ instead create your own stub classes.
 #### Testing profiles
 
 There are two profiles for integration
-test: [application-it-embedded.yaml](../src/test/resources/application-it--embedded.yaml)
-and [application-it-local.yaml](../src/test/resources/application-it-local.yaml). Based on your requirements, you can
-choose to enable one of them, but not both. Normally you can just use `application-it-embedded.yaml` for development and
+test: [application-local-it-embedded.yaml](../src/test/resources/application-it--embedded.yaml)
+and [application-local-it.yaml](../src/test/resources/application-local-it.yaml). Based on your requirements, you can
+choose to enable one of them, but not both. Normally you can just use `application-local-it-embedded.yaml` for
+development and
 CI pipelines, at it does not require local MongoDB/Redis to run and hence easier to run tests.
 
-The main difference between `application-it-embedded.yaml` and `application-it-local.yaml` is that the former uses
+The main difference between `application-local-it-embedded.yaml` and `application-local-it.yaml` is that the former uses
 embedded MongoDB and Redis while the latter uses real ones from your local machine.
 
-|                         | `application-it-embedded.yaml` | `application-it-local.yaml` |
-|-------------------------|--------------------------------|-----------------------------|
-| Embedded MongoDB server | Yes                            | No                          |
-| Local MongoDB server    | No                             | Yes                         |
-| Embedded Redis server   | Yes                            | No                          |
-| Local Redis server      | No                             | Yes                         |
-| MongoDB transaction     | Enabled                        | Enabled                     |
-| Mongock migration       | Disabled                       | Disabled                    |
-| Kafka publishing        | Disabled                       | Disabled                    |
-| Kafka consuming         | Disabled                       | Disabled                    |
-| Scheduled job           | Disabled                       | Disabled                    |
-| Rest client             | Disabled                       | Disabled                    |
+|                                 | `application-local-it-embedded.yaml` | `application-local-it.yaml` |
+|---------------------------------|--------------------------------------|-----------------------------|
+| Embedded MongoDB server         | Yes                                  | No                          |
+| Local MongoDB server            | No                                   | Yes                         |
+| Embedded Redis server           | Yes                                  | No                          |
+| Local Redis server              | No                                   | Yes                         |
+| MongoDB transaction             | Enabled                              | Enabled                     |
+| Mongock migration               | Disabled                             | Disabled                    |
+| Kafka publishing                | Disabled                             | Disabled                    |
+| Kafka consuming                 | Disabled                             | Disabled                    |
+| Local RustFS(AWS S3 compatible) | Disabled                             | Enabled                     |
+| Scheduled job                   | Disabled                             | Disabled                    |
+| Rest client                     | Disabled                             | Disabled                    |
+| Keycloak Authentication         | Disabled                             | Disabled                    |
 
-- `application-it-embedded.yaml`: This is the default profile which you use most of the time. This profile should be
-  enabled for CI pipelines. This profile enables developers to run integration tests without setting up any middlewares
+- `application-local-it-embedded.yaml`: This profile enables developers to run integration tests without setting up any
+  middlewares
   locally like MongoDB, Redis or Kafka. It has the following configurations:
     - Use embedded MongoDB server (`de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring4x`)
     - Use embedded Redis server (`com.github.codemonstur:embedded-redis`)
@@ -185,15 +188,17 @@ embedded MongoDB and Redis while the latter uses real ones from your local machi
     - Kafka disabled for both publishing and consuming events
     - Job schedulers are disabled
     - RestClients disabled
-- `application-it-local.yaml`: This is only for real local MongoDB/Redis servers and should not be enabled for CI
-  pipelines, it has the following configurations:
-    - Use your local MongoDB server
-    - Use your local Redis server
-    - MongoDB transactions enabled (same as `application-it-embedded.yaml`)
-    - Mongock disabled (same as `application-it-embedded.yaml`)
-    - Kafka disabled for both publishing and consuming events (same as `application-it-embedded.yaml`)
-    - Job schedulers are disabled (same as `application-it-embedded.yaml`)
-    - RestClients disabled (same as `application-it-embedded.yaml`)
+    - No local RustFS server running, access to AWS S3 is stubbed by `StubObjectStorageService`
+- `application-local-it.yaml`: This profile uses local MongoDB/Redis/AWS S3 servers, it has the following
+  configurations:
+    - Use local MongoDB server
+    - Use local Redis server
+    - Use local RustFS server for simulating AWS S3
+    - MongoDB transactions enabled (same as `application-local-it-embedded.yaml`)
+    - Mongock disabled (same as `application-local-it-embedded.yaml`)
+    - Kafka disabled for both publishing and consuming events (same as `application-local-it-embedded.yaml`)
+    - Job schedulers are disabled (same as `application-local-it-embedded.yaml`)
+    - RestClients disabled (same as `application-local-it-embedded.yaml`)
 
 For both profiles:
 
@@ -218,10 +223,13 @@ and [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingAc
 - Simulates the real HTTP API calling process, other than just calling controller/service method directly
 
 In [IntegrationTest.authHeaderOf(Actor actor)](../src/test/java/com/company/andy/IntegrationTest.java), the current
-actor is been serialized into JSON string and put into `Authorization` header to mimic a JWT token, which is then sent to the controller API.
+actor is been serialized into JSON string and put into `Authorization` header to mimic a JWT token, which is then sent
+to the controller API.
 Upon receiving the request,
-the [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java) decodes the JSON string into a JWT object
-without any validation, then an Actor object is created from the JWT object, which is then injected into the controller method
+the [TestingActorJwtDecoder](../src/test/java/com/company/andy/support/TestingActorJwtDecoder.java) decodes the JSON
+string into a JWT object
+without any validation, then an Actor object is created from the JWT object, which is then injected into the controller
+method
 parameter annotated with `@AuthenticationPrincipal`.
 
 #### Test Controllers
@@ -376,7 +384,8 @@ their own test files, as they are not triggered by our own controller APIs but b
 
 #### How Kafka is disabled in integration tests?
 
-- In `application-it-embedded.yaml` or `application-it-local.yaml`, the KafkaAutoConfiguration is excluded which disables the consuming side:
+- In `application-local-it-embedded.yaml` or `application-local-it.yaml`, the KafkaAutoConfiguration is excluded which
+  disables the consuming side:
 
 ```yaml
 spring:
@@ -398,7 +407,7 @@ public class EventConfiguration {
 
 #### How Redis server is set up in integration tests?
 
-- The `TestingEmbeddedRedisServer` is enabled for `it` profile(not `it-local` profile) and it starts an embedded Redis
+- The `TestingEmbeddedRedisServer` is enabled for `it` profile(not `local-it` profile) and it starts an embedded Redis
   server using
   `@PostConstruct`:
 
@@ -410,11 +419,16 @@ public class EventConfiguration {
 ```
 
 #### How Oauth2 clients are disabled in integration tests?
-- in `application-it-embedded.yaml` and `application-it-local.yaml`, `OAuth2ClientAutoConfiguration` is excluded to disable the auto configuration of Oauth2 clients:
+
+- in `application-local-it-embedded.yaml` and `application-local-it.yaml`, `OAuth2ClientAutoConfiguration` is excluded
+  to disable the auto configuration of Oauth2 clients:
+
 ```yaml
 spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration # Disable OAuth2 Client for service account
 ```
-- [RestClientConfiguration](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) is marked with `@DisableForIT`.
+
+- [RestClientConfiguration](src/main/java/com/company/andy/common/configuration/RestClientConfiguration.java) is marked
+  with `@DisableForIT`.

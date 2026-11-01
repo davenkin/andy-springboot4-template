@@ -4,8 +4,13 @@ common:
   platformJwtIssuer: http://localhost:7125/realms/platform
   deviceJwtIssuer: http://localhost:7125/realms/device
 
+aws:
+  s3:
+    region: "us-east-1"
+    bucket: "local-bucket"
+
 server:
-  port: 5125
+  port: 8888
 spring:
   data:
     redis:

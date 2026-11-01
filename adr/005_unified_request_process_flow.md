@@ -371,7 +371,7 @@ Scheduler --> Timer: success
 
 ```java
 @Slf4j
-@Profile("local | it-embedded | it-local")
+@DisableForIT
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class EquipmentJobScheduler {

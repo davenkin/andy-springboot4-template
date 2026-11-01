@@ -1,5 +1,6 @@
 package com.company.andy.feature.systemsettings.controller;
 
+import com.company.andy.common.configuration.profile.EnableOnlyForLocal;
 import com.company.andy.feature.systemsettings.command.SystemSettingsCommandService;
 import com.company.andy.feature.systemsettings.command.UpdateSystemBaseSettingsCommand;
 import com.company.andy.feature.systemsettings.query.QSystemSettings;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 // Controller should be thin and calls into CommandService and QueryService.
 // Here PlatformSystemSettingsController belongs to the Platform API plane and should be prefixed with "Platform".
 
-@Profile("local | it-embedded | it-local")
+@EnableOnlyForLocal
 @Tag(name = "PlatformSystemSettingsController", description = "System settings APIs for Platform API plane")
 @Validated
 @RestController

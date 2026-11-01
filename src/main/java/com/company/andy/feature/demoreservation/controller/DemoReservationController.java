@@ -1,5 +1,6 @@
 package com.company.andy.feature.demoreservation.controller;
 
+import com.company.andy.common.configuration.profile.EnableOnlyForLocal;
 import com.company.andy.common.utils.ResponseId;
 import com.company.andy.feature.demoreservation.command.CreateDemoReservationCommand;
 import com.company.andy.feature.demoreservation.command.DemoReservationCommandService;
@@ -7,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 // Controller should be thin and calls into CommandService and QueryService.
 
-@Profile("local | it-embedded | it-local")
+@EnableOnlyForLocal
 @Tag(name = "DemoReservationController", description = "Demo reservation APIs")
 @Validated
 @RestController

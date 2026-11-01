@@ -53,10 +53,11 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to run locally
 
-- First run `./start-docker-compose.sh` to start the following middlewares using Docker:
+- First run `./start-docker-compose.sh` to start the following middleware using Docker:
     - `MongoDB`: localhost:27125
     - `Kafka`: localhost:9125
     - `Kafka UI`: [http://localhost:8125](http://localhost:8125)
+    - `RustFS UI`: [http://localhost:5216](http://localhost:5216), login with username `rustfsaccesskey` and password `rustfssecretkey`
     - `Keycloak`: [http://localhost:7125](http://localhost:7125), login with username `admin` and password `admin`, more
       local user accounts refer to [keycloak-data/README.md](keycloak-data/README.md)
     - `Redis`: localhost:6125, password: `aredissecret`
@@ -65,9 +66,9 @@ This is a template Spring Boot 4 project with the following features:
       running
     - Run `main()` in  `SpringBootWebApplication`, assuming docker-compose is already up running
 
-- Open [http://localhost:5125/about](http://localhost:5125/about) to check if the application runs successfully
-- Swagger UI: [http://localhost:5125/swagger-ui/index.html](http://localhost:5125/swagger-ui/index.html)
-- Actuator endpoints: [http://localhost:5125/actuator](http://localhost:5125/actuator)
+- Open [http://localhost:8888/about](http://localhost:8888/about) to check if the application runs successfully
+- Swagger UI: [http://localhost:8888/swagger-ui/index.html](http://localhost:8888/swagger-ui/index.html)
+- Actuator endpoints: [http://localhost:8888/actuator](http://localhost:8888/actuator)
 - To stop docker-compose and delete volume data, run `./stop-docker-compose.sh`
 
 ## How to build

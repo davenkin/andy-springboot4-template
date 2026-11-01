@@ -84,15 +84,14 @@ services:
       - andy-springboot4-template-network
     restart: always
 
-
   rustfs:
     image: rustfs/rustfs:1.0.4
     ports:
       - "5125:9000"
       - "5216:9001"
     environment:
-      RUSTFS_ACCESS_KEY: a-rustfs-access-key
-      RUSTFS_SECRET_KEY: a-rustfs-secret-key
+      RUSTFS_ACCESS_KEY: rustfsaccesskey
+      RUSTFS_SECRET_KEY: rustfssecretkey
       RUSTFS_ADDRESS: 0.0.0.0:9000
       RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
       RUSTFS_CONSOLE_ENABLE: true
@@ -101,7 +100,6 @@ services:
     networks:
       - andy-springboot4-template-network
     restart: always
-
 
 networks:
   andy-springboot4-template-network:

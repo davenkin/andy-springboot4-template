@@ -1,5 +1,6 @@
 package com.company.andy.feature.demoreservation.controller;
 
+import com.company.andy.common.configuration.profile.EnableOnlyForLocal;
 import com.company.andy.common.utils.PagedResponse;
 import com.company.andy.feature.demoreservation.query.DemoReservationQueryService;
 import com.company.andy.feature.demoreservation.query.PageDemoReservationsQuery;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 // Here PlatformDemoReservationController belongs to the Platform API plane and should be prefixed with "Platform".
 
 
-@Profile("local | it-embedded | it-local")
+@EnableOnlyForLocal
 @Tag(name = "DemoReservationController", description = "Demo reservation APIs for Platform API plane")
 @Validated
 @RestController

@@ -1,5 +1,6 @@
 package com.company.andy.common.event;
 
+import com.company.andy.common.configuration.profile.DisableForIT;
 import com.company.andy.common.event.publish.DomainEventPublisher;
 import com.company.andy.common.model.actor.Actor;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import static net.javacrumbs.shedlock.core.LockAssert.assertLocked;
 
 @Slf4j
 @Component
+@DisableForIT
 @RequiredArgsConstructor
 public class DomainEventJobScheduler {
     private final DomainEventPublisher domainEventPublisher;

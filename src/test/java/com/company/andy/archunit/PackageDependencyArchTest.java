@@ -21,10 +21,8 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule business_classes_should_all_under_specific_packages = classes()
-            .that()
-            .resideInAnyPackage("..com.company.andy.feature..")
-            .should()
-            .resideInAnyPackage(
+            .that().resideInAnyPackage("..com.company.andy.feature..")
+            .should().resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..domain..",
@@ -38,10 +36,8 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule domain_classes_should_not_depend_on_outer_packages = noClasses()
-            .that()
-            .resideInAnyPackage("..com.company.andy.feature..domain..")
-            .should()
-            .dependOnClassesThat()
+            .that().resideInAnyPackage("..com.company.andy.feature..domain..")
+            .should().dependOnClassesThat()
             .resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..controller..",
@@ -54,15 +50,13 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule feature_code_should_not_depend_on_current_actor_service = noClasses()
-            .that()
-            .resideInAnyPackage(
+            .that().resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
                     "..com.company.andy.feature..query.."
             )
-            .should()
-            .dependOnClassesThat()
+            .should().dependOnClassesThat()
             .belongToAnyOf(
                     CurrentActorService.class
             )
@@ -71,22 +65,19 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule map_struct_should_not_be_used = noClasses()
-            .should()
-            .dependOnClassesThat().resideInAPackage("org.mapstruct..")
+            .should().dependOnClassesThat().resideInAPackage("org.mapstruct..")
             .because(
                     "We don't use MapStruct as we think manual mapper implementations are more straightforward and easier to debug, and also manual mappers do not take much effort.");
 
     @ArchTest
     static final ArchRule spring_data_repositories_should_not_be_used = noClasses()
-            .should()
-            .dependOnClassesThat().belongToAnyOf(MongoRepository.class, ListCrudRepository.class, ListPagingAndSortingRepository.class)
+            .should().dependOnClassesThat().belongToAnyOf(MongoRepository.class, ListCrudRepository.class, ListPagingAndSortingRepository.class)
             .because(
                     "We don't use Spring Data's repository interfaces directly as it's too rigid for method names, instead we use AbstractMongoRepository as the base repository class and define our own repository interfaces for better flexibility and readability.");
 
     @ArchTest
     static final ArchRule usage_of_jackson_annotations_should_be_minimized = noClasses()
-            .that()
-            .resideInAnyPackage(
+            .that().resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..domain..",
@@ -94,8 +85,7 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             )
-            .should()
-            .dependOnClassesThat()
+            .should().dependOnClassesThat()
             .belongToAnyOf(
                     JsonProperty.class,
                     JsonAlias.class,
@@ -112,8 +102,7 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule usage_of_json_node_objects_should_be_minimized = noClasses()
-            .that()
-            .resideInAnyPackage(
+            .that().resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..controller..",
                     "..com.company.andy.feature..domain..",
@@ -121,15 +110,13 @@ class PackageDependencyArchTest {
                     "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
             )
-            .should()
-            .dependOnClassesThat()
+            .should().dependOnClassesThat()
             .resideInAnyPackage("tools.jackson.databind.node")
             .because("We should not rely directly on Jackson node objects as it's an infrastructure concern and it's bad for code navigability.");
 
     @ArchTest
     static final ArchRule mongodb_indexes_should_be_created_explicitly = noClasses()
-            .should()
-            .dependOnClassesThat()
+            .should().dependOnClassesThat()
             .belongToAnyOf(
                     Indexed.class,
                     CompoundIndex.class,
@@ -142,24 +129,28 @@ class PackageDependencyArchTest {
 
     @ArchTest
     static final ArchRule feature_classes_should_not_rely_on_spring_security = noClasses()
-            .that()
-            .resideInAnyPackage(
+            .that().resideInAnyPackage(
                     "..com.company.andy.feature..command..",
                     "..com.company.andy.feature..domain..",
                     "..com.company.andy.feature..eventhandler..",
                     "..com.company.andy.feature..scheduledjob..",
                     "..com.company.andy.feature..query.."
-            ).should()
-            .dependOnClassesThat()
+            ).should().dependOnClassesThat()
             .resideInAnyPackage("org.springframework.security..")
             .because(
                     "Feature packages should not rely on spring security class, as we already uses Actor to represent the authenticated principal. You may reference spring security in the controller and infrastructure packages.");
 
     @ArchTest
     static final ArchRule should_not_use_rest_template = noClasses()
-            .that()
-            .resideInAnyPackage("..com.company.andy..")
+            .that().resideInAnyPackage("..com.company.andy..")
             .should().dependOnClassesThat()
             .haveFullyQualifiedName("org.springframework.web.client.RestTemplate")
             .because("Don't use RestTemplate as it's deprecated, use RestClient instead.");
+
+    @ArchTest
+    static final ArchRule only_s3_object_storage_service_can_depend_on_s3_client = classes()
+            .that().haveFullyQualifiedName("software.amazon.awssdk.services.s3.S3Client")
+            .should().onlyHaveDependentClassesThat().haveSimpleName("S3ObjectStorageService")
+            .because("Only S3Client is a low level concern and should be hidden from our own code.");
+
 }
