@@ -35,8 +35,8 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Slf4j
-@ActiveProfiles("it-embedded")
-//@ActiveProfiles("it-local")
+//@ActiveProfiles("it-embedded")
+@ActiveProfiles("it-local")
 @AutoConfigureRestTestClient
 @ExtendWith(TestIdExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)

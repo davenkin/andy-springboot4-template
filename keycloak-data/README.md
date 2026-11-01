@@ -33,7 +33,7 @@ The current folder contains the following settings:
 - Nothing there yet
 
 # How to import Keycloak data
- The `docker-compose.yml` file mounts the `keycloak-data` folder into Keycloak Docker's `/opt/keycloak/data/import` folder from where Keycloak will import all json files automatically at startup.
+ The `docker-compose.yaml` file mounts the `keycloak-data` folder into Keycloak Docker's `/opt/keycloak/data/import` folder from where Keycloak will import all json files automatically at startup.
 ```
     volumes:
       - ./keycloak-data:/opt/keycloak/data/import
