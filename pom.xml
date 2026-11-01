@@ -231,52 +231,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.codehaus.mojo</groupId>-->
-<!--                <artifactId>exec-maven-plugin</artifactId>-->
-<!--                <version>3.5.0</version>-->
-<!--                <executions>-->
-<!--                    &lt;!&ndash; Stop docker compose if already exists in order to have a clean docker environment&ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>stop-test-containers</id>-->
-<!--                        <phase>process-test-resources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <executable>docker</executable>-->
-<!--                            <arguments>-->
-<!--                                <argument>compose</argument>-->
-<!--                                <argument>-f</argument>-->
-<!--                                <argument>${project.basedir}/docker-compose.yaml</argument>-->
-<!--                                <argument>down</argument>-->
-<!--                                <argument>-v</argument>-->
-<!--                            </arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-
-<!--                    &lt;!&ndash; Start docker compose for running tests&ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>start-test-containers</id>-->
-<!--                        <phase>process-test-resources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <executable>docker</executable>-->
-<!--                            <arguments>-->
-<!--                                <argument>compose</argument>-->
-<!--                                <argument>-f</argument>-->
-<!--                                <argument>${project.basedir}/docker-compose.yaml</argument>-->
-<!--                                <argument>up</argument>-->
-<!--                                <argument>-d</argument>-->
-<!--                                <argument>&#45;&#45;wait</argument>-->
-<!--                            </arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 </project>
