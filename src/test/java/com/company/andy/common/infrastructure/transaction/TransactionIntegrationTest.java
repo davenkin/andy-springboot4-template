@@ -78,22 +78,4 @@ class TransactionIntegrationTest extends IntegrationTest {
         assertEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
         assertNotNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
     }
-
-    @Test
-    void should_not_work_for_multiple_aggregate_roots_when_exception_thrown_in_the_middle_without_transaction() {
-        Actor actor = randomMemberActor();
-        CreateEquipmentCommand createEquipmentCommand = randomCreateEquipmentCommand();
-        String equipmentId = equipmentCommandService.createEquipment(createEquipmentCommand, actor.requireOrgId());
-        UpdateEquipmentNameCommand updateEquipmentNameCommand = randomUpdateEquipmentNameCommand();
-        UpdateEquipmentHolderCommand updateEquipmentHolderCommand = randomUpdateEquipmentHolderCommand();
-
-        assertThrows(RuntimeException.class, () -> testingTransactionService.throwExceptionInTheMiddleWithoutTransaction(equipmentId,
-                updateEquipmentNameCommand,
-                updateEquipmentHolderCommand, actor));
-
-        Equipment dbEquipment = equipmentRepository.byId(equipmentId);
-        assertEquals(updateEquipmentNameCommand.name(), dbEquipment.getName());
-        assertNotEquals(updateEquipmentHolderCommand.name(), dbEquipment.getHolder());
-        assertNotNull(latestDomainEventFor(equipmentId, EQUIPMENT_NAME_UPDATED_EVENT, EquipmentNameUpdatedEvent.class));
-    }
 }

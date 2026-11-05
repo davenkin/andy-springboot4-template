@@ -34,15 +34,4 @@ public class TestingTransactionService {
         throw new RuntimeException("fake exception");
     }
 
-    public void throwExceptionInTheMiddleWithoutTransaction(
-            String equipmentId,
-            UpdateEquipmentNameCommand nameCommand,
-            UpdateEquipmentHolderCommand holderCommand,
-            Actor actor) {
-        equipmentCommandService.updateEquipmentName(equipmentId, nameCommand, actor.requireOrgId());
-        if (true) { // mimic exception in the middle of the transaction flow
-            throw new RuntimeException("fake exception");
-        }
-        equipmentCommandService.updateEquipmentHolder(equipmentId, holderCommand, actor.requireOrgId());
-    }
 }

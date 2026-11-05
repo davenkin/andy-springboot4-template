@@ -11,7 +11,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 public class NoNullElementValidator implements ConstraintValidator<NoNullElement, Collection<?>> {
 
     @Override
-    public boolean isValid(Collection collection, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Collection<?> collection, ConstraintValidatorContext constraintValidatorContext) {
         if (isEmpty(collection)) {
             return true;
         }
