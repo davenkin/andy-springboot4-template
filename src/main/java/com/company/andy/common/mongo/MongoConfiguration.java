@@ -36,18 +36,14 @@ public class MongoConfiguration {
 
     @Bean
     public MongoClientSettingsBuilderCustomizer mongoClientSettingsBuilderCustomizer() {
-        return builder -> {
-            builder.applyToConnectionPoolSettings(poolBuilder -> {
-                poolBuilder.maxSize(500).minSize(5);
-            });
-        };
+        return builder -> builder.applyToConnectionPoolSettings(poolBuilder -> poolBuilder.maxSize(500).minSize(5));
     }
 
     @Bean
     MongoTemplate mongoTemplate(MongoDatabaseFactory mongoDbFactory, MongoConverter converter) {
         MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory, converter);
         mongoTemplate.setWriteConcern(MAJORITY);
-        mongoTemplate.setWriteConcernResolver(action -> MAJORITY);
+        mongoTemplate.setWriteConcernResolver(_ -> MAJORITY);
         mongoTemplate.setWriteResultChecking(EXCEPTION);
         mongoTemplate.setReadPreference(secondaryPreferred());
         return mongoTemplate;

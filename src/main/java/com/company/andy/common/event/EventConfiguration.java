@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.messaging.ChangeStreamRequest;
 import org.springframework.data.mongodb.core.messaging.DefaultMessageListenerContainer;
 import org.springframework.data.mongodb.core.messaging.MessageListener;
 import org.springframework.data.mongodb.core.messaging.MessageListenerContainer;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
@@ -65,13 +66,16 @@ public class EventConfiguration {
 
     @Bean
     public DefaultKafkaConsumerFactoryCustomizer defaultKafkaConsumerFactoryCustomizer(JsonMapper jsonMapper) {
-        return consumerFactory -> {
-            JacksonJsonDeserializer valueDeserializer = new JacksonJsonDeserializer<>(jsonMapper);
-            valueDeserializer.addTrustedPackages("*");
+        return consumerFactory -> customizeConsumerFactory(consumerFactory, jsonMapper);
+    }
 
-            // Must wrap the JsonDeserializer into an ErrorHandlingDeserializer, otherwise deserialization error will result in endless message retry
-            consumerFactory.setValueDeserializer(new ErrorHandlingDeserializer<>(valueDeserializer));
-        };
+    private static <V> void customizeConsumerFactory(DefaultKafkaConsumerFactory<?, V> consumerFactory, JsonMapper jsonMapper) {
+        JacksonJsonDeserializer<V> valueDeserializer = new JacksonJsonDeserializer<>(jsonMapper);
+        valueDeserializer.addTrustedPackages("*");
+
+        // Must wrap the JsonDeserializer into an ErrorHandlingDeserializer,
+        // otherwise deserialization error will result in endless message retry
+        consumerFactory.setValueDeserializer(new ErrorHandlingDeserializer<>(valueDeserializer));
     }
 
     @Bean
