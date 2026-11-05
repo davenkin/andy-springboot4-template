@@ -22,8 +22,6 @@ import static org.springframework.data.domain.Sort.Direction.fromString;
 @SuperBuilder
 @NoArgsConstructor(access = PROTECTED)
 public abstract class PageQuery {
-    private static final String PROPERTY_DIRECTION_DELIMITER = ",";
-    private static final int MAX_SORT_PROPERTIES = 3;
     private static final int DEFAULT_PAGE_SIZE = 25;
     private static final int DEFAULT_PAGE_NUMBER = 0;
 

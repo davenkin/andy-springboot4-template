@@ -5,10 +5,11 @@ import static com.company.andy.common.utils.CommonUtils.singleParameterizedArgum
 // Base class for all event handlers, deals with handlers' priority, idempotency and transactionality.
 
 public abstract class AbstractEventHandler<T> {
-    private final Class<?> eventClass;
+    private final Class<T> eventClass;
 
+    @SuppressWarnings("unchecked")
     protected AbstractEventHandler() {
-        this.eventClass = singleParameterizedArgumentClassOf(this.getClass());
+        this.eventClass = (Class<T>) singleParameterizedArgumentClassOf(this.getClass());
     }
 
     public boolean isIdempotent() {
@@ -32,6 +33,10 @@ public abstract class AbstractEventHandler<T> {
 
     public boolean canHandle(Object event) {
         return this.eventClass.isAssignableFrom(event.getClass());
+    }
+
+    public final void handleEventObject(Object event) {
+        handle(this.eventClass.cast(event));
     }
 
     public abstract void handle(T event);

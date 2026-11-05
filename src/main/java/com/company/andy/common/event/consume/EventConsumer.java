@@ -84,7 +84,7 @@ public class EventConsumer {
             Object event = consumingEvent.getEvent();
             ActorOrigin origin = ActorOrigin.fromEvent(event.getClass().getName(), consumingEvent.getEventId());
             Actor actor = Actor.createEventHandlerActor(handler.getClass().getName(), origin);
-            CurrentActorService.runWithActor(actor, () -> ((AbstractEventHandler<Object>) handler).handle(event));
+            CurrentActorService.runWithActor(actor, () -> handler.handleEventObject(event));
         } else {
             log.warn("Event[{}:{}] has already been consumed by handler[{}], skip handling.",
                     consumingEvent.getType(), consumingEvent.getEventId(), handler.getName());
