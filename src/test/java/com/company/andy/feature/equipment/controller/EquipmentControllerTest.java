@@ -17,6 +17,7 @@ import com.company.andy.feature.equipment.query.PageEquipmentsQuery;
 import com.company.andy.feature.equipment.query.QPagedEquipment;
 import com.company.andy.feature.maintenance.command.MaintenanceRecordCommandService;
 import com.company.andy.feature.maintenance.domain.MaintenanceRecordRepository;
+import com.company.andy.support.DisableForEmbedded;
 import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ class EquipmentControllerTest extends IntegrationTest {
     @Autowired
     private MaintenanceRecordRepository maintenanceRecordRepository;
 
+    @DisableForEmbedded
     @Test
     void should_create_equipment() {
         // Prepare
