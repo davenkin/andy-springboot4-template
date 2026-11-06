@@ -6,6 +6,7 @@ import com.company.andy.common.event.DomainEventType;
 import com.company.andy.common.event.consume.EventConsumer;
 import com.company.andy.common.event.publish.PublishingDomainEvent;
 import com.company.andy.common.model.actor.Actor;
+import com.company.andy.support.TestingActiveProfilesResolver;
 import com.company.andy.support.testid.TestIdExtension;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +36,10 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Slf4j
-//@ActiveProfiles("local-it-embedded")
-@ActiveProfiles("local-it")
 @AutoConfigureRestTestClient
 @ExtendWith(TestIdExtension.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles(resolver = TestingActiveProfilesResolver.class)
 public abstract class IntegrationTest {
 
     @Autowired
@@ -83,3 +83,5 @@ public abstract class IntegrationTest {
         return headers -> headers.setBearerAuth(getEncoder().encodeToString(objectMapper.writeValueAsString(actor).getBytes()));
     }
 }
+
+

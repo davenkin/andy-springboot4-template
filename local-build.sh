@@ -8,6 +8,7 @@
 
 # Run the build
 ./mvnw clean package
+./mvnw clean package -Dspring.profiles.active=local-it
 
 
 

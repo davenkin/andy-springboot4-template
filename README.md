@@ -73,7 +73,8 @@ This is a template Spring Boot 4 project with the following features:
 
 ## How to build
 
-- Run `./build.sh` to build the project locally
+- Run `./local-build.sh` to build the project locally with MongoDB, Kafka, Redis running in Docker.
+- Run `./local-build-embedded.sh` to build the project locally with embedded MongoDB, Redis.
 
 ## How to run tests
 
