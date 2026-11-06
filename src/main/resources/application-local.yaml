@@ -11,6 +11,7 @@ aws:
 
 server:
   port: 8888
+
 spring:
   data:
     redis:
