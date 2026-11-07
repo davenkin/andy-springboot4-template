@@ -4,6 +4,7 @@ import com.company.andy.common.event.DomainEvent;
 import com.company.andy.common.event.publish.PublishingDomainEventDao;
 import com.company.andy.common.exception.ServiceException;
 import com.company.andy.common.model.AggregateRoot;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -44,6 +45,12 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
 
     protected AbstractMongoRepository() {
         this.arClass = singleParameterizedArgumentClassOf(this.getClass());
+    }
+
+    @PostConstruct
+    void validate() {
+        requireNonNull(mongoTemplate, "mongoTemplate must not be null.");
+        requireNonNull(publishingDomainEventDao, "publishingDomainEventDao must not be null.");
     }
 
     @Transactional
@@ -178,7 +185,7 @@ public abstract class AbstractMongoRepository<AR extends AggregateRoot> {
 
     private void checkSameOrg(Collection<AR> ars) {
         Set<String> orgIdS = ars.stream().map(AR::getOrgId).collect(toImmutableSet());
-        if (orgIdS.size() > 1) {
+        if (orgIdS.size() >= 2) {
             Set<String> allArIds = ars.stream().map(AggregateRoot::getId).collect(toImmutableSet());
             throw new ServiceException(NOT_SAME_ORG, "All " + arType() + "s should belong to the same organization.", "arIds", allArIds);
         }
