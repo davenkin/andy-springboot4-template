@@ -53,7 +53,7 @@ Sometimes you may want to export your local Keycloak data for future import, use
 docker run --rm \
 -v andy-springboot4-template_andy-springboot4-template-keycloak-volume:/opt/keycloak/data \
 -v $(pwd)/keycloak-data:/tmp/export \
-quay.io/keycloak/keycloak:26.2.5 \
+quay.io/keycloak/keycloak:26.8.2 \
 export \
 --dir /tmp/export \
 --realm platform \
@@ -66,7 +66,7 @@ export \
 docker run --rm \
 -v andy-springboot4-template_andy-springboot4-template-keycloak-volume:/opt/keycloak/data \
 -v $(pwd)/keycloak-data:/tmp/export \
-quay.io/keycloak/keycloak:26.2.5 \
+quay.io/keycloak/keycloak:26.8.2 \
 export \
 --dir /tmp/export \
 --realm org \
@@ -80,7 +80,7 @@ export \
 docker run --rm \
 -v andy-springboot4-template_andy-springboot4-template-keycloak-volume:/opt/keycloak/data \
 -v $(pwd)/keycloak-data:/tmp/export \
-quay.io/keycloak/keycloak:26.2.5 \
+quay.io/keycloak/keycloak:26.8.2 \
 export \
 --dir /tmp/export \
 --realm device \
