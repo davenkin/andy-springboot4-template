@@ -74,7 +74,7 @@ export \
 ```
 
 
-4. Run the following command to export the `device` realm data:
+5. Run the following command to export the `device` realm data:
 
 ```bash
 docker run --rm \
@@ -87,4 +87,4 @@ export \
 --users realm_file
 ```
 
-5. Data will be exported to the `keycloak-data` folder.
+6. Data will be exported to the `keycloak-data` folder.
